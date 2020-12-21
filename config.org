@@ -7,7 +7,6 @@
 ;; -*- lexical-binding: t -*-
 #+END_SRC
 
-
 #+BEGIN_QUOTE
 “I’m rarely happier than when spending an entire day programming my
 computer to perform automatically a task that would otherwise take me
@@ -15,7 +14,6 @@ a good ten seconds to do by hand.” - Douglas Adams
 #+END_QUOTE
 
 * References
-
 
 https://github.com/hlissner/doom-emacs
 https://github.com/hlissner/doom-emacs/blob/develop/docs/api.org
@@ -59,6 +57,8 @@ run 'doom sync' after modifying this file!
 
  You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
  they are implemented.
+
+*
 
 * Variable definitions
 
@@ -586,7 +586,8 @@ manager or manually:
 + *pyright* can be installed with ~pip install pyright~ or ~npm i -g pyright~.
 
   #+BEGIN_SRC emacs-lisp
-    (setq pyenv-show-active-python-in-modeline t)
+    (setq pyvenv-default-virtual-env-name "dev"
+          pyenv-show-active-python-in-modeline t)
   #+END_SRC
 
 * Shell/dired
@@ -658,7 +659,7 @@ manager or manually:
 	  (after! dired
 		  (if IS-MAC
 		      (progn
-			(setq insert-directory-program "gls" dired-use-ls-dired t)))
+ 		(setq insert-directory-program "gls" dired-use-ls-dired t)))
 		  (setq list-directory-verbose-switches "-lgGh --group-directories-first")
 		  ;;(setq list-directory-brief-switches "-CF")
 		  (setq dired-listing-switches "-algGh --group-directories-first") ;; | awk '{print $3, $4, $5, $6, $7}'")
@@ -667,7 +668,7 @@ manager or manually:
 		  (setq dired-omit-files "^\\.[^.]\\|$Rhistory\\|$RData\\|__pycache__")
 		  (require 'dired-x)
 		  (add-hook 'dired-mode-hook (lambda ()
-					   (dired-hide-details-mode nil)
+					   (dired-hide-details-mode )
 					   (setq dired-omit-mode t)
 					   (local-set-key [(meta return)] 'dired-open-file))))
 
@@ -1217,6 +1218,29 @@ Babel / source code content
 	) ;; after! org
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+;; ;; Convert inline pdf
+(if (not (system-type-is-darwin))
+    (progn
+      (add-to-list 'image-type-file-name-regexps '("\\.pdf\\'" . imagemagick))
+      (add-to-list 'image-file-name-extensions "pdf")
+      (setq imagemagick-types-inhibit (remove 'PDF imagemagick-types-inhibit))
+      (setq imagemagick-render-type 1) ;; never rendering
+      ))
+(add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
+
+;; PDFs visited in Org-mode are opened in org-pdf-view (and other file extensions are handled according to the defaults)
+(add-hook 'org-mode-hook
+      '(lambda ()
+         (setq org-file-apps
+           '((auto-mode . emacs)
+             ("\\.mm\\'" . default)
+             ("\\.x?html?\\'" . default)
+	     ("\\.pdf\\'" . (lambda (file link) (org-pdfview-open link)))))))
+;;             ("\\.pdf\\'" . "evince %s")))))
+
+#+END_SRC
+
 
 * Appearance
 
@@ -1239,8 +1263,8 @@ There are two ways to load a theme. Both assume the theme is installed and
 available. You can either set `doom-theme' or manually load a theme with the
 `load-theme' function. This is the default:
 #+BEGIN_SRC emacs-lisp
-;;(setq doom-theme 'doom-one)
-(setq doom-theme 'doom-city-lights)
+(setq doom-theme 'doom-one)
+;;(setq doom-theme 'doom-city-lights)
 ;;(setq doom-theme 'doom-solarized-dark)
 #+END_SRC
 
@@ -1258,7 +1282,7 @@ available. You can either set `doom-theme' or manually load a theme with the
 This determines the style of line numbers in effect. If set to `nil', line
 numbers are disabled. For relative line numbers, set this to `relative'.
 #+BEGIN_SRC emacs-lisp
-(setq display-line-numbers-type t)
+(setq display-line-numbers-type nil)
 #+END_SRC
 
 * Key bindings
@@ -1473,7 +1497,7 @@ Gist note snippets
 			   (local-set-key (kbd "C-c C-v C-c") 'org-babel-clear-all-results)
 			   ))
 ;; org-store-link should be accessible from all buffers
-;;(define-key global-map (kbd "C-c l") 'org-store-link)
+(define-key global-map (kbd "C-c l") 'org-store-link)
 
 ;; (setq org-completion-use-iswitchb t)
 ;; (global-set-key "\C-cb" 'org-iswitchb)

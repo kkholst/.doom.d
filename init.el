@@ -22,9 +22,9 @@
        :completion
        company           ; the ultimate code completion backend
        ;;helm              ; the *other* search engine for love and life
-       ido               ; the other *other* search engine...
-       ;; (ivy               ; a search engine for love and life
-        ;; +prescient +icons +fuzzy)
+       ;;ido               ; the other *other* search engine...
+        (ivy               ; a search engine for love and life
+         +prescient +icons +fuzzy)
 
        :ui
        deft              ; notational velocity for Emacs
@@ -46,7 +46,7 @@
        (popup +defaults   ; tame sudden yet inevitable temporary windows
         +all)
        ;;tabs              ; a tab bar for Emacs
-       ;;treemacs          ; a project drawer, like neotree but cooler
+       treemacs          ; a project drawer, like neotree but cooler
        ;;unicode           ; extended unicode support for various languages
        vc-gutter         ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
