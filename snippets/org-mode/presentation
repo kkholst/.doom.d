@@ -1,0 +1,49 @@
+# -*- mode: snippet -*-
+# name: presentation
+# key: presentation
+# --
+* Header							     :IGNORE::ARCHIVE:
+#+TITLE: ${1:environment}
+#+AUTHOR: Klaus Kähler Holst
+#+EMAIL: klaus.holst@maersk.com
+#+DATE: \today
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS: presentation+tikz
+#+LATEX_CLASS_OPTIONS: [table,onlymath,10pt,handout]
+#+BEAMER_THEME: maersk
+# +BEAMER_THEME: maersk [titlebackground]
+#+BEAMER_COLOR_THEME: maersk
+#+BEAMER_FONT_THEME: professionalfonts
+# +LATEX_HEADER: \institute{Principal Scientist, Advanced Analytics, Maersk}
+# +LATEX_HEADER: \subtitle{Part II: non-linear models}
+#+LATEX_HEADER: \usepackage{bm}\usepackage[normalem]{ulem}
+#+LATEX_HEADER: \usepackage{ifthen}
+#+LATEX_HEADER: \renewcommand{\one}{\bm{1}}
+# +LATEX_HEADER: \usepackage{pgfpages}
+# +LATEX_HEADER: \mode<handout>{%
+# +LATEX_HEADER:    \pgfpagesuselayout{2 on 1}[a4paperborder shrink=5mm]
+# +LATEX_HEADER:    %\pgfpagesuselayout{4 on 1}[a4paper,landscape]
+# +LATEX_HEADER:    \setbeameroption{show notes}
+# +LATEX_HEADER: }
+# +LATEX_HEADER: \setbeameroption{show notes}
+# +LATEX_HEADER_EXTRA: \usepackage{newtxtext}
+# +LATEX_HEADER_EXTRA: \usepackage{newtxmath}
+#+LATEX_HEADER_EXTRA: \usepackage{libertine}
+#+LATEX_HEADER_EXTRA: \usepackage[libertine]{newtxmath}
+#+STARTUP: beamer hideall
+#+OPTIONS: toc:nil h:3 ^:{}
+#+PROPERTY: header-args:R  :session *R* :cache no :width 550 :height 450
+#+PROPERTY: header-args  :eval never-export :exports code :results output :tangle yes :comments yes
+#+PROPERTY: header-args:R+ :colnames yes :rownames no :hlines yes
+
+* Introduction
+
+*** Outline
+
+* Local variables :NOEXPORT::ARCHIVE:
+
+# local variables:
+# eval: (my-org-buffer-local-mode)
+# eval: (define-key my-org-buffer-local-mode-map (kbd "M-j") 'my/org-export-to-latex)
+# eval: (define-key my-org-buffer-local-mode-map (kbd "C-x C-s") 'my/org-export-to-latex)
+# end:

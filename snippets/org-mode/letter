@@ -1,0 +1,45 @@
+# -*- mode: snippet -*-
+# name: letter
+# key: letter
+# --
+
+#+LATEX_CLASS: letter
+#+LATEX_CLASS_OPTIONS: [english,noheader,logo,signature]
+#+PROPERTY: header-args:R  :session *R* :cache no :width 550 :height 450
+#+PROPERTY: header-args  :eval never-export :exports results :results output :tangle yes :comments yes
+#+PROPERTY: header-args:R+ :colnames yes :rownames no :hlines yes
+#+OPTIONS: timestamp:nil title:nil date:t author:nil creator:nil toc:nil
+#+OPTIONS: h:4 num:t tags:nil d:t ^:{}
+#+LATEX_HEADER: \\usepackage{tabto}
+#+LATEX_HEADER: \\hypersetup{hidelinks,colorlinks,linkcolor={blue!50!black},urlcolor={blue!50!black},citecolor={blue!50!black}}
+#+LATEX_HEADER: \\address{ESPLANADEN 50 \\\\ 1098 KØBENHAVN}
+#+LATEX_HEADER: \\telephone{33\\,63\\,31\\,30}
+#+LATEX_HEADER: \\mobilephone{61\\,70\\,00\\,96}
+#+LATEX_HEADER: \\email{\\url{klaus.holst@maersk.com}}
+#+LATEX_HEADER: \\homepage{\\url{http://www.maersk.com}}
+#+LATEX_HEADER: \\name{Klaus Kähler Holst}
+
+#+ATTR_LaTeX: :options {The Editorial Board\\\\ xxx}
+#+BEGIN_letter
+
+\vspace*{-5em}
+Dear Editors,\\\\
+
+We appreciate the constructive comments about our paper \emph{xxx}.
+
+$1
+
+\closing{Sincerely,}
+
+Principal Scientist, Maersk
+#+LATEX: \\\\[\bigskipamount]
+email:      \tabto{3.5em}\url{klaus.holst@maersk.com} \\\\
+url:        \tabto{3.5em}\url{http://www.holst.it}
+
+#+END_letter
+
+# local variables:
+# eval: (my-org-buffer-local-mode)
+# eval: (define-key my-org-buffer-local-mode-map (kbd "M-j") 'my/org-export-to-latex)
+# eval: (define-key my-org-buffer-local-mode-map (kbd "C-x C-s") 'my/org-export-to-latex)
+# end:

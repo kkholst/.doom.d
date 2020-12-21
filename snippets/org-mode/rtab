@@ -1,0 +1,9 @@
+# name: R table
+# key: rtab
+# --
+
+#+CAPTION:
+#+LABEL: tab
+#+BEGIN_SRC R :exports results :results org
+lava:::org($1)
+#+END_SRC

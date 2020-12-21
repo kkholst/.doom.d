@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: frame
+# key: frame
+# --
+*** $1
+$2
+
+**** note                                                            :B_noteNH:
+    :PROPERTIES:
+    :BEAMER_env: noteNH
+    :END:
+...

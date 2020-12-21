@@ -1,0 +1,7 @@
+# name: LaTeX src block
+# key: ll
+# --
+
+#+BEGIN_SRC latex :exports results :results latex
+$1
+#+END_SRC

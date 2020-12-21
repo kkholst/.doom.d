@@ -1,0 +1,19 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: statagraph
+# key: statagraph
+# --
+
+#+BEGIN_SRC stata :eval never
+twoway line y x, scheme(s1color)
+#+END_SRC
+
+#+BEGIN_SRC stata :exports none
+twoway line y x, scheme(s1color) name($1, replace) 
+graph display $1
+graphexportpdf figs/$1
+gx figs/$1 600
+#+END_SRC
+
+#+BEGIN_CENTER
+file:figs/$1.pdf
+#+END_CENTER

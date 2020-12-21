@@ -1,0 +1,8 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# # binding: C-c ; # { `yas/selected-text`}
+# contributor: Klaus
+# name: fold
+# key: fold
+# --
+`(klaus/insert-folds)`
+

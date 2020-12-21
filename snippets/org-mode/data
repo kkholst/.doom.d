@@ -1,0 +1,25 @@
+# name: Data block
+# key: datasrc
+# --
+
+Data from [[McKenzie%201996][McKenzie 1996]]
+#+name: mckenzie
+| Diagnosis | BDI | GHQ |  n |
+|-----------+-----+-----+----|
+|         1 |   1 |   1 |  7 |
+|         0 |   1 |   1 |  1 |
+|         0 |   1 |   0 |  1 |
+|         1 |   0 |   1 |  4 |
+|         0 |   0 |   1 |  2 |
+|         1 |   0 |   0 |  2 |
+|         0 |   0 |   0 | 33 |
+
+To long format and tabulate
+#+BEGIN_SRC R :exports code :var mckenzie=mckenzie :row.names no
+  library(lava)
+  idx <- unlist(lapply(seq(nrow(mckenzie)),function(x) rep(x,mckenzie$n[x])))
+  long <- mckenzie[idx,1:3]
+  xy <- table(long[,1:2])     ## Diagnosis by BDI
+  xz <- table(long[,c(1,3)])  ## Diagnosis by GHQ
+  yz <- table(long[,2:3])     ## BDI vs GHQ
+#+END_SRC

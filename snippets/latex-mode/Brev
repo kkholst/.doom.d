@@ -1,0 +1,50 @@
+# -*- mode: snippet -*-
+# name: Brev
+# key: <brev
+# --
+
+\documentclass[danish,logo]{ku-brev}
+\usepackage[utf8]{inputenc}
+\usepackage[english,danish]{babel}
+
+\begin{document}
+\institute{BIOSTATISTISK AFDELING}
+\date{
+`(concat 
+  (substring (current-time-string) 8 10) " "
+  (substring (current-time-string) 4 7) " " 
+  (substring (current-time-string) 20 24))`
+}
+\address{ØSTER FARIMAGSGADE 5 \\\ 1014 KØBENHAVN K}
+\telephone{35\,32\,79\,11}
+\directphone{}
+\fax{35\,32\,07\,09}
+\mobilephone{61\,70\,00\,96}
+\email{kkho@biostat.ku.dk}
+\homepage{http://www.biostat.ku.dk/\~{}kkho}
+\name{Klaus Kähler Holst}
+\signature{}
+
+\begin{letter}{NN Support \\\
+    Tavlekærsvej 23 \\\
+    2300 Hvidovre \\\
+    Att: NN}
+
+\opening{Vedrørende: ...}
+
+Kære NN
+
+Efter aftale med ..., sender jeg hermed underskreven
+kopi af retningslinjerne for ...
+
+På forhånd mange tak.
+
+\closing{Med venlig hilsen}
+
+\end{letter}
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

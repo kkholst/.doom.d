@@ -1,0 +1,15 @@
+# name: Figure tikz
+# key: tikzfig
+# --
+
+#+CAPTION:
+#+LABEL: fig
+#+BEGIN_SRC R :exports none :results output raw
+outp <- capture.output({
+outf <- 'fig'
+tikzDevice::tikz(file=paste(outf,'.tex',sep=''),standAlone=TRUE,width=6,height=6)
+$1
+dev.off()
+system(paste('pdflatex ', outf), ignore.stdout=TRUE)})
+cat(paste('#+BEGIN_CENTER\n[[file:',outf,'.pdf]]\n#+END_CENTER\n',sep=''))
+#+END_SRC

@@ -1,0 +1,15 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: Python Header
+# key: pyheader
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# --
+#!/usr/bin/env python3
+# encoding: utf-8
+#
+# Copyright (c) 2015 Klaus K. Holst.  All rights reserved.
+"""
+Created on `(current-time-string)`
+@author: kh$1
+"""
+
+$2

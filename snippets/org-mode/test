@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: test
+# key: tt
+# --
+
+# Cool stuff: `(current-time-string)`
+# File: `(read-file-name "File: ")`

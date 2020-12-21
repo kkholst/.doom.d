@@ -1,0 +1,9 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: frameprop
+# key: frameprop
+# --
+:PROPERTIES:
+:BEAMER_act: 1|handout:0
+:BEAMER_env: againframe
+:BEAMER_ref: *My frame title
+:END:

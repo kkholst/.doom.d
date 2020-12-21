@@ -1,0 +1,9 @@
+# name: (local variable)
+# key: localvar
+# --
+
+`(add-file-local-variable 'mode 'org-mode nil)`
+`(add-file-local-variable 'coding 'utf-8 nil)`
+`(add-file-local-variable 'eval '(my-fun) nil)`
+`(add-file-local-variable 'var 'value nil)`
+

@@ -1,0 +1,8 @@
+# name: LaTeX practicals/exercise template
+# key: pract
+# --
+
+#+ATTR_LaTeX: :options {$1}
+#+BEGIN_pract
+$2
+#+END_pract

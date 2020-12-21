@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: el
+# key: el
+# --
+#+BEGIN_EXPORT latex
+$1
+#+END_EXPORT

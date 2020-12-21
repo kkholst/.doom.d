@@ -1,0 +1,43 @@
+# -*- mode: snippet -*-
+# name: Letter
+# key: <letter
+# --
+
+\documentclass[english,logo]{ku-brev}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\begin{document}
+\institute{DEPARTMENT OF BIOSTATISTICS}
+\date{`(concat 
+  (substring (current-time-string) 8 10) " "
+  (substring (current-time-string) 4 7) " " 
+  (substring (current-time-string) 20 24))`}
+\address{ØSTER FARIMAGSGADE 5 \\\ 1014 KØBENHAVN K}
+\telephone{+45\ 35\,32\,79\,11}
+\directphone{}
+\fax{+45\ 35\,32\,07\,09}
+\mobilephone{+45\ 61\,70\,00\,96}
+\email{kkho@biostat.ku.dk}
+\homepage{http://www.biostat.ku.dk/\~{}kkho}
+\name{Klaus Kähler Holst}
+\signature{}
+
+\begin{letter}{NN Support \\\
+    Tavlekærsvej 23 \\\
+    2300 Hvidovre \\\
+    Att: NN}
+
+\opening{Re: ...}
+
+Dear NN
+
+\closing{Sincerely,}
+
+\end{letter}
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

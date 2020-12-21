@@ -1,0 +1,8 @@
+# name: proposition
+# key: prop
+# --
+#+BEGIN_prop
+$1
+#+BEGIN_proof
+#+END_proof
+#+END_prop

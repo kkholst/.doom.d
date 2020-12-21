@@ -1,0 +1,24 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: asterR
+# key: asterR
+# --
+
+f <- file(description="stdin", open="r")
+dat.in <- read.table(f, header=FALSE, sep="\t", quote="", comment.char="", na.strings=c("","NA"))
+close(f)
+
+onerun <- function(iter,R=50,n=1e3) {
+    set.seed(iter)
+    ...
+    res <- c(a=1,b=2)
+}
+
+dout <- matrix(unlist(
+     mcmapply(onerun,iter=dat.in[,1],R=dat.in[,2],n=dat.in[,3],
+	mc.cores=ncores)),byrow=TRUE,ncol=2)
+
+res <- cbind(dat.in,nrow(dat.in),dout)
+write.table(res, file=stdout(),
+		 col.names=FALSE, row.names=FALSE,
+		 quote=FALSE, sep="\t", na="", fileEncoding="UTF-8")
+

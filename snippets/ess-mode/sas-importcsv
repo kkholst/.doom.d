@@ -1,0 +1,12 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: sas-importcsv
+# key: sas-importcsv
+# --
+
+proc import datafile="d.csv"
+     out=simdata
+     dbms=csv
+     replace;
+     getnames=yes;
+run;
+

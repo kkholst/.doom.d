@@ -1,0 +1,34 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: tikzpath
+# key: tikzpath
+# --
+
+\usetikzlibrary{shapes,arrows,shadows.blur}
+\tikzstyle{plain}=[rectangle,thick,fill=white,align=left, minimum size=1cm,draw=gray!80,blur shadow={shadow blur steps=5}]
+\tikzstyle{exo}=[rectangle,thick,minimum size=1cm,draw=gray!80,fill=blue!20,blur shadow={shadow blur steps=5}]
+\tikzstyle{endo}=[rectangle,thick,minimum size=1cm,draw=gray!80,fill=orange!80,blur shadow={shadow blur steps=5}]
+\tikzstyle{latent}=[circle,thick,minimum size=1cm,draw=gray!80,fill=olive!80,blur shadow={shadow blur steps=5}]
+					 
+\begin{tikzpicture}[>=latex,text height=1.5ex,text depth=0.25ex]
+    \matrix[row sep=0.6cm,column sep=0.3cm,ampersand replacement=\&]{ 
+      \node(y1)[plain] {$y_1$}; \&  
+      \node(y2)[plain] {$y_2$}; \&
+      \node(y3)[plain] {$y_3$}; \& \& 
+      \node(z1)[plain] {$z_1$}; \&  
+      \node(z2)[plain] {$z_2$}; \&
+      \node(z3)[plain] {$z_3$}; \\
+      \& \node(e1)[plain,circle] {$\eta_1$};\&\&\&\&
+      \node(e2)[plain,circle] {$\eta_2$}; \\
+      \&\&\& \node(x) [plain] {x}; \\
+    };      
+    %%\path[<->] (y1) edge[thick, loop below] node [auto, near start] {$\beta$} (y1);
+    \path[->] (e1) edge[thick] (y1);
+    \path[->] (e1) edge[thick] (y2);
+    \path[->] (e1) edge[thick] (y3);
+    \path[->] (e2) edge[thick] (z1);
+    \path[->] (e2) edge[thick] (z2);
+    \path[->] (e2) edge[thick] (z3);
+    \path[->] (e1) edge[thick, bend left=5] node [above] {$\gamma$} (e2) ;
+    \path[->] (x) edge[dashed,thick] (e1);
+    \path[->] (x) edge[thick] node [above] {$\beta$} (e2);
+\end{tikzpicture}

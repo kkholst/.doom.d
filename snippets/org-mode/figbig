@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: figbig
+# key: figbig
+# --
+\newgeometry{margin=0pt}
+\hspace*{-2.25em}
+#+ATTR_LaTeX: :width .95\textwidth
+[[file:$1]]
+\restoregeometry

@@ -1,0 +1,44 @@
+# -*- mode: snippet -*-
+# name: letterbasic
+# key: letterbasic
+# --
+
+\documentclass[a4paper,12pt]{letter}
+\usepackage{etex}
+\usepackage{etoolbox}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathtools}
+\usepackage[strict=true]{csquotes}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage[usenames]{xcolor}
+\usepackage[hidelinks,colorlinks,linkcolor={blue!50!black},urlcolor={blue!50!black},citecolor={blue!50!black}]{hyperref}
+
+\usepackage{lipsum}
+\signature{\vspace*{-3.5em}\includegraphics[scale=0.2]{signature}\\
+  Klaus Kähler Holst \\
+Principal Scientist, Maersk}
+\date{\today}
+
+\begin{document}
+
+\begin{letter}{}%{Company name \\ Street\\ City\\ Country}
+\opening{Dear Sir or Madam:}
+\lipsum[1-2]
+
+\closing{Yours Faithfully,\vspace*{-80pt} }
+
+%%\ps{P.S. Here goes your ps.}
+%%\encl{Enclosures.}
+\end{letter}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

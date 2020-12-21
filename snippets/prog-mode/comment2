@@ -1,0 +1,7 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: comment-simple
+# key: com
+# --
+`(loop repeat 50 concat comment-start)`
+`(loop repeat 3 concat comment-start)` $1
+`(loop repeat 50 concat comment-start)`

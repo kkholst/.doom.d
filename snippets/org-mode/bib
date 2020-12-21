@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: bib
+# key: bib
+# --
+bibliographystyle:unsrtnat$1 # apalike
+bibliography:huge.bib

@@ -1,0 +1,7 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: sas-print
+# key: sas-print
+# --
+
+PROC PRINT DATA=  (firstobs=1 obs=25);
+RUN;

@@ -1,0 +1,27 @@
+# -*- mode: snippet -*-
+# name: homepage
+# key: homepage
+# --
+* Header							     :ignore:
+#+TITLE: ${1:environment}
+#+AUTHOR: Klaus Kähler Holst
+#+EMAIL: k.k.holst@biostat.ku.dk
+#+DATE: \today
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS: presentation
+#+LATEX_CLASS_OPTIONS: [table,onlymath]
+#+BEAMER_THEME: bio
+#+BEAMER_COLOR_THEME: bio
+#+BEAMER_FONT_THEME: serif
+#+LATEX_HEADER: \institute{Department of Biostatistics, University of Copenhagen}
+# +LATEX_HEADER: \subtitle{...}
+#+STARTUP: beamer hideall
+#+OPTIONS: toc:nil h:3 ^:{}
+#+PROPERTY: header-args:R  :session *R* :cache no :width 550 :height 450
+#+PROPERTY: header-args  :eval never-export :exports results :results output :tangle yes :comments yes 
+#+PROPERTY: header-args:R+ :colnames yes :rownames no :hlines yes
+
+* Introduction
+
+*** Outline
+

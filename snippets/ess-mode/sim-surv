@@ -1,0 +1,41 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: sim-surv
+# key: sim-surv
+# --
+
+m <- lvm(t~1)
+distribution(m,~t+c+entry) <- list(coxWeibull.lvm(scale=1/100,shape=2),
+                               coxExponential.lvm(rate=10),
+                               coxExponential.lvm(rate=10))
+m <- eventTime(m,time~min(t=1,c=0),"status")
+d <- subset(transform(sim(m,1000),time=pmin(time,10),status=status*(time<10)),entry<time)
+d <- d[order(d$time),]
+cc <- coxph(Surv(entry,time,status)~1,d)
+cc0 <- coxph(Surv(time,status)~1,d)
+e <- eha::phreg(Surv(entry,time,status)~1,data=d)
+cumsum.na <- function(x,...) { x[is.na(x)] <- 0; cumsum(x) }
+l <- transform(lifetable(Surv(entry,time,status)~1,breaks=seq(0,10,by=0.1),data=d),
+               surv=exp(-cumsum.na(rate*(int.end-int.start))))
+plot(e,fn="sur",col="blue",lwd=2)
+lines(survfit(cc))
+lines(survfit(cc0),col="red")
+lines(surv~int.end,data=l,col="orange",lwd=2,type="s")
+
+
+
+m <- lvm(t~x)
+distribution(m,~x) <- ones.lvm(0.5)
+distribution(m,~t+c) <- list(coxExponential.lvm(1),coxExponential.lvm(1))
+m <- eventTime(m,time~min(t=1,c=0),"status")
+d <- sim(m,1000,p=c("t~x"=0.3))
+T <- summary(prodlim(Surv(time,status)~1,data=d))
+##e <- eha::phreg(Surv(time,status)~x,shape=1,data=d)
+cumsum.na <- function(x,...) { x[is.na(x)] <- 0; cumsum(x) }
+l <- transform(lifetable(Surv(time,status)~1,data=d,breaks=c(0,T$table[,"time"]+0.00001)),
+                surv=exp(-cumsum.na(rate*(int.end-int.start))))
+l <- transform(lifetable(Surv(time,status)~x,data=d,breaks=c(0,5)),
+               surv=exp(-cumsum.na(rate*(int.end-int.start))))
+g <- glm(events ~ offset(log(atrisk))+x,data=l,family=poisson(log))
+summary(g)
+## Exact test under constant hazard
+with(l, binom.test(events[1],sum(events),p=atrisk[1]/sum(atrisk)))

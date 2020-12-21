@@ -1,0 +1,17 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: standalone
+# key: standalone
+# binding: direct-keybinding
+# --
+
+\documentclass[multi=math,border=1]{standalone}
+\usepackage{amsmath,amssymb,amsthm}
+\begin{document}
+\begin{math}
+  E=mc^2
+\end{math}
+
+\begin{math}
+  \sin^2x+\cos^2x=1
+\end{math}
+\end{document}

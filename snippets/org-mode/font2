@@ -1,0 +1,5 @@
+# name: verbatim font: footnotesize
+# key: Font
+# --
+
+#+LaTeX: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\footnotesize,formatcom = {\color[rgb]{0.5,0,0}}}

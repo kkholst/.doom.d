@@ -1,0 +1,28 @@
+# -*- mode: snippet -*-
+# name: letter2
+# key: letter2
+# --
+
+#+LATEX_CLASS: letter2
+#+LATEX_CLASS_OPTIONS: [a4paper,12pt]
+#+DATE: \today
+#+LATEX_HEADER:  \signature{\vspace*{-3.5em}\includegraphics[scale=0.2]{signature}\\\\ Klaus Kähler Holst \\\\ Principal Scientist, Maersk}
+#+PROPERTY: header-args:R  :session *R* :cache no :width 550 :height 450
+#+PROPERTY: header-args  :eval never-export :exports results :results output :tangle yes :comments yes 
+#+PROPERTY: header-args:R+ :colnames yes :rownames no :hlines yes
+#+OPTIONS: timestamp:nil title:nil date:t author:nil creator:nil toc:nil 
+#+OPTIONS: h:4 num:t tags:nil d:t ^:{}
+
+#+ATTR_LaTeX: :options {} 
+#+BEGIN_letter
+
+\opening{To whom it may concern,}
+
+...
+
+\closing{Yours sincerely,}
+
+# \ps{P.S. Here goes your ps.}
+# \encl{Enclosures.}
+
+#+END_letter

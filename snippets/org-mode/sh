@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: sh
+# key: sh
+# --
+#+BEGIN_SRC sh :shebang "#!/usr/bin/zsh"
+$1
+#+END_SRC

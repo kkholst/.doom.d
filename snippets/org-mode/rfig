@@ -1,0 +1,13 @@
+# name: R figure
+# key: rfig
+# --
+
+#+NAME: $1
+#+BEGIN_SRC R :exports results :results output graphics :file tmp/$1.pdf :width 7 :height 7
+$2 
+#+END_SRC
+
+#+CAPTION: ... label:fig:$1
+#+ATTR_LATEX: :width 10cm :options :center t
+#+RESULTS: $1
+[[file:tmp/$1.pdf]]

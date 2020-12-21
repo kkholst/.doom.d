@@ -1,0 +1,7 @@
+# name: SAS source block
+# key: sas
+# --
+
+#+BEGIN_SRC SAS,style=sas-more-keywords :exports code
+$1
+#+END_SRC

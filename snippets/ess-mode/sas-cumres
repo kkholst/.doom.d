@@ -1,0 +1,18 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: sas-cumres
+# key: sas-cumres
+# --
+
+
+ods listing path="tmp" gpath="tmp" file="test.html";
+FILENAME outfile './tmp/';
+ODS graphics on;
+GOPTIONS reset=all dev=PNG gsfname=outfile xpixels=800 ypixels=600;
+
+ODS HTML FILE='test.html' path=outfile gpath=outfile;
+proc genmod data=simdata PLOTS=all;
+    model y = x / dist=normal  link=identity;
+    output out=modeldiag predicted=pred resraw=res;
+    assess link / resample=1000 npath=50;
+run;
+ODS HTML CLOSE;

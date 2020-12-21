@@ -1,0 +1,54 @@
+# -*- mode: snippet -*-
+# name: handout
+# key: handout
+# --
+* preample 							     :ignore:
+
+#+TITLE: Getting started with ...
+#+AUTHOR: Klaus K. Holst
+#+email: k.k.holst@biostat.ku.dk
+#+LATEX_CLASS: tufte-handout
+#+LATEX_CLASS_OPTIONS: [a4paper]
+#+PROPERTY: header-args:R  :session *R* :cache no :width 550 :height 450
+#+PROPERTY: header-args  :eval never-export :exports results :results output :tangle yes :comments yes 
+#+PROPERTY: header-args:R+ :colnames yes :rownames no :hlines yes
+#+OPTIONS: timestamp:t title:t date:t author:t creator:nil toc:nil 
+#+OPTIONS: h:4 num:t tags:nil d:t ^:{}
+#+LATEX_HEADER: \lstset{language=R,keywords={},morekeywords={}}
+#+LATEX_HEADER: \usepackage{zlmtt}
+#+LATEX_HEADER: \usepackage{environ}
+#+LATEX_HEADER: \NewEnviron{mnote}{\marginnote{\BODY}}
+#+LATEX_HEADER: \NewEnviron{snote}{\sidenote{\BODY}}
+
+* Introduction
+
+
+#+BEGIN_mnote
+Here a margin note
+#+END_mnote
+
+\vspace*{5em}
+
+#+NAME: fig1
+#+BEGIN_SRC R :exports both :file figs/fig1.png :results output graphics
+plot(1)
+#+END_SRC
+
+#+ATTR_LaTeX: :width \textwidth :center t
+#+CAPTION: Important figure. label:fig1
+#+RESULTS: fig1
+
+\vspace*{1em}
+
+#+BEGIN_marginfigure
+#+ATTR_LATEX: :width 2cm :float nil :center t
+#+CAPTION: Important margin figure. label:fig2
+#+RESULTS: fig1
+
+#+END_marginfigure
+
+
+
+
+
+\cite{Tufte2006}

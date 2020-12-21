@@ -1,0 +1,4 @@
+# name: verbatim font: tiny
+# key: font
+# --
+#+LaTeX: \DefineVerbatimEnvironment{verbatim}{BVerbatim}{fontsize=\tiny,formatcom = {\color[rgb]{0.1,0.1,0.1}}}

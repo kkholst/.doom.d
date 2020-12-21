@@ -1,0 +1,29 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: bestpractice
+# key: bestpractice
+# --
+
+\RequirePackage{etex}
+\RequirePackage[l2tabu,orthodox]{nag}% Old habits die hard. All the
+                                % same, there are
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+% commands, classes and packages which are 
+% outdated and superseded. nag provides routines
+% to warn the user about the use of those.
+\usepackage{fixltx2e}
+\usepackage[all,error]{onlyamsmath}  % Error on deprecated math commands like $$ $$.
+%% I also know to use ( ) instead of $ $ and \[ \] instead of $$ $$
+%% (as discussed in Are ( and ) preferable to $?). And that csquotes
+%% has a strict mode to turn warnings into errors:
+%% http://tex.stackexchange.com/questions/19264/techniques-and-packages-to-keep-up-with-good-practices
+\usepackage[strict=true]{csquotes}
+
+\begin{document}
+  
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Input (get file)
+# key: inp
+# --
+`(read-file-name "File: ")`

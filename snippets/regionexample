@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: envir
+# key: envir
+# binding: TAB <f1>
+# type: command{\bf }
+# --
+(if (region-active-p)
+    (yas-expand-snippet "{\\bf `yas-selected-text`}")
+  (yas-expand-snippet "{\\bf $0}"))

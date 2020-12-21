@@ -1,0 +1,72 @@
+# name: Template: www
+# key: <www
+# --
+
+#+BEGIN_EXPORT html
+<a href="http://www.biostat.ku.dk/~kkho" class="logo"><span></span></a>
+#+END_EXPORT
+
+#+HTML: <ul id="navigation">
+# +HTML:   <li><a href="http://www.biostat.ku.dk/~kkho">Home</a></li>
+#+HTML:   <li class="sub"><a href="#">Research</a><div class="nav">
+ - [[file:publist.pdf][Publications]]
+ - [[file:cvmini.pdf][Curriculum Vitae]] 
+#+HTML:   </div></li>
+#+HTML:   <li class="sub"><a href="#">Software</a><div class="nav">
+ - [[http://lava.r-forge.r-project.org/#sec-2][Latent Variable Models (lava)]]
+ - [[https://r-forge.r-project.org/projects/gof/][Goodness-of-fit methods (gof)]]
+ - [[http://lava.r-forge.r-project.org/#sec-1][Analysis of Multivariate Event Times (mets)]]
+#+HTML:   </div></li>
+#+HTML:   <li class="sub"><a href="#">Teaching</a><div class="nav">
+ - [[file:undervisning/twin2014/][Statistical methods for twin data (2014)]]
+# - [[file:undervisning/twin2013/][Statistical methods for twin data]]
+# - [[file:undervisning/sem2012][Introduction to SEM]]
+#+HTML:   </div></li>
+#+HTML:   <li class="sub"><a href="#">Links</a><div class="nav">
+ - [[http://www.nru.dk][Neurobiology Research Unit]]
+#+HTML:   </div></li>
+#+HTML: </ul>
+
+#+BEGIN_EXPORT html
+<!--
+<div style="position:fixed;bottom:2px;right:2px;">
+<button onclick="swapStyleSheet('orgmode2.css')" style="height:1.8em;">Dark Style Sheet</button>
+<button onclick="swapStyleSheet('orgpaper.css')" style="height:1.8em;">Light Style Sheet</button>
+</div>
+-->
+#+END_EXPORT
+
+-----
+
+
+#+HTML: <p style="padding-bottom:1em;"></p>
+
+
+#+TITLE: Klaus Kähler Holst
+#+AUTHOR: Klaus K. Holst
+#+PROPERTY: session *R*
+# +DATE: 15-02-2013
+#+PROPERTY: cache yes
+#+PROPERTY: results output wrap
+#+PROPERTY: exports results 
+#+PROPERTY: tangle yes 
+#+PROPERTY: comments yes
+#+OPTIONS: LaTeX:nil timestamp:t author:nil creator:nil ^:{}
+#+STARTUP: hideall 
+# http://orgmode.org/manual/Export-options.html
+#+OPTIONS: toc:nil h:4 num:nil d:t tags:nil
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.biostat.ku.dk/~kkho/styles/flipper.css"/>
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.biostat.ku.dk/~kkho/styles/fancy.css"/>
+#+HTML_HEAD: <link id="pagestyle" rel="stylesheet" type="text/css" href="http://www.biostat.ku.dk/~kkho/styles/orgmode2.css"/>
+#+HTML_HEAD: <link rel="icon" type="image/x-icon" href="http://www.biostat.ku.dk/~kkho/styles/logo.ico"/>
+#+HTML_HEAD: <style type="text/css">body { background-image: url(http://www.biostat.ku.dk/~kkho/styles/sund.png); background-size:8em 6.33em; background-position: 2% 0.55em; }
+#+HTML_HEAD:  th,td,tr,table th,table th,table td {
+#+HTML_HEAD:      background: rgba(240,240,240,1);         
+#+HTML_HEAD:      border: none;
+#+HTML_HEAD:  }
+#+HTML_HEAD:   body { width: 800px; text-align:justify; text-justify:inter-word; }
+#+HTML_HEAD: </style>
+# +LaTeX_HEADER: \\newcommand{\\cov}{\\mathbb{C}\\text{ov}}
+# +LaTeX_HEADER: \\usepackage{amsmath}\\usepackage{booktabs}\\usepackage{mathtools}\\usepackage{rotating}
+# +HTML:  \\(\\newcommand{\\cov}{\\mathbb{C}\\text{ov}}\\)
+

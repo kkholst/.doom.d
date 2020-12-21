@@ -1,0 +1,26 @@
+# -*- mode: snippet -*-
+# name: Signature
+# key: <sig
+# --
+
+\documentclass[a4paper,12pt]{article}
+\usepackage[bottom=0cm,top=0cm,left=0cm,right=0cm]{geometry}
+\usepackage[english,danish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{pdfpages}
+\pagestyle{plain}
+\begin{document}
+%%\includepdf[pages={1},scale=0.95]{$1}
+\mbox{
+  \put(0,0){\includegraphics[page={1},scale=0.95]{$1}}
+  %%\put(0,0){\includegraphics[page={2},scale=0.95]{$1}}
+  \put(75,195){\includegraphics[scale=0.20]{signature}}
+  \put(140,236){`(current-time-string)`}
+}
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

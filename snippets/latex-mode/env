@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: env
+# key: env
+# --
+\begin{$1}
+`(or yas/selected-text
+      (when cua-mode (prog1 (get-register ?0) (set-register ?0
+      nil))))`$0$2      
+\end{$1}

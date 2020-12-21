@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: color
+# key: color
+# binding: M-C
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
+# --
+[[color:blue][`yas-selected-text`$1]]

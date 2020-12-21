@@ -1,0 +1,4 @@
+bin/*.jar
+abbrev_defs
+config.el
+*~

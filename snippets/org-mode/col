@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: col
+# key: col
+# --
+**** $1
+  :PROPERTIES:
+  :BEAMER_col: 0.5
+  :END:
+$2

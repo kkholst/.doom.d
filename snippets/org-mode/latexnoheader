@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: latexnoheader
+# key: latexnoheader
+# --
+
+* Local variables :noexport:
+#+PROPERTY: header-args:R  :session *R* :cache no :width 550 :height 450
+#+PROPERTY: header-args  :eval never-export :exports code :results output :tangle yes :comments yes 
+#+PROPERTY: header-args:R+ :colnames yes :rownames no :hlines yes
+#+BEGIN_SRC emacs-lisp :eval t :results silent :exports none
+(setq org-latex-listings t)
+#+END_SRC
+

@@ -1,0 +1,15 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: signaturetikz
+# key: signaturetikz
+# binding: direct-keybinding
+# --
+
+%%\usepackage{tikz}
+\def\tikzoverlay{%
+   \tikz[baseline,overlay]\node%%[every overlay node]
+}%
+\tikzoverlay[] at (-1.7,-1) {
+    \tikz node (label) at (0,0)[]{
+        \includegraphics[width=8em]{signature}
+    };
+};

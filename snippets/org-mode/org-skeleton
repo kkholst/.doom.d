@@ -1,0 +1,128 @@
+# name: Template: standard
+# key: <org
+# --
+
+# Cool stuff: `(current-time-string)`
+
+#+BEGIN_SRC R :results silent
+2+2
+#+END_SRC
+
+#+BEGIN_SRC R :exports none
+  pdf("nyfig.pdf")
+  plot(1:10,pch=16,cex=3,col=unlist(lapply(1:10,
+                             function(x) lava:::Col("darkred",1/x))))
+  dev.off()  
+#+END_SRC
+
+#+BEGIN_CENTER
+[[file:nyfig.pdf]]
+#+END_CENTER
+
+#+BEGIN_SRC R :results silent
+   library(guts)
+   library(lava) 
+#+END_SRC
+
+#+BEGIN_SRC R :results output raw :wrap center
+lava:::org(diag(4))
+cat("\n")
+lava:::org(diag(4))
+#+END_SRC
+
+#+BEGIN_SRC R :exports both :wrap example
+diag(4)
+#+END_SRC
+
+#+BEGIN_SRC R :exports results :results output drawer
+lava:::org(diag(4),latex=":style float:right")
+#+END_SRC
+
+#+BEGIN_SRC R :exports both :results output drawer
+l <- lm(Sepal.Length~Species,data=iris)
+lava:::org(l)
+#+END_SRC
+
+#+ATTR_HTML: :style float:right
+#+BEGIN_SRC R :exports results :file test.png :results graphics output raw
+plotConf(l)
+#+END_SRC
+
+
+* COMMENT Configuration
+
+#+TITLE: \nbsp 
+#+AUTHOR: Klaus K. Holst
+#+email: k.k.holst@biostat.ku.dk
+#+PROPERTY: session *R* 
+#+PROPERTY: cache yes 
+#+PROPERTY: results output
+# +PROPERTY: wrap example
+#+PROPERTY: colnames yes
+#+PROPERTY: rownames yes
+#+PROPERTY: width 550 
+#+PROPERTY: height 450 
+#+PROPERTY: exports both
+#+PROPERTY: tangle yes 
+#+PROPERTY: comments yes 
+#+STARTUP: hideall 
+# +OPTIONS: LaTeX:dvipng 
+#+OPTIONS: LaTeX:t 
+#+OPTIONS: timestamp:t author:t creator:nil
+#+OPTIONS: toc:t h:4 num:t tags:nil ^:{}
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+HTML_HEAD: <link rel="icon" type="image/x-icon" href="http://www.biostat.ku.dk/~kkho/styles/icon.ico">
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.biostat.ku.dk/~kkho/styles/orgmode2.css"> 
+#+HTML_HEAD: <style type="text/css">body { background-image: url(http://www.biostat.ku.dk/~kkho/images/logo.png); }</style>
+# +HTML_HEAD: <style type="text/css">body { background-image: url(sund.png); background-size:120px 95px; background-position: 2% 0.55em; }</style>
+# #+MATHJAX: align:"left" mathml:t path:"http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" 
+# #+INFOJS_OPT: path:http://orgmode.org/org-info.js view:info 
+# #+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js 
+#+LATEX_CMD: pdflatex
+#+LATEX_CLASS: plain
+#+LaTeX_CLASS_OPTIONS: [a4paper,12pt] 
+#+LATEX_HEADER: \newcommand{\usetheme}[1]{}
+#+LATEX_HEADER: \usepackage{hyperref}
+#+LATEX_HEADER: \usepackage{amsmath,amssymb}
+#+LATEX_HEADER: \usepackage[usenames,table]{xcolor}
+#+LATEX_HEADER: \usepackage{graphicx}
+#+LATEX_HEADER: \usepackage{listings}
+#+LATEX_HEADER: \usepackage{fixltx2e}
+#+LATEX_HEADER: \usepackage{bm}
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{xleftmargin=7mm,xrightmargin=1mm,numbers=none,frame=lines,fontsize=\footnotesize,formatcom={\color[rgb]{0.2,0.2,0.2}}}
+#+LATEX_HEADER: \setlength{\parindent}{0pt} % Kills annoying indents. 
+#+LATEX_HEADER: \let\iint\relax 
+#+LATEX_HEADER: \let\iiint\relax 
+#+LATEX_HEADER: \usepackage[left=2cm,top=2cm,right=2cm,bottom=2cm]{geometry} 
+#+LATEX_HEADER: \usepackage[english]{babel} 
+#+LATEX_HEADER: \newcommand{\R}{\ensuremath{\mathbb{R}}} 
+#+LATEX_HEADER: \newcommand{\Z}{\ensuremath{\mathbb{Z}}} 
+#+LATEX_HEADER: \newcommand{\N}{\ensuremath{\mathbb{N}}} 
+#+LATEX_HEADER: \newcommand{\norm}[1]{\ensuremath{\left\Vert#1\right\Vert}} 
+#+LATEX_HEADER: \newcommand{\var}{\ensuremath{\mathbb{V}\text{ar}}} 
+#+LATEX_HEADER: \newcommand{\cov}{\ensuremath{\mathbb{C}\text{ov}}} 
+#+LATEX_HEADER: \newcommand{\cor}{\ensuremath{\mathbb{C}\text{or}}} 
+#+LATEX_HEADER: \newcommand{\E}{\ensuremath{\mathbb{E}}} 
+#+LATEX_HEADER: \newcommand{\pr}{\ensuremath{\mathbb{P}}} 
+#+LATEX_HEADER: \newcommand{\one}{\bm{1}} 
+#+LATEX_HEADER: \newcommand{\abs}[1]{\ensuremath{\left\vert#1\right\vert}} 
+#+LATEX_HEADER: \newcommand{\ipr}[1]{\langle#1\rangle} 
+#+LATEX_HEADER: \newcommand{\set}[1]{\left\{#1\right\}} 
+#+LATEX_HEADER: \newcommand{\seq}[1]{\left<#1\right>} 
+#+LATEX_HEADER: \renewcommand{\subset}{\subseteq}  
+#+LATEX_HEADER: \renewcommand{\supset}{\supseteq} 
+#+LATEX_HEADER: \newcommand{\argmax}{\operatorname{arg\,\max}} 
+#+LATEX_HEADER: \newcommand{\argmin}{\operatorname{arg\,\min}} 
+#+LATEX_HEADER: \newcommand{\sgn}{\operatorname{sgn}} 
+#+LATEX_HEADER: \newcommand{\mvec}{\operatorname{vec}} 
+#+LATEX_HEADER: \newcommand{\logit}{\operatorname{logit}} 
+#+LATEX_HEADER: \newcommand{\tr}{\operatorname{tr}} 
+#+LATEX_HEADER: \newcommand{\diag}{\operatorname{diag}} 
+#+LATEX_HEADER: \newcommand{\rank}{\operatorname{rank}} 
+#+LATEX_HEADER: \newcommand{\independenT}[2]{\mathrel{\setbox0\hbox{$#1#2$}\copy0\kern-\wd0\mkern4mu\box0}} 
+#+LATEX_HEADER: \newcommand{\indep}{\protect\mathpalette{\protect\independenT}{\perp}} 
+#+HTML: <hr>
+

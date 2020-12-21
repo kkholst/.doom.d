@@ -1,0 +1,14 @@
+# name: Figure
+# key: ff
+# --
+
+#+NAME: $1
+#+BEGIN_SRC R :exports results :results graphics output :file (org-babel-temp-file \"tmp/figure-\" \".pdf\")
+plot(1:10)
+#+END_SRC
+   
+#+BEGIN_CENTER
+#+ATTR_LATEX: :width 9cm
+#+CAPTION: Bla bla. label:fig:$1
+#+RESULTS: $1
+#+END_CENTER

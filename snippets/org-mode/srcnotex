@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: srcnotex
+# key: srcnotex
+# --
+#+ATTR_LaTeX: :options mathescape=false,texcomments=false
+#+NAME: $1
+#+BEGIN_SRC R
+$2
+#+END_SRC

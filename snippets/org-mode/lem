@@ -1,0 +1,8 @@
+# name: lemma
+# key: lem
+# --
+#+BEGIN_lem
+$1
+#+BEGIN_proof
+#+END_proof
+#+END_lem

@@ -1,0 +1,4 @@
+# name: HTML attribute
+# key: ah
+# --
+#+ATTR_HTML: :class left :width 100%

@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: csource
+# key: csource
+# --
+Rcpp::sourceCpp(file='',
+                code ='	
+// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::plugins(cpp11)]]
+#include <RcppArmadillo.h>
+using namespace Rcpp;
+using namespace arma;
+// [[Rcpp::export(name=".${1:Name}")]]
+List ${1:$(yas/substr yas-text "[^: ]*")}(NumericVector &x) {	
+     $2return( List::create(Named("x")=x) );
+}		
+')

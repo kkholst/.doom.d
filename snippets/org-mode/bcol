@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: bcol
+# key: bcol
+# --
+
+**** :B_column:
+     :PROPERTIES:
+     :BEAMER_env: column
+     :BEAMER_col: 0.5
+     :END:
+
+$1

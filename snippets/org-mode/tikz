@@ -1,0 +1,19 @@
+# name: tikz block 
+# key: tikz
+# --
+
+#+BEGIN_SRC latex :exports results :results latex
+\begin{center}
+  \resizebox{\linewidth}{!}{
+      \begin{tikzpicture}[>=latex] %%,text height=1.5ex,text depth=0.25ex,auto,on grid]
+         \matrix[row sep=0.6cm,column sep=0.3cm,ampersand replacement=\&]{
+           \node(r1) [endo2] {$R_1$}; \& \& \node(r2) [endo2] {$R_2$}; \\
+           \& \node(eta) [plain2] {$\eta = \int f\,dm = \E a$}; \\
+           \node(eta2) [plain2,text width=2cm] {A longer text should be wrapped \\ ~ \\ New line}; \\
+          }; 
+          \path[->] (eta2) edge[thick] node [left,above,rotate=90] {left part} node [right] {R} (r1) ; %% left,rigth,above,below
+          \path[->] (eta2) edge[thick,out=0,in=270,dashed,sloped] node [auto] {A} (r2) ;
+       \end{tikzpicture}
+     }
+\end{center}
+#+END_SRC

@@ -1,0 +1,11 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: sas-csvimport
+# key: sas-csvimport
+# --
+
+proc import datafile="$1.csv"
+     out=work.mydata
+     dbms=csv
+     replace;
+     getnames=yes;
+run;

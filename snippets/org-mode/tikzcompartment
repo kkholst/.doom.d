@@ -1,0 +1,26 @@
+# name: tikz compartment model example
+# key: tikzcompartment
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
+# --
+
+#+BEGIN_SRC latex :exports results :results latex
+\begin{center}
+%%\resizebox{0.3\linewidth}{!}{
+  \begin{tikzpicture}[scale=2.5]
+    \node [empty] (i) at (1,1) {$C_{0}$}; 
+    \node [box] (c1) at (2,1) {$C_{1}$};
+    \node [box] (c2) at (3,1) {$C_{2}$};
+    \node [box] (c3) at (3,0) {$C_{3}$};
+    
+    \path [->] (i.20) edge node[above] {$k_{01}$} (c1.160) ;
+    \path [<-] (i.-20) edge node[below] {$k_{10}$} (c1.200) ;
+
+    \path [->] (c1.20) edge node[above] {$k_{12}$} (c2.160) ;
+    \path [<-] (c1.-20) edge node[below] {$k_{21}$} (c2.200) ;
+
+    \path [->] (c2.250) edge node[left] {$k_{23}$} (c3.110) ;
+    \path [<-] (c2.290) edge node[right] {$k_{32}$} (c3.70) ;
+  \end{tikzpicture}
+%%}
+\end{center}
+#+END_SRC

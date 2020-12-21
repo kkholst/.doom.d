@@ -1,0 +1,8 @@
+# name: LaTeX practicals/exercise template
+# key: rn
+# --
+#+ATTR:
+#+NAME: $1
+#+BEGIN_SRC R,style=Rplus :exports code :eval never
+$2
+#+END_SRC

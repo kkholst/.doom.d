@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: bnote
+# key: bnote
+# --
+
+**** \normalsize                                                                :B_note:
+     :PROPERTIES:
+     :BEAMER_env: note
+     :END:
+  
+$1
+
+
+
+

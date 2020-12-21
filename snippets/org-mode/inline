@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: inline code block
+# key: inline
+# --
+
+src_R[:exports results :session *R* :results scalar]{cat($1,"\n")}

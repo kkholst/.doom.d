@@ -1,0 +1,10 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: com2
+# key: com2
+# --
+
+$1
+`(let ((comment-style 'box)
+      (pos (point-at-eol 0)))
+      (next-line -2)      		 
+      (comment-region (point-at-bol 0) pos))`

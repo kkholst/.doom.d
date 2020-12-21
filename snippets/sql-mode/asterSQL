@@ -1,0 +1,22 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: asterSQL
+# key: 
+# binding: direct-keybinding
+# --
+-- -*- mode: act; -*-
+-- \remove rtest/$1.R; \install $1.R rtest/$1.R
+-- \dF rtest.*
+
+\timing
+DROP TABLE IF EXISTS rtest.$1;
+CREATE TABLE rtest.$1 DISTRIBUTE BY REPLICATION AS 
+SELECT * FROM stream (
+            ON (select n,
+	          50 as k,
+	        from rtest.numbers order by n limit 1000)
+            PARTITION BY n
+            SCRIPT('Rexec rtest/$1.R')
+            OUTPUTS('n int','k int',
+		    'estimate numeric(20,8)',
+	    	    'sd numeric(20,8)')
+);

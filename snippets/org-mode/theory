@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: LaTeX practicals/exercise template
+# key: theory
+# --
+
+#+ATTR_LaTeX: :options {$1}
+#+BEGIN_theory
+$2
+#+END_theory

@@ -1,0 +1,11 @@
+# name: Hyperlink (label + button)
+# key: hyperlink
+# --
+
+
+:PROPERTIES:
+:BEAMER_opt: label=label2
+:END:
+
+#+LaTeX: \hyperlink{label2}{\beamergotobutton{$1}}
+
