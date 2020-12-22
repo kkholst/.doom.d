@@ -74,6 +74,7 @@ Splash screen setup
 (setq +doom-dashboard-banner-file (expand-file-name "mascot.svg" doom-private-dir))
 #+END_SRC
 
+
 #+BEGIN_SRC emacs-lisp
   (setq my/bibliography-directory "~/Bibliography/")
   (defvar my/emacshome "~/.doom.d/" "emacs configuration files")
@@ -93,20 +94,13 @@ Splash screen setup
   (defvar my/bibliography-directory (concat my/project-home "Bibliography/") "Bibliography default path")
   (defvar my/bibliography (concat my/bibliography-directory "huge.bib") "Primary bibtex file")
   (defvar my/pdf-directory "~/Documents/PDF/" "Location of articles")
-
-  (setq default-directory "~/")
-  ;;(setq inferior-julia-program-name "julia")
-
-  ;; GPG key to use for encryption
-  ;; Either the Key ID or set to nil to use symmetric encryption.
-  (setq org-crypt-key "20BD49CED464EEA2")
+  (defvar my/opencmd (if IS-MAC "open" "/usr/bin/xdg-open") "Program for opening files and applications")
 #+END_SRC
 
-Open application command
+
+GPG key to use for encryption (Either the Key ID or set to nil to use symmetric encryption).
 #+BEGIN_SRC emacs-lisp
-  (if IS-MAC
-      (setq my/opencmd "open")
-    (setq my/opencmd "/usr/bin/xdg-open"))
+  (setq org-crypt-key "20BD49CED464EEA2")
 #+END_SRC
 
 Load local configuration (not version controlled)
@@ -115,10 +109,58 @@ Load local configuration (not version controlled)
       (load (concat my/emacshome "local.el")))
 #+END_SRC
 
+* Appearance
+
+Doom exposes five (optional) variables for controlling fonts in Doom. Here
+are the three important ones:
+
+ + `doom-font'
+ + `doom-variable-pitch-font'
+ + `doom-big-font' -- used for `doom-big-font-mode'; use this for
+   presentations or streaming.
+
+They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
+ font string. You generally only need these two:
+ #+BEGIN_SRC emacs-lisp
+;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
+;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
+ #+END_SRC
+
+There are two ways to load a theme. Both assume the theme is installed and
+available. You can either set `doom-theme' or manually load a theme with the
+`load-theme' function. This is the default:
+#+BEGIN_SRC emacs-lisp
+(setq doom-theme 'doom-one)
+;;(setq doom-theme 'doom-city-lights)
+;;(setq doom-theme 'doom-solarized-dark)
+#+END_SRC
+
+This determines the style of line numbers in effect. If set to `nil', line
+numbers are disabled. For relative line numbers, set this to `relative'.
+#+BEGIN_SRC emacs-lisp
+(setq display-line-numbers-type t)
+#+END_SRC
+
+Other styles
+#+BEGIN_SRC emacs-lisp :tangle no :eval never
+;; (scroll-bar-mode -1)    ;; Disable scroll bar
+;; (tool-bar-mode -1)      ;; Remove toolbar
+;; (blink-cursor-mode -1)  ;; Disable blinking cursor
+;; (menu-bar-mode 0)       ;; Remove menu-bar. Still accessible via C-mouse-3
+;; (display-time-mode t)   ;; Time in status bar
+;; (column-number-mode t)  ;; Column number in status bar
+;; (transient-mark-mode t) ;; Make marked block visible (cancel marked blok with C-g)
+#+END_SRC
+
 * Miscellaneous / Editor behaviour
 
+Set default working directory
 #+BEGIN_SRC emacs-lisp
-  ;; Rm block with DEL (or replace with any other key/insert)
+  (setq default-directory "~/")
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  ;; Remove block with DEL (or replace with any other key/insert)
   (when (> emacs-major-version 23)
     (delete-selection-mode t)
     (pending-delete-mode t))
@@ -162,12 +204,12 @@ Don't wrap lines
 (global-visual-line-mode -1)
 #+END_SRC
 
-Stop stupid decision on how to split screen
+Stop annoying decisions on how to split the screen
 #+BEGIN_SRC emacs-lisp
 (setq split-width-threshold nil)
 #+END_SRC
 
-auto-fill defaults:
+Auto-fill defaults:
 #+BEGIN_SRC emacs-lisp
 (add-hook 'text-mode-hook 'turn-on-auto-fill) ;; Avoid line wrap
 #+END_SRC
@@ -178,16 +220,15 @@ Disable bell emacs-lisp
 (setq ring-bell-function 'ignore)
 #+END_SRC
 
-Don't clutter my directories with ~backup files Place backups in =~/.saves=
+Don't clutter my directories with ~backup files. Place backups in =~/.saves=
 #+BEGIN_SRC emacs-lisp
   (setq
-   backup-by-copying t      ; don't clobber symlinks
-   backup-directory-alist
-   '(("." . "~/.saves"))    ; don't litter my fs tree
+   backup-by-copying t                          ;; don't clobber symlinks
+   backup-directory-alist '(("." . "~/.saves")) ;; don't litter my fs tree
    delete-old-versions t
    kept-new-versions 6
    kept-old-versions 2
-   version-control t)       ; use versioned backups
+   version-control t)                           ;; use versioned backups
 
   ;; ... auto directories...
   (setq backup-directory-alist
@@ -202,13 +243,12 @@ Save history across sessions
 (savehist-mode 1)
 #+END_SRC
 
-press tab one time it will indent, press it again and you get
-completion
+Press tab one time it will indent, press it again and you get completion
 #+BEGIN_SRC emacs-lisp
 (setq tab-always-indent 'complete)
 #+END_SRC
 
-pdf-view
+Pdf-view
 #+BEGIN_SRC emacs-lisp
   (add-hook! pdf-view-mode :append #'auto-revert-mode)
   (map! :map pdf-view-mode-map "M-RET" (cmd!
@@ -218,7 +258,6 @@ pdf-view
 #+END_SRC
 
 Encryption
-
 #+BEGIN_SRC emacs-lisp
   (setq gnutls-min-prime-bits 1024)
 
@@ -232,9 +271,9 @@ Encryption
   )
 #+END_SRC
 
-* Home-brewed
+* Custom functions
 
-  bury *scratch* buffer instead of kill it
+ Bury *scratch* buffer instead of kill it
 #+BEGIN_SRC emacs-lisp
 (defadvice kill-buffer (around kill-buffer-around-advice activate)
   (let ((buffer-to-kill (ad-get-arg 0)))
@@ -269,8 +308,13 @@ Close buffers easily
 
   #+BEGIN_SRC emacs-lisp
   (defun my/unicode ()
-  (interactive)
-    (find-file "~/configuration/unicode.txt"))
+    "Display buffer with unicode characters"
+    (interactive)
+    ;;(require 'xub-mode nil t)
+    (let* ((buf (concat my/emacslib "unicode.txt")))
+      (find-file buf)
+      (local-set-key (kbd "q") (lambda () (interactive) (kill-buffer buf)))
+      (read-only-mode 1)))
   (defalias 'unicode 'my/unicode)
   #+END_SRC
 
@@ -311,7 +355,7 @@ Close buffers easily
 #+BEGIN_SRC emacs-lisp
 (defun my/transpose-buffers (arg)
   "Transpose the buffers shown in two windows."
-  (interactive "p")
+  ((interactive)eractive "p")
   (let ((selector (if (>= arg 0) 'next-window 'previous-window)))
     (while (/= arg 0)
       (let ((this-win (window-buffer))
@@ -325,7 +369,7 @@ Close buffers easily
 Sort region
 #+BEGIN_SRC emacs-lisp
 (defun my/sort-region (&optional reverse separator)
-;; Sort region of comma-separated sentences. Thanks, Thomas Gerds.
+  "Sort region of comma-separated sentences."
   (interactive "P")
   (let ((separator (or separator ","))
 	(sort-fold-case nil))
@@ -351,7 +395,7 @@ Sort region
   (sort-regexp-fields reverse "\\w+" "\\&" beg end))
 #+END_SRC
 
-This small routine is handy for all "context" commands I think.
+Small routine for "context" commands
 #+BEGIN_SRC emacs-lisp
   (defun pointInRegExp (startRE endRE)
     "returns t if the current point is within a block represented
@@ -366,7 +410,6 @@ This small routine is handy for all "context" commands I think.
 This function lets you insert not only the first element of the
 `kill-ring' but cycles through it when called repeatedly (taken from
 Thomas Gerds)
-
 #+BEGIN_SRC emacs-lisp
   (defun yank-or-pop (arg)
    (interactive "*p")
@@ -430,32 +473,34 @@ Thomas Gerds)
 (defalias 'pdf-print-buffer 'my/pdf-print-buffer)
 #+END_SRC
 
-* Mac specific
+* Spelling and grammar
 
+Spell-checking settings
+#+begin_src emacs-lisp
+    ;; skip regions that match regex (org-stuff):
+    (add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
+    (add-to-list 'ispell-skip-region-alist '("#\\+BEGIN_SRC" . "#\\+END_SRC"))
+    (add-to-list 'ispell-skip-region-alist '("#\\+BEGIN_EXAMPLE" . "#\\+END_EXAMPLE"))
+#+end_src
+
+Google translate
   #+BEGIN_SRC emacs-lisp
-    (setq mac-option-key-is-meta nil
-	  mac-command-key-is-meta t
-	  mac-command-modifier 'meta
-	  mac-option-modifier 'none)
-  #+END_SRC
+(use-package! google-translate
+  :bind
+  ("C-c C-t" . google-translate-smooth-translate)
+  :init
+  (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
+  (setq google-translate-translation-directions-alist
+	'(("da" . "en") ("en" . "da") ("en" . "ene")))
+  (setq google-translate-enable-ido-completion t)
+  (setq google-translate-show-phonetic t)
+  :config
+  (require 'google-translate-smooth-ui))
 
-* Spelling
+#+end_src
 
-  #+BEGIN_SRC emacs-lisp
-    (use-package! google-translate
-      :bind
-      ("C-c C-t" . google-translate-smooth-translate)
-      :init
-      (setq google-translate-translation-directions-alist
-	    '(("da" . "en") ("en" . "da") ("en" . "en")))
-      (setq google-translate-enable-ido-completion t)
-      (setq google-translate-show-phonetic t)
-      :config
-      (require 'google-translate-smooth-ui))
-
-
-    ;;; langtool (gramma)
-
+Language tool (grammar checking)
+#+begin_src emacs-lisp
     (use-package! langtool
       :bind
 	     ("C-x 4 w" . langtool-check) ;; To check current buffer and show warnings.
@@ -473,16 +518,9 @@ Thomas Gerds)
 				      "EN_UNPAIRED_BRACKETS"
 				    "COMMA_PARENTHESIS_WHITESPACE"
 				    "EN_QUOTES"))
-      (setq langtool-mother-tongue "en")
-      )
-
-    ;; skip regions that match regex (org-stuff):
-    (add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
-    (add-to-list 'ispell-skip-region-alist '("#\\+BEGIN_SRC" . "#\\+END_SRC"))
-    (add-to-list 'ispell-skip-region-alist '("#\\+BEGIN_EXAMPLE" . "#\\+END_EXAMPLE"))
-
-
+      (setq langtool-mother-tongue "en"))
   #+END_SRC
+
 * Development
 
 LSP and DAP debugger:
@@ -492,6 +530,7 @@ https://emacs-lsp.github.io/lsp-mode/page/lsp-r/
 
 #+BEGIN_SRC emacs-lisp
 (setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd")
+(setq lsp-auto-guess-root t ) ;; Get root of projetct from projectile (i.e., .git location)
 #+END_SRC
 
 
@@ -755,6 +794,7 @@ manager or manually:
         bibtex-completion-pdf-field "File"
 	bibtex-completion-library-path `(,my/pdf-directory) ;;'("~/Documents/PDF" "~/Projects/Publications")
 	bibtex-completion-bibliography `(,my/bibliography)
+  (advice-add 'bibtex-completion-candidates :filter-return 'reverse)
 	bibtex-completion-notes-path (concat my/bibliography-directory "helm-bibtex-notes"))
 
 (use-package! reftex
@@ -1241,51 +1281,14 @@ Babel / source code content
 
 #+END_SRC
 
+* Keybindings
 
-* Appearance
-
-Doom exposes five (optional) variables for controlling fonts in Doom. Here
-are the three important ones:
-
- + `doom-font'
- + `doom-variable-pitch-font'
- + `doom-big-font' -- used for `doom-big-font-mode'; use this for
-   presentations or streaming.
-
-They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
- font string. You generally only need these two:
- #+BEGIN_SRC emacs-lisp :tangle no
-;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
-;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
- #+END_SRC
-
-There are two ways to load a theme. Both assume the theme is installed and
-available. You can either set `doom-theme' or manually load a theme with the
-`load-theme' function. This is the default:
-#+BEGIN_SRC emacs-lisp
-(setq doom-theme 'doom-one)
-;;(setq doom-theme 'doom-city-lights)
-;;(setq doom-theme 'doom-solarized-dark)
-#+END_SRC
-
-
-#+BEGIN_SRC emacs-lisp :tangle no :eval never
-  (scroll-bar-mode -1)
-  (tool-bar-mode -1)  ;; Remove toolbar
-  (blink-cursor-mode -1)  ;;
-  ;;(menu-bar-mode 0) ;; Remove menu-bar. Still accessible via C-mouse-3
-  (display-time-mode t) ;; Time in status bar
-  (column-number-mode t) ;; Column number in status bar
-  (transient-mark-mode t) ;; Make marked block visible (cancel marked blok with C-g)
-#+END_SRC
-
-This determines the style of line numbers in effect. If set to `nil', line
-numbers are disabled. For relative line numbers, set this to `relative'.
-#+BEGIN_SRC emacs-lisp
-(setq display-line-numbers-type nil)
-#+END_SRC
-
-* Key bindings
+  #+BEGIN_SRC emacs-lisp
+    (setq mac-option-key-is-meta nil
+	  mac-command-key-is-meta t
+	  mac-command-modifier 'meta
+	  mac-option-modifier 'none)
+  #+END_SRC
 
 ** Editor
 
@@ -1412,15 +1415,25 @@ numbers are disabled. For relative line numbers, set this to `relative'.
       (winner-mode 1))
 #+END_SRC
 
+Avy (ace-jump-mode replacement)
+#+BEGIN_SRC emacs-lisp
+(setq avy-all-windows t)
+;;(global-set-key (kbd "C-c j") 'avy-goto-word-or-subword-1)
+(global-set-key (kbd "M-.") 'avy-goto-word-or-subword-1)
+(global-set-key (kbd "C-c O") 'ace-window)
+#+END_SRC
+
 ** Helm
 
 #+BEGIN_SRC emacs-lisp
-  (map!
-      "C-x b"  #'helm-mini
-      "C-<f4>" #'helm-execute-kmacro
-      "<f9>" #'helm-bibtex
-      "C-<f9>" #'helm-resume
-      "C-c h" #'helm-resume)
+(map!
+ "M-m" #'helm-show-kill-ring
+ ;; "C-x b"  #'helm-mini
+ "C-<f4>" #'helm-execute-kmacro
+ "<f12>" #'helm-bibtex
+ ;; "C-<f9>" #'helm-resume
+ ;; "C-c h" #'helm-resume)
+)
 #+END_SRC
 
 ** Dired / shell
@@ -1457,6 +1470,8 @@ Gist note snippets
 
 ** Org
 
+Note that cdlatex steals the backquote for entering math symbols. To enter a
+backquote use 'C-q `'
 #+BEGIN_SRC emacs-lisp
 (add-hook 'org-mode-hook (lambda ()
 			   ;; AUCTeX Light (major-mode cannot be used in org major-mode)
@@ -1509,7 +1524,8 @@ Gist note snippets
 ** ESS
 #+BEGIN_SRC emacs-lisp
 
-  (map! :leader "r" #'my/split-ess)
+  (map! :leader "R" #'my/split-ess)
+
   (after! ess
 	  (map! :map ess-mode-map
 		"M-j" #'tag-ess-eval-and-go

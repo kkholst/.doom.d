@@ -15,6 +15,13 @@
 (package! ox-tufte)
 (package! org-ref)
 (package! hippie-exp)
+(package! ace-jump-mode)
+(package! langtool)
+(package! google-translate)
+
+;;(package! ivy-bibtex)
+(package! ivy-yasnippet)
+
 (package! helm)
 (package! helm-org-rifle)
 (package! helm-swoop)
@@ -22,10 +29,6 @@
 (package! helm-dash)
 (package! helm-flycheck)
 (package! helm-c-yasnippet)
-(package! ace-jump-mode)
-(package! langtool)
-(package! google-translate)
-
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)
