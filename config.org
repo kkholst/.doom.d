@@ -10,7 +10,7 @@
 #+BEGIN_QUOTE
 “I’m rarely happier than when spending an entire day programming my
 computer to perform automatically a task that would otherwise take me
-a good ten seconds to do by hand.” - Douglas Adams
+a good ten seconds to do by hand.” - /Douglas Adams/
 #+END_QUOTE
 
 * References
@@ -60,6 +60,8 @@ run 'doom sync' after modifying this file!
 
 *
 
+*
+
 * Variable definitions
 
 Some functionality uses this to identify you, e.g. GPG configuration, email
@@ -75,6 +77,7 @@ Splash screen setup
 #+END_SRC
 
 
+Various variable definitions
 #+BEGIN_SRC emacs-lisp
   (setq my/bibliography-directory "~/Bibliography/")
   (defvar my/emacshome "~/.doom.d/" "emacs configuration files")
@@ -86,21 +89,22 @@ Splash screen setup
   (defvar my/email user-mail-address "Personal email")
   (defvar my/homepage "http://www.holst.it" "Personal homepage")
   (defvar my/project-home "~/Projects/" "Personal project directory")
-  (defvar my/superman (concat my/project-home "metropolis/") "SuperMan project directory")
-  (setq superman-home my/superman)
-  (setq superman-profile (concat my/superman "Projects.org"))
   (defvar my/base-directory "~/" "Base directory")
   (defvar my/snippets (concat my/base-directory "Snippets/") "Code snippets directory")
   (defvar my/bibliography-directory (concat my/project-home "Bibliography/") "Bibliography default path")
   (defvar my/bibliography (concat my/bibliography-directory "huge.bib") "Primary bibtex file")
   (defvar my/pdf-directory "~/Documents/PDF/" "Location of articles")
   (defvar my/opencmd (if IS-MAC "open" "/usr/bin/xdg-open") "Program for opening files and applications")
+  (defvar my/superman (concat my/project-home "metropolis/") "SuperMan project directory")
+  (setq superman-home my/superman)
+  (setq superman-profile (concat my/superman "Projects.org"))
 #+END_SRC
 
 
 GPG key to use for encryption (Either the Key ID or set to nil to use symmetric encryption).
 #+BEGIN_SRC emacs-lisp
-  (setq org-crypt-key "20BD49CED464EEA2")
+  (setq org-crypt-key "3249D6A2848986C7EE3B7CBD606357DB6D474C95")
+
 #+END_SRC
 
 Load local configuration (not version controlled)
@@ -150,6 +154,22 @@ Other styles
 ;; (display-time-mode t)   ;; Time in status bar
 ;; (column-number-mode t)  ;; Column number in status bar
 ;; (transient-mark-mode t) ;; Make marked block visible (cancel marked blok with C-g)
+#+END_SRC
+
+ The following uses the framebar to display the buffer/filename and projectile project
+#+BEGIN_SRC emacs-lisp
+(setq frame-title-format
+      '(""
+        (:eval
+         (if (s-contains-p org-roam-directory (or buffer-file-name ""))
+             (replace-regexp-in-string
+              ".*/[0-9]*-?" "☰ "
+              (subst-char-in-string ?_ ?  buffer-file-name))
+           "%b"))
+        (:eval
+         (let ((project-name (projectile-project-name)))
+           (unless (string= "-" project-name)
+             (format (if (buffer-modified-p)  " ◉ %s" "  ●  %s") project-name))))))
 #+END_SRC
 
 * Miscellaneous / Editor behaviour
@@ -487,39 +507,38 @@ Google translate
   #+BEGIN_SRC emacs-lisp
 (use-package! google-translate
   :bind
-  ("C-c C-t" . google-translate-smooth-translate)
+  ("C-c C-x t" . (lambda () (interactive) (google-translate-smooth-translate) (enlarge-window 15)))
   :init
+    (setq google-translate-translation-directions-alist
+	'(("da" . "en") ("en" . "da") ("en" . "en")))
+  (require 'google-translate-smooth-ui)
   (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
-  (setq google-translate-translation-directions-alist
-	'(("da" . "en") ("en" . "da") ("en" . "ene")))
+  :config
   (setq google-translate-enable-ido-completion t)
   (setq google-translate-show-phonetic t)
-  :config
-  (require 'google-translate-smooth-ui))
-
+  (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
+  (setq google-translate-backend-method 'curl))
 #+end_src
 
 Language tool (grammar checking)
-#+begin_src emacs-lisp
-    (use-package! langtool
-      :bind
-	     ("C-x 4 w" . langtool-check) ;; To check current buffer and show warnings.
-	     ("C-x 4 W" . langtool-check-done) ;; To finish checking. All marker is removed.
-	     ("C-x 4 l" . langtool-switch-default-language)
-	     ("C-x 4 4" . langtool-show-message-at-point) ;; Goto warning point
-	     ("C-x 4 c" . langtool-correct-buffer) ;; To correct marker follow LanguageTool suggestions.
-	     ("C-x 4 5" . langtool-goto-next-error) ;; To correct marker follow LanguageTool suggestions.
-	     ;;("C-x 4 3"  .langtool-goto-previous-error) ;; To correct marker follow LanguageTool suggestions.
-      :config
-      (setq langtool-java-bin "/usr/local/opt/openjdk/bin/java")
-      (setq langtool-language-tool-jar (concat my/localbin "languagetool-commandline.jar"))
-      ;; rules: https://www.languagetool.org/languages/
-      (setq langtool-disabled-rules '("WHITESPACE_RULE"
-				      "EN_UNPAIRED_BRACKETS"
-				    "COMMA_PARENTHESIS_WHITESPACE"
-				    "EN_QUOTES"))
-      (setq langtool-mother-tongue "en"))
-  #+END_SRC
+#+BEGIN_SRC emacs-lisp
+(after! langtool
+(setq langtool-language-tool-jar (concat my/localbin "languagetool-commandline.jar"))
+(setq langtool-java-bin "/usr/local/opt/openjdk/bin/java")
+(setq langtool-mother-tongue "en")
+;; rules: https://www.languagetool.org/languages/
+(setq langtool-disabled-rules '("WHITESPACE_RULE"
+				"EN_UNPAIRED_BRACKETS"
+				"COMMA_PARENTHESIS_WHITESPACE"
+				"EN_QUOTES"))
+(map! "C-x 4 w" #'langtool-check ;; To check current buffer and show warnings.
+	    "C-x 4 W" #'langtool-check-done ;; To finish checking. All marker is removed.
+	    "C-x 4 l" #'langtool-switch-default-language
+	    "C-x 4 4" #'langtool-show-message-at-point ;; Goto warning point
+	    "C-x 4 c" #'langtool-correct-buffer ;; To correct marker follow LanguageTool suggestions.
+	    "C-x 4 5" #'langtool-goto-next-error ;; To correct marker follow LanguageTool
+))
+#+END_SRC
 
 * Development
 
@@ -534,70 +553,17 @@ https://emacs-lsp.github.io/lsp-mode/page/lsp-r/
 #+END_SRC
 
 
-Always delete trailing white spaces
-#+BEGIN_SRC emacs-lisp
-  ;; (defun my-prog-nuke-trailing-whitespace ()
-  ;; (when (derived-mode-p 'prog-mode)
-  ;;     (delete-trailing-whitespace)))
-  ;; (
-  ;; add-hook 'before-save-hook 'delete-trailing-whitespace)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (defun my/compile (&optional arg)
-    (interactive "P")
-    (if (buffer-file-name) (save-buffer))
-    ;;;(if (file-exists-p "Makefile")
-    (let* ((cmd (or compile-command
-		    (concat "cd " default-directory "; make -k "))))
-      ;;(let* ((cmd (concat "cd " default-directory "; make -k ")))
-      ;;(eval compile-command))))
-      (if arg (setq cmd (read-string "Command: " cmd)))
-      (set (make-local-variable 'compile-command) cmd)
-      ;;(setq compilation-read-command nil)
-      (save-some-buffers 0)
-      (compile cmd t))
-      (other-window 1)
-      (goto-char (point-max)))
-  (add-hook 'compilation-shell-minor-mode
-	    (lambda) ()
-	    (ansi-color-for-comint-mode-on))
-
-  (defun my/create-tags (&optional dir-name)
-    "Create tags file."
-    (interactive "DDirectory: ")
-    ;;  (let ((cmd "find -regex '.*/.*\.\(c\|cpp\|h\|.R\|.r\)$' | xargs ctags -e"))
-    (shell-command-to-string "ctags -e *.cpp *.h *.c")
-    (shell-command-to-string "R --vanilla --slave -e 'rtags()' >> TAGS")
-    )
-  (defalias 'create-tags 'my/create-tags)
-
-
-  ;; Use ido to list tags, but then select via etags-select (best of both worlds!)
-  (defun my/ido-find-tag ()
-    "Find a tag using ido"
-    (interactive)
-    (tags-completion-table)
-    (let (tag-names)
-      (mapatoms (lambda (x)
-		  (push (prin1-to-string x t) tag-names))
-		tags-completion-table)
-      (etags-select-find (ido-completing-read "Tag: " tag-names))))
-
-   ;; (use-package etags-select
-   ;;   :defer t
-   ;;   :bind
-   ;;   ("M-." . my/ido-find-tag)
-   ;;   ("C-M-." . select-tags-table)
-  ;; (global-set-key (kbd "M-.") 'helm-etags-select)
-  ;; (require 'helm-yaetags)
-  ;; (global-set-key (kbd "M-.") 'helm-yaetags-find-tag)
-
+[disabled] Always delete trailing white spaces
+#+BEGIN_SRC emacs-lisp :tangle no
+ (defun my-prog-nuke-trailing-whitespace ()
+   (when (derived-mode-p 'prog-mode)
+       (delete-trailing-whitespace)))
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
 #+END_SRC
 
 ** python
 
-   This module has no hard prerequisites, but a few soft ones:
+ This module has no hard prerequisites, but a few soft ones:
 
 + For this module's supported test runners:
   + ~pip install pytest~
@@ -632,136 +598,107 @@ manager or manually:
 * Shell/dired
 
 #+BEGIN_SRC emacs-lisp
-     (defun alt-shell-dwim (arg)
-       "Run an inferior shell like `shell'. If an inferior shell as its I/O
-     through the current buffer, then pop the next buffer in `buffer-list'
-     whose name is generated from the string \"*shell*\". When called with
-     an argument, start a new inferior shell whose I/O will go to a buffer
-     named after the string \"*shell*\" using `generate-new-buffer-name'."
-       (interactive "P")
-       (let* ((shell-buffer-list
-	      (let (blist)
-		 (dolist (buff (buffer-list) blist)
-		   (when (string-match "^\\*shell\\*\\|*Popup Shell*" (buffer-name buff))
-		    (setq blist (cons buff blist))))))
-	      (name (if arg
-		       (generate-new-buffer-name "*shell*")
-		     (car shell-buffer-list))))
-	 (shell name)))
-    ;; (global-set-key (kbd "<f7>") 'alt-shell-dwim)
-    (if (system-type-is-darwin)
-	(progn
-	  (global-set-key (kbd "<f7>") (lambda () (interactive)
-					 (let ((cmd (concat "open -a Terminal " (expand-file-name default-directory))))
-					   (call-process-shell-command cmd nil 0)))))
-	(progn
-	  (global-set-key (kbd "<f7>") (lambda () (interactive)
-					 (let ((cmd (concat "gnome-terminal --working-directory=" (expand-file-name default-directory))))
-					   (call-process-shell-command cmd nil 0)))))
-	)
-
-  (ansi-color-for-comint-mode-on)
-  (setq ansi-color-for-comint-mode 'filter)
-  (setq comint-scroll-to-bottom-on-input t)
-  (setq comint-scroll-to-bottom-on-output t)
-  (setq comint-move-point-for-output t)
-  (add-hook 'comint-output-filter-functions 'comint-truncate-buffer)
-
+(ansi-color-for-comint-mode-on)
+(setq ansi-color-for-comint-mode 'filter)
+(setq comint-scroll-to-bottom-on-input t)
+(setq comint-scroll-to-bottom-on-output t)
+(setq comint-move-point-for-output t)
+(add-hook 'comint-output-filter-functions 'comint-truncate-buffer)
 #+END_SRC
 
-  #+BEGIN_SRC emacs-lisp
-	  ;; Use dired instead of deer (simple ranger mode)
-	  (setq ranger-override-dired-mode nil)
+#+BEGIN_SRC emacs-lisp
+;; Use dired instead of deer (simple ranger mode)
+(setq ranger-override-dired-mode nil)
 
-	  (setq dired-dwim-target t) ;; midnight commander style. Nice copy,move with two dired buffers open in same frame
-	  (setq dired-omit-files "^\\.[^.]\\|$Rhistory\\|$RData\\|__pycache__")
+(setq dired-dwim-target t) ;; midnight commander style. Nice copy,move with two dired buffers open in same frame
+(setq dired-omit-files "^\\.[^.]\\|$Rhistory\\|$RData\\|__pycache__")
 
-	  (use-package! dired+
-			:config
-			(setq font-lock-maximum-decoration (quote ((dired-mode . 1) (t . t))))
-			(diredp-toggle-find-file-reuse-dir 1))
+(use-package! dired+
+  :config
+  (setq font-lock-maximum-decoration (quote ((dired-mode . 1) (t . t))))
+  (diredp-toggle-find-file-reuse-dir 1))
 
-	(use-package! dired-narrow
-		  :after dired
-		  :bind (:map dired-mode-map
-			      ("/" . dired-narrow)))
-
-
-	  (defun dired-open-file (&optional file)
-	    "In dired, open the file named on this line."
-	    (interactive)
-	    (let* ((file (or file (dired-get-filename nil t))))
-	      (message "Opening %s..." file)
-	      (call-process my/opencmd nil 0 nil file)
-	      (message "Opening %s done" file)))
-
-	  (after! dired
-		  (if IS-MAC
-		      (progn
- 		(setq insert-directory-program "gls" dired-use-ls-dired t)))
-		  (setq list-directory-verbose-switches "-lgGh --group-directories-first")
-		  ;;(setq list-directory-brief-switches "-CF")
-		  (setq dired-listing-switches "-algGh --group-directories-first") ;; | awk '{print $3, $4, $5, $6, $7}'")
-		  ;; g: don't list owner (but like l), G: no-group, h: human-readable, a: hidden, X: sort alphabetically by entry extension
-		  (setq dired-dwim-target t) ;; midnight commander style. Nice copy,move with two dired buffers open in same frame
-		  (setq dired-omit-files "^\\.[^.]\\|$Rhistory\\|$RData\\|__pycache__")
-		  (require 'dired-x)
-		  (add-hook 'dired-mode-hook (lambda ()
-					   (dired-hide-details-mode )
-					   (setq dired-omit-mode t)
-					   (local-set-key [(meta return)] 'dired-open-file))))
+(use-package! dired-narrow
+  :after dired
+  :bind (:map dired-mode-map
+	 ("/" . dired-narrow)))
 
 
-    (defun my/dired-do-command (command)
-      "Run COMMAND on marked files. Any files not already open will be opened.
+(defun dired-open-file (&optional file)
+  "In dired, open the file named on this line."
+  (interactive)
+  (let* ((file (or file (dired-get-filename nil t))))
+    (message "Opening %s..." file)
+    (call-process my/opencmd nil 0 nil file)
+    (message "Opening %s done" file)))
+
+(after! dired
+  (if IS-MAC
+      (progn
+ 	(setq insert-directory-program "gls" dired-use-ls-dired t)))
+  (setq list-directory-verbose-switches "-lgGh --group-directories-first")
+  ;;(setq list-directory-brief-switches "-CF")
+  (setq dired-listing-switches "-algGh --group-directories-first") ;; | awk '{print $3, $4, $5, $6, $7}'")
+  ;; g: don't list owner (but like l), G: no-group, h: human-readable, a: hidden, X: sort alphabetically by entry extension
+  (setq dired-dwim-target t) ;; midnight commander style. Nice copy,move with two dired buffers open in same frame
+  (setq dired-omit-files "^\\.[^.]\\|$Rhistory\\|$RData\\|__pycache__")
+  (require 'dired-x)
+  (add-hook 'dired-mode-hook (lambda ()
+			       (dired-hide-details-mode 0)
+			       (setq dired-omit-mode t)
+			       (local-set-key [(meta return)] 'dired-open-file))))
+
+
+(defun my/dired-do-command (command)
+  "Run COMMAND on marked files. Any files not already open will be opened.
     After this command has been run, any buffers it's modified will remain
     open and unsaved."
-      (interactive "CRun on marked files M-x ")
-      (save-window-excursion
-	(mapc (lambda (filename)
-		(find-file filename)
-		(call-interactively command))
-	      (dired-get-marked-files))))
+  (interactive "CRun on marked files M-x ")
+  (save-window-excursion
+    (mapc (lambda (filename)
+	    (find-file filename)
+	    (call-interactively command))
+	  (dired-get-marked-files))))
 
 
 
 
-    (defun my/open-in-external-app (&optional file)
-      "Open the current file or dired marked files in external app.
+(defun my/open-in-external-app (&optional file)
+  "Open the current file or dired marked files in external app.
     Works in Microsoft Windows, Mac OS X, Linux."
-      (interactive)
-      (let ( doIt
-	     (myFileList
-	      (cond
-	       ((string-equal major-mode "dired-mode") (dired-get-marked-files))
-	       (file (list file))
-	       (t (list (buffer-file-name))) ) ) )
-
-	(setq doIt (if (<= (length myFileList) 5)
-		       t
-		     (y-or-n-p "Open more than 5 files?") ) )
-
-	(when doIt
+  (interactive)
+  (let ( doIt
+	 (myFileList
 	  (cond
-	   ((string-equal system-type "windows-nt")
-	    (mapc (lambda (fPath) (w32-shell-execute my/opencmd (replace-regexp-in-string "/" "\\" fPath t t)) ) myFileList)
-	    )
-	   ((string-equal system-type "darwin")
-	    (mapc (lambda (fPath) (let ((process-connection-type nil)) (start-process "" nil "open" fPath)) )  myFileList) )
-	   ((string-equal system-type "gnu/linux")
-	    (mapc (lambda (fPath) (let ((process-connection-type nil)) (start-process "" nil "/usr/bin/xdg-open" fPath)) ) myFileList) ) ) ) ) )
+	   ((string-equal major-mode "dired-mode") (dired-get-marked-files))
+	   (file (list file))
+	   (t (list (buffer-file-name))) ) ) )
+
+    (setq doIt (if (<= (length myFileList) 5)
+		   t
+		 (y-or-n-p "Open more than 5 files?") ) )
+
+    (when doIt
+      (cond
+       ((string-equal system-type "windows-nt")
+	(mapc (lambda (fPath) (w32-shell-execute my/opencmd (replace-regexp-in-string "/" "\\" fPath t t)) ) myFileList)
+	)
+       ((string-equal system-type "darwin")
+	(mapc (lambda (fPath) (let ((process-connection-type nil)) (start-process "" nil "open" fPath)) )  myFileList) )
+       ((string-equal system-type "gnu/linux")
+	(mapc (lambda (fPath) (let ((process-connection-type nil)) (start-process "" nil "/usr/bin/xdg-open" fPath)) ) myFileList) ) ) ) ) )
 
 
 
-    (defun oo (&optional file)
-      "Open file"
-      (interactive)
-      (let* (
-	     (file (expand-file-name (or file (read-file-name "File: ")))))
-	(my/open-in-external-app file)
-	))
+(defun oo (&optional file)
+  "Open file"
+  (interactive)
+  (let* (
+	 (file (expand-file-name (or file (read-file-name "File: ")))))
+    (my/open-in-external-app file)
+    ))
 
-  #+END_SRC
+#+END_SRC
 
 * LaTeX
   #+BEGIN_SRC emacs-lisp
@@ -794,8 +731,9 @@ manager or manually:
         bibtex-completion-pdf-field "File"
 	bibtex-completion-library-path `(,my/pdf-directory) ;;'("~/Documents/PDF" "~/Projects/Publications")
 	bibtex-completion-bibliography `(,my/bibliography)
-  (advice-add 'bibtex-completion-candidates :filter-return 'reverse)
 	bibtex-completion-notes-path (concat my/bibliography-directory "helm-bibtex-notes"))
+
+(after! helm-bibtex (advice-add 'bibtex-completion-candidates :filter-return 'reverse))
 
 (use-package! reftex
   :after (auctex)
@@ -815,69 +753,6 @@ manager or manually:
 
 * Completion
 
-  Helm
-  #+BEGIN_SRC emacs-lisp
-      (use-package! helm-dash
-	:after helm)
-
-      (use-package! helm-swoop
-	:commands (helm-swoop)
-	:bind
-	("C-c s" . helm-swoop)
-	("M-S" . helm-swoop)
-	:after helm
-	:config
-	(define-key isearch-mode-map (kbd "M-s o") 'helm-occur-from-isearch)
-	(setq helm-swoop-speed-or-color t)
-	(setq helm-swoop-use-fuzzy-match t)
-	(setq helm-swoop-use-line-number-face t))
-
-    (use-package! helm-c-yasnippet
-      :after helm yasnippet)
-
-    (use-package! helm-config
-      :after helm)
-
-    (use-package! helm-flycheck
-      :after helm flycheck)
-
-    (setq
-     helm-boring-buffer-regexp-list '("^diary$"
-				      "*helm"
-				      "*ESS*"
-				      ".*Org-preview.*"
-				      ".*command-output.*"
-				      ".*Completions.*"
-				      ".*helm-mode"
-				      ".*Echo Area.*"
-				      ".*Minibuf.*"
-				      ".*code-conversion.*"
-				      ".*fontification.*"
-				      ".*Ibuffer.*"))
-    (setq helm-boring-file-regexp-list
-	  '("\\.git$" "\\.hg$" "\\.svn$"  "^\\."  "\\.$"
-	    "\\.\\.$" "\\.Plo$" "\\.lo$"  "_source.*"
-	    "_8h.*"  "\\.CVS$" "\\._darcs$"  "\\.la$"
-	    "\\.swf$" "\\.elc$" "\\.pyc$"
-	   "\\.o$" "~$"  "^#.*"))
-
-    (setq
-     helm-recentf-fuzzy-match t
-     helm-buffers-fuzzy-matching t
-     helm-locate-fuzzy-match t
-     helm-M-x-fuzzy-match t
-     helm-semantic-fuzzy-match t
-     helm-imenu-fuzzy-match t
-     helm-apropos-fuzzy-match t
-     helm-lisp-fuzzy-completion t
-     helm-candidate-number-limit 500
-     helm-idle-delay 0.1
-     helm-input-idle-delay 0.1)
-    ;;(setq helm-c-locate-command "mdfind %.0s %s")
-
-
-  #+END_SRC
-
   #+BEGIN_SRC emacs-lisp
     (setq abbrev-mode nil) ;; We want to activate ourself: M-e
     ;;(read-abbrev-file "~/.abbrev_defs")
@@ -885,6 +760,65 @@ manager or manually:
     (setq save-abbrevs t)
   #+END_SRC
 
+  Helm
+  #+BEGIN_SRC emacs-lisp
+;; Show results in a child-frame
+(setq helm-display-function 'helm-display-buffer-in-own-frame
+        helm-display-buffer-reuse-frame t
+        helm-display-buffer-width 110
+        helm-display-buffer-height 30
+        helm-use-undecorated-frame-option t)
+      (use-package! helm-dash
+	:after helm)
+
+(use-package! helm-c-yasnippet
+  :after helm yasnippet)
+
+(use-package! helm-config
+  :after helm)
+
+(use-package! helm-flycheck
+  :after helm flycheck)
+
+(setq
+ helm-boring-buffer-regexp-list '("^diary$"
+				  "*helm"
+				  "*ESS*"
+				  ".*Org-preview.*"
+				  ".*command-output.*"
+				  ".*Completions.*"
+				  ".*helm-mode"
+				  ".*Echo Area.*"
+				  ".*Minibuf.*"
+				  ".*code-conversion.*"
+				  ".*fontification.*"
+				  ".*Ibuffer.*"))
+(setq helm-\textbf{}oring-file-regexp-list
+	  '("\\.git$" "\\.hg$" "\\.svn$"  "^\\."  "\\.$"
+	    "\\.\\.$" "\\.Plo$" "\\.lo$"  "_source.*"
+	    "_8h.*"  "\\.CVS$" "\\._darcs$"  "\\.la$"
+	    "\\.swf$" "\\.elc$" "\\.pyc$"
+	   "\\.o$" "~$"  "^#.*"))
+
+(setq helm-recentf-fuzzy-match t
+      helm-buffers-fuzzy-matching t
+      helm-locate-fuzzy-match t
+      helm-M-x-fuzzy-match t
+      helm-semantic-fuzzy-match t
+      helm-imenu-fuzzy-match t
+      helm-apropos-fuzzy-match t
+      helm-lisp-fuzzy-completion t
+      helm-candidate-number-limit 500
+      helm-idle-delay 0.1
+      helm-input-idle-delay 0.1)
+;;(setq helm-c-locate-command "mdfind %.0s %s")
+  #+END_SRC
+
+Ivy
+#+BEGIN_SRC emacs-lisp
+(setq +ivy-buffer-preview t)
+
+#+END_SRC
 
 ** hippie expand
 
@@ -1096,6 +1030,7 @@ change `org-directory'. It must be set before org loads!
 
 #+BEGIN_SRC emacs-lisp
   (after! org
+    (add-hook 'org-mode-hook 'org-fragtog-mode)
 	  (require 'my-org-latex))
 #+END_SRC
 
@@ -1317,14 +1252,18 @@ Babel / source code content
   (define-key comint-mode-map (kbd "M-<up>") 'comint-previous-input)
   (define-key comint-mode-map (kbd "M-<down>") 'comint-next-input)
 
-  (map! "C-z" #'undo)
+
+  ;;(map! "C-z" #'undo)
+  ;;(global-unset-key (kbd "C-z"))
+(map! "C-z" #'undo-fu-only-undo)
+   (map! "C-S-z" #'undo-fu-only-redo)
+
   ;;(global-set-key (kbd "C-i") 'indent-region)
-  (map! "C-c S" #'occur)
+  (map! "C-c S" #'swiper)
 
   (map! "<f3>" #'kmacro-start-macro-or-insert-counter)
   (map! "<f4>" #'kmacro-end-or-call-macro)
-
-  (map! "C-c <f8>" #'ielm)
+  (map! :leader "<f8>" #'ielm)
 
   ;; (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
   ;; (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
@@ -1345,9 +1284,7 @@ Babel / source code content
   (global-set-key [S-home] 'beginning-of-buffer)
   (global-set-key [S-end] 'end-of-buffer)
 
-
   (map! "M-g" #'goto-line)
-  (map! "C-x C-z"  #'my/compile)
   (map! "C-x '" #'next-error)
 
   ;; Makes control+pgup/pgdn arrow keys scroll one line at the time
@@ -1399,8 +1336,9 @@ Babel / source code content
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-  (map!  "C-x _" #'visual-line-mode)
-  (map! "M-y" #'yank-or-pop) ;;  cycles through kill-ring it when called repeatedly
+  (map!  :leader "_" #'visual-line-mode)
+  (map! "C-y" #'yank-or-pop) ;;  cycles through kill-ring it when called repeatedly
+  (map! "M-y" #'counsel-yank-pop) ;; kill-ring
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -1419,17 +1357,25 @@ Avy (ace-jump-mode replacement)
 #+BEGIN_SRC emacs-lisp
 (setq avy-all-windows t)
 ;;(global-set-key (kbd "C-c j") 'avy-goto-word-or-subword-1)
-(global-set-key (kbd "M-.") 'avy-goto-word-or-subword-1)
-(global-set-key (kbd "C-c O") 'ace-window)
+(map! :leader
+      "SPC" #'avy-goto-word-or-subword-1
+      "O" #'ace-window)
 #+END_SRC
 
-** Helm
+** Helm / Ivy / Yas
 
 #+BEGIN_SRC emacs-lisp
+;; Disable yasnippet tab completion
+(after! yasnippet
+(define-key yas-minor-mode-map [(tab)]        nil)
+(define-key yas-minor-mode-map (kbd "TAB")    nil)
+(define-key yas-minor-mode-map (kbd "<tab>")  nil)
+)
+
 (map!
- "M-m" #'helm-show-kill-ring
+ ;;"M-m" #'helm-show-kill-ring
  ;; "C-x b"  #'helm-mini
- "C-<f4>" #'helm-execute-kmacro
+ ;;"C-<f4>" #'helm-execute-kmacro
  "<f12>" #'helm-bibtex
  ;; "C-<f9>" #'helm-resume
  ;; "C-c h" #'helm-resume)
@@ -1439,18 +1385,33 @@ Avy (ace-jump-mode replacement)
 ** Dired / shell
 
 #+BEGIN_SRC emacs-lisp
+;; (after! dired-ranger
   (map!
    (:map dired-mode-map
-   :localleader
-   "C-c"  #'dired-ranger-copy
-   "C-r" #'dired-ranger-move
-   "C-x C-v" #'dired-ranger-move
-   "C-v" #'dired-ranger-paste
-   "C-x SPC" #'peep-dired
-   "RET" #'dired-open-file
-   "C-r" #'helm-ag
-   "C-f" #'helm-find))
+    "C-c C-c"  #'dired-ranger-copy
+    "C-r C-r" #'dired-ranger-move
+    "C-c C-x C-v" #'dired-ranger-move
+    "C-c C-v" #'dired-ranger-paste
+    "C-c C-SPC" #'peep-dired
+    "C-c RET" #'dired-open-file
+    "C-c %" #'helm-ag
+    "C-c /" #'helm-find))
+#+END_SRC
 
+
+#+BEGIN_SRC emacs-lisp
+(if IS-MAC
+    (map! :leader "<f7>" (lambda () (interactive)
+			   (let ((cmd (concat "open -a Terminal " (expand-file-name default-directory))))
+			       (call-process-shell-command cmd nil 0))))
+    (map! :leader "<f7>" (lambda () (interactive)
+			   (let ((cmd (concat "gnome-terminal --working-directory=" (expand-file-name default-directory))))
+			     (call-process-shell-command cmd nil 0)))))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(after! vterm
+(map! :map vterm-mode-map "C-c C-y" #'vterm-yank))
 #+END_SRC
 
 ** Development
@@ -1462,10 +1423,16 @@ Avy (ace-jump-mode replacement)
 
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+  (map! :leader :desc
+"compile" "C-z" #'counsel-compile)
+#+END_SRC
+
 Gist note snippets
 #+BEGIN_SRC emacs-lisp
   (map! "C-<f12>" #'gist-list)
   (map! "C-<f11>" #'gist-region-private)
+  (map! :map prog-mode-map  :leader "h" #'lsp-describe-thing-at-point)
 #+END_SRC
 
 ** Org
@@ -1476,13 +1443,9 @@ backquote use 'C-q `'
 (add-hook 'org-mode-hook (lambda ()
 			   ;; AUCTeX Light (major-mode cannot be used in org major-mode)
 			   (org-cdlatex-mode)
-			   ;(local-unset-key (kbd "`"))
-			   ;(local-unset-key (kbd "S-dead-grave SPC"))
-			   ;(setq cdlatex-math-modify-prefix [f7])
 			   (turn-off-auto-fill)
 			   (local-set-key (kbd "M-j") 'my/org-export-to-latex)
 			   (local-set-key (kbd "C-c M-j") 'org-export-to-latex)
-
 			   ;; Rebind org-export keybinding conflicting
 			   ;; with favourite windmove bindings
 			   ;; (local-unset-key [M-left]) ;; Reserver for windmove
@@ -1494,15 +1457,10 @@ backquote use 'C-q `'
 			   ;; (local-set-key (kbd "C-c <up>")  'org-metaup)
 			   ;; (local-set-key (kbd "C-c <down>") 'org-metadown)
 			   ;; Rebind org-export keybinding conflicting
-			   ;; with AUCTeX
-			   ;;                      (auto-complete-mode)
-			   (local-unset-key (kbd "C-c SPC")) ;; We use this for ace-jump...
-			   (local-set-key (kbd "C-x SPC") 'org-table-blank-field) ;; ^ ... and use this instead
 			   (local-set-key (kbd "M-e") 'hippie-expand-case-sensitive)
 			   (local-set-key (kbd "M-r") (lambda ()(interactive)(hippie-expand-case-sensitive t)))
 			   (local-set-key (kbd "C-c C-e") 'org-export-dispatch)
 			   (local-set-key (kbd "C-c e") 'cdlatex-environment)
-			   ;;                         (local-set-key (kbd "C-c C-g") 'kill-this-buffer)
 			   (local-set-key (kbd "C-c S") 'org-occur)
 			   (local-set-key (kbd "C-c C") 'org-babel-execute-buffer)
 			   (local-set-key (kbd "C-c C-g") 'org-babel-remove-result)
@@ -1512,13 +1470,7 @@ backquote use 'C-q `'
 			   (local-set-key (kbd "C-c C-v C-c") 'org-babel-clear-all-results)
 			   ))
 ;; org-store-link should be accessible from all buffers
-(define-key global-map (kbd "C-c l") 'org-store-link)
-
-;; (setq org-completion-use-iswitchb t)
-;; (global-set-key "\C-cb" 'org-iswitchb)
-;;(global-set-key "\C-ca" 'org-agenda)
-;;(global-set-key [(alt f12)] 'org-capture)
-
+(map! :localleader "RET" #'org-store-link) ;; C-c l RET
 #+END_SRC
 
 ** ESS

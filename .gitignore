@@ -1,3 +1,5 @@
+*.tex
+tmp
 custom.el
 bin/*.jar
 abbrev_defs

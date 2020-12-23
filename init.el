@@ -25,7 +25,9 @@
        ;; +childframe +org)
        ;;ido               ; the other *other* search engine...
         (ivy               ; a search engine for love and life
-         +prescient +icons +fuzzy +childframe)
+         +prescient +icons
+         ;;+fuzzy
+         +childframe)
 
        :ui
        deft              ; notational velocity for Emacs
@@ -87,9 +89,11 @@
 
        :checkers
        syntax              ; tasing you for every semicolon you forget
-       ;; (spell             ; tasing you for misspelling mispelling
-        ;; +hunspell)
-       ;; grammar           ; tasing grammar mistake every you make
+       (spell             ; tasing you for misspelling mispelling
+        +hunspell
+        +flyspell        ; flyspell instead of fuspell
+        )
+       grammar           ; tasing grammar mistake every you make
 
        :tools
        ;;ansible
@@ -172,7 +176,9 @@
        (python
         +pyenv             ; Python virtual environment support
 	+poetry            ; Python packaging, dependency management, and virtual environment
-        +lsp)
+        +lsp
+        ;;+pyright
+        )
        ;;qt                ; the 'cutest' gui framework ever
        ;;racket            ; a DSL for DSLs
        ;;raku              ; the artist formerly known as perl6
@@ -189,7 +195,7 @@
        ;;swift             ; who asked for emoji variables?
        ;;terra             ; Earth and Moon in alignment for performance.
        ;;web               ; the tubes
-       ;;yaml              ; JSON, but readable
+       yaml              ; JSON, but readable
 
        :email
        ;;(mu4e +gmail)

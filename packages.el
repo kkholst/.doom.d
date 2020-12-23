@@ -6,28 +6,31 @@
 ;; use 'M-x doom/reload'.
 
 (add-load-path! "lisp")
-(package! comment-dwim-2)
-(package! helm-ag)
 (package! dired+)
 (package! peep-dired)
+(package! dired-ranger)
 (package! dired-narrow)
+(package! comment-dwim-2)
 (package! julia-mode)
-(package! ox-tufte)
-(package! org-ref)
 (package! hippie-exp)
 (package! ace-jump-mode)
-(package! langtool)
+;;(package! langtool)
 (package! google-translate)
-
 ;;(package! ivy-bibtex)
 (package! ivy-yasnippet)
+;;(package! mini-frame)
+
+(package! org-fragtog)
+(package! org-ref)
+(package! ox-tufte)
 
 (package! helm)
-(package! helm-org-rifle)
-(package! helm-swoop)
+;; (package! helm-org-rifle)
+;; (package! helm-swoop)
+(package! helm-ag)
+(package! helm-flycheck)
 (package! helm-bibtex)
 (package! helm-dash)
-(package! helm-flycheck)
 (package! helm-c-yasnippet)
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:

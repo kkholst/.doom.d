@@ -534,7 +534,6 @@ my/org-latex-tikz
 \\documentclass[a4paper,12pt]{letter}
 \\usepackage{etex}
 \\usepackage{etoolbox}
-\\usepackage[utf8]{inputenc}
 \\usepackage[T1]{fontenc}
 \\usepackage{mathtools}
 \\usepackage[strict=true]{csquotes}
