@@ -58,10 +58,6 @@ run 'doom sync' after modifying this file!
  You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
  they are implemented.
 
-*
-
-*
-
 * Variable definitions
 
 Some functionality uses this to identify you, e.g. GPG configuration, email
@@ -94,7 +90,6 @@ Various variable definitions
   (defvar my/bibliography-directory (concat my/project-home "Bibliography/") "Bibliography default path")
   (defvar my/bibliography (concat my/bibliography-directory "huge.bib") "Primary bibtex file")
   (defvar my/pdf-directory "~/Documents/PDF/" "Location of articles")
-  (defvar my/opencmd (if IS-MAC "open" "/usr/bin/xdg-open") "Program for opening files and applications")
   (defvar my/superman (concat my/project-home "metropolis/") "SuperMan project directory")
   (setq superman-home my/superman)
   (setq superman-profile (concat my/superman "Projects.org"))
@@ -104,13 +99,31 @@ Various variable definitions
 GPG key to use for encryption (Either the Key ID or set to nil to use symmetric encryption).
 #+BEGIN_SRC emacs-lisp
   (setq org-crypt-key "3249D6A2848986C7EE3B7CBD606357DB6D474C95")
-
 #+END_SRC
+
+Org related directories
+#+BEGIN_SRC emacs-lisp
+  (setq org-directory my/project-home)
+  (setq org-project-directory org-directory)
+  (setq org-roam-directory (concat org-directory "notes"))
+#+END_SRC
+
 
 Load local configuration (not version controlled)
 #+BEGIN_SRC emacs-lisp
   (if (file-exists-p (concat my/emacshome "local.el"))
       (load (concat my/emacshome "local.el")))
+#+END_SRC
+
+Binaries locations
+#+BEGIN_SRC emacs-lisp
+(setq langtool-language-tool-jar (concat my/localbin "languagetool-commandline.jar"))
+(setq langtool-java-bin "/usr/local/opt/openjdk/bin/java")
+(setq langtool-mother-tongue "en")
+  (setq org-babel-C++-compiler "ccache /usr/local/opt/llvm/bin/clang++"
+		org-babel-python-command "python3")
+(setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd")
+(defvar my/opencmd (if IS-MAC "open" "/usr/bin/xdg-open") "Program for opening files and applications")
 #+END_SRC
 
 * Appearance
@@ -523,9 +536,6 @@ Google translate
 Language tool (grammar checking)
 #+BEGIN_SRC emacs-lisp
 (after! langtool
-(setq langtool-language-tool-jar (concat my/localbin "languagetool-commandline.jar"))
-(setq langtool-java-bin "/usr/local/opt/openjdk/bin/java")
-(setq langtool-mother-tongue "en")
 ;; rules: https://www.languagetool.org/languages/
 (setq langtool-disabled-rules '("WHITESPACE_RULE"
 				"EN_UNPAIRED_BRACKETS"
@@ -548,7 +558,6 @@ https://emacs-lsp.github.io/lsp-mode/tutorials/CPP-guide/
 https://emacs-lsp.github.io/lsp-mode/page/lsp-r/
 
 #+BEGIN_SRC emacs-lisp
-(setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd")
 (setq lsp-auto-guess-root t ) ;; Get root of projetct from projectile (i.e., .git location)
 #+END_SRC
 
@@ -595,7 +604,7 @@ manager or manually:
           pyenv-show-active-python-in-modeline t)
   #+END_SRC
 
-* Shell/dired
+* Shell / dired
 
 #+BEGIN_SRC emacs-lisp
 (ansi-color-for-comint-mode-on)
@@ -661,8 +670,6 @@ manager or manually:
 	  (dired-get-marked-files))))
 
 
-
-
 (defun my/open-in-external-app (&optional file)
   "Open the current file or dired marked files in external app.
     Works in Microsoft Windows, Mac OS X, Linux."
@@ -677,17 +684,15 @@ manager or manually:
     (setq doIt (if (<= (length myFileList) 5)
 		   t
 		 (y-or-n-p "Open more than 5 files?") ) )
-
     (when doIt
       (cond
        ((string-equal system-type "windows-nt")
 	(mapc (lambda (fPath) (w32-shell-execute my/opencmd (replace-regexp-in-string "/" "\\" fPath t t)) ) myFileList)
 	)
        ((string-equal system-type "darwin")
-	(mapc (lambda (fPath) (let ((process-connection-type nil)) (start-process "" nil "open" fPath)) )  myFileList) )
+	(mapc (lambda (fPath) (let ((process-connection-type nil)) (start-process "" nil my/opencmd fPath)) )  myFileList) )
        ((string-equal system-type "gnu/linux")
-	(mapc (lambda (fPath) (let ((process-connection-type nil)) (start-process "" nil "/usr/bin/xdg-open" fPath)) ) myFileList) ) ) ) ) )
-
+	(mapc (lambda (fPath) (let ((process-connection-type nil)) (start-process "" nil my/opencmd fPath)) ) myFileList) ) ) ) ) )
 
 
 (defun oo (&optional file)
@@ -1015,14 +1020,6 @@ install.packages(“languageserver”)
 
 * Org
 
-If you use `org' and don't want your org files in the default location below,
-change `org-directory'. It must be set before org loads!
-#+BEGIN_SRC emacs-lisp
-  (setq org-directory my/project-home)
-  (setq org-project-directory org-directory)
-  (setq org-roam-directory (concat org-directory "notes"))
-#+END_SRC
-
 #+BEGIN_SRC emacs-lisp
   (use-package! ox-ravel
 	      :after ox)
@@ -1058,9 +1055,9 @@ Encryption
 		  (forward-line 1)
 		  ) nil )))
 	;; add crypt decryption to org-mode context sensitive processing.
-	(add-hook 'org-ctrl-c-ctrl-c-hook 'org-ctrl-c-encrypted))
+  (add-hook 'org-ctrl-c-ctrl-c-hook 'org-ctrl-c-encrypted)
+ )
 #+END_SRC
-
 
 References
 #+BEGIN_SRC emacs-lisp
@@ -1102,8 +1099,8 @@ References
 Babel / source code content
 #+BEGIN_SRC emacs-lisp
 
-  (add-hook 'org-ctrl-c-ctrl-c-final-hook 'org-display-inline-images)
-  (add-hook 'org-ctrl-c-ctrl-c-hook 'org-display-inline-images)
+ (add-hook 'org-ctrl-c-ctrl-c-final-hook 'org-display-inline-images)
+ (add-hook 'org-ctrl-c-ctrl-c-hook 'org-display-inline-images)
   ;; Down-size inline images
   (setq org-image-actual-width 300)
 
@@ -1111,20 +1108,17 @@ Babel / source code content
   (setq org-hide-emphasis-markers t)
 
   (after! org
-	  (add-to-list 'org-link-abbrev-alist '("gmane" . "http://thread.gmane.org/%s"))
+    (add-to-list 'org-link-abbrev-alist '("gmane" . "http://thread.gmane.org/%s"))
 	  (add-to-list 'org-link-abbrev-alist '("arxiv" . "http://arxiv.org/abs/%s"))
 	  (add-to-list 'org-link-abbrev-alist '("doi" . "http://dx.doi.org/%s"))
-
-	  (setq org-babel-C++-compiler "ccache g++"
-		org-babel-python-command "python3")
 
 	;;; Evoked by C-c '
 	;;(setq org-src-window-setup 'reorganize-frame)
 	(setq org-src-window-setup 'current-window)
 	;; Do not confirm source block evaluation
 	(setq org-confirm-babel-evaluate nil)
-	(setq org-src-fontify-natively t
-	      org-src-tab-acts-natively t)
+;;	(setq org-src-fontify-natively t)
+;;	      org-src-tab-acts-natively t)
 	;;; Seems to crash emacs?!?! ^ ^
 
 	;; Show date/time in hash og org-babel result blocks
