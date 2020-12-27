@@ -19,6 +19,8 @@ https://github.com/hlissner/doom-emacs
 https://github.com/hlissner/doom-emacs/blob/develop/docs/api.org
 https://github.com/hlissner/emacs-doom-themes
 
+themes
+https://github.com/hlissner/emacs-doom-themes/tree/screenshots
 
 Inspiration:
 https://github.com/jwiegley/use-package/
@@ -120,9 +122,10 @@ Binaries locations
 (setq langtool-language-tool-jar (concat my/localbin "languagetool-commandline.jar"))
 (setq langtool-java-bin "/usr/local/opt/openjdk/bin/java")
 (setq langtool-mother-tongue "en")
-  (setq org-babel-C++-compiler "ccache /usr/local/opt/llvm/bin/clang++"
+(setq org-babel-C++-compiler "ccache /usr/local/opt/llvm/bin/clang++"
 		org-babel-python-command "python3")
 (setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd")
+(setq plantuml-jar-path (expand-file-name "~/local/plantuml/plantuml.jar"))
 (defvar my/opencmd (if IS-MAC "open" "/usr/bin/xdg-open") "Program for opening files and applications")
 #+END_SRC
 
@@ -155,7 +158,8 @@ available. You can either set `doom-theme' or manually load a theme with the
 This determines the style of line numbers in effect. If set to `nil', line
 numbers are disabled. For relative line numbers, set this to `relative'.
 #+BEGIN_SRC emacs-lisp
-(setq display-line-numbers-type t)
+;; (setq display-line-numbers-type t)
+(add-hook! '(org-mode-hook LaTeX-mode-hook) #'doom-disable-line-numbers-h)
 #+END_SRC
 
 Other styles
@@ -304,7 +308,7 @@ Encryption
   )
 #+END_SRC
 
-* Custom functions
+* Functions
 
  Bury *scratch* buffer instead of kill it
 #+BEGIN_SRC emacs-lisp
@@ -452,6 +456,27 @@ Thomas Gerds)
     nil)
 #+END_SRC
 
+
+#+BEGIN_SRC emacs-lisp
+(defun python-shell-send-dwim (&optional arg)
+  "Sends from python-mode buffer to a python shell, intelligently."
+  (interactive "P")
+  (if arg
+      (python-shell-send-buffer)
+    (progn
+      (if (not (region-active-p))
+          (progn
+            (beginning-of-line 1)
+            (if (looking-at python-nav-beginning-of-defun-regexp)
+                (python-mark-defun)
+              (mark-paragraph))))
+      (let ((beg (region-beginning)) (end (region-end)))
+        (python-shell-send-region beg end)
+        (deactivate-mark)
+        (goto-char end)))))
+#+END_SRC
+
+
 ** Printer
 
 #+BEGIN_SRC emacs-lisp
@@ -559,6 +584,14 @@ https://emacs-lsp.github.io/lsp-mode/page/lsp-r/
 
 #+BEGIN_SRC emacs-lisp
 (setq lsp-auto-guess-root t ) ;; Get root of projetct from projectile (i.e., .git location)
+
+(defun dap-clean(&optional arg)
+  (interactive)
+  (kill-matching-buffers ".*LLDB::" nil t)
+  (kill-matching-buffers ".*GDB::" nil t)
+  (kill-matching-buffers ".*dap-ui" nil t)
+  (ignore-error (dap-disconnect)))
+;;(after! hydra-mode  (advice-add '... :filter-return #'dap-clean))
 #+END_SRC
 
 
@@ -601,7 +634,8 @@ manager or manually:
 
   #+BEGIN_SRC emacs-lisp
     (setq pyvenv-default-virtual-env-name "dev"
-          pyenv-show-active-python-in-modeline t)
+          pyvenv-virtual-env-name ".virtualenvs"
+          pyvenv-show-active-python-in-modeline t)
   #+END_SRC
 
 * Shell / dired
@@ -739,6 +773,7 @@ manager or manually:
 	bibtex-completion-notes-path (concat my/bibliography-directory "helm-bibtex-notes"))
 
 (after! helm-bibtex (advice-add 'bibtex-completion-candidates :filter-return 'reverse))
+(add-hook! '(LaTeX-mode-hook) #'writegood-mode)
 
 (use-package! reftex
   :after (auctex)
@@ -773,38 +808,10 @@ manager or manually:
         helm-display-buffer-width 110
         helm-display-buffer-height 30
         helm-use-undecorated-frame-option t)
-      (use-package! helm-dash
-	:after helm)
-
 (use-package! helm-c-yasnippet
   :after helm yasnippet)
-
-(use-package! helm-config
-  :after helm)
-
 (use-package! helm-flycheck
   :after helm flycheck)
-
-(setq
- helm-boring-buffer-regexp-list '("^diary$"
-				  "*helm"
-				  "*ESS*"
-				  ".*Org-preview.*"
-				  ".*command-output.*"
-				  ".*Completions.*"
-				  ".*helm-mode"
-				  ".*Echo Area.*"
-				  ".*Minibuf.*"
-				  ".*code-conversion.*"
-				  ".*fontification.*"
-				  ".*Ibuffer.*"))
-(setq helm-\textbf{}oring-file-regexp-list
-	  '("\\.git$" "\\.hg$" "\\.svn$"  "^\\."  "\\.$"
-	    "\\.\\.$" "\\.Plo$" "\\.lo$"  "_source.*"
-	    "_8h.*"  "\\.CVS$" "\\._darcs$"  "\\.la$"
-	    "\\.swf$" "\\.elc$" "\\.pyc$"
-	   "\\.o$" "~$"  "^#.*"))
-
 (setq helm-recentf-fuzzy-match t
       helm-buffers-fuzzy-matching t
       helm-locate-fuzzy-match t
@@ -816,96 +823,12 @@ manager or manually:
       helm-candidate-number-limit 500
       helm-idle-delay 0.1
       helm-input-idle-delay 0.1)
-;;(setq helm-c-locate-command "mdfind %.0s %s")
   #+END_SRC
 
 Ivy
 #+BEGIN_SRC emacs-lisp
 (setq +ivy-buffer-preview t)
 
-#+END_SRC
-
-** hippie expand
-
-#+BEGIN_SRC emacs-lisp
-  (use-package! hippie-exp
-    :if (not noninteractive)
-    :commands (hippie-expand hippie-expand-case-sensitive)
-    :bind
-    ("M-e" . hippie-expand-case-sensitive)
-    ;;("M-e" . hippie-expand-case-sensitive)
-    ("M-r" . hippie-expand)
-    :config
-    (eval-after-load "dabbrev" '(defalias 'dabbrev-expand 'hippie-expand-case-sensitive 'hippie-expand))
-    (setq hippie-expand-try-functions-list
-	    '(yas/hippie-try-expand
-	      try-expand-dabbrev
-	      try-expand-dabbrev-all-buffers
-	      try-expand-dabbrev-from-kill
-	      try-expand-all-abbrevs
-	      try-complete-file-name
-	      try-complete-file-name-partially
-	      try-expand-list
-	      ;;        try-complete-lisp-symbol-partially
-	      ;;        try-complete-lisp-symbol
-	      try-expand-whole-kill
-	      ispell-complete-word ;;as a last resort, use ispell completion
-	      ;;to complete words.
-	      ))
-
-    (defun my-ido-hippie-expand ()
-      "Offer ido-based completion for the word at point."
-      (interactive)
-      (my-ido-hippie-expand-with 'hippie-expand-case-sensitive))
-
-    (defun hippie-expand-case-sensitive (arg)
-      "Do case sensitive searching so we deal with gtk_xxx and GTK_YYY."
-      (interactive "P")
-      (let ((case-fold-search nil))
-	(hippie-expand arg)))
-      ;; The following is an approach for obtaining the complete list of
-      ;; possible expansions from hippie-expand, and letting the user select
-      ;; the one they want via the ido interface.
-      (defun my-hippie-expand-completions (&optional hippie-expand-function)
-	"Return the full list of possible completions generated by `hippie-expand'.
-      The optional argument can be generated with `make-hippie-expand-function'."
-	(let ((this-command 'my-hippie-expand-completions)
-	      (last-command last-command)
-	      (buffer-modified (buffer-modified-p))
-	      (hippie-expand-try-functions-list (or hippie-expand-function 'hippie-expand)))
-	  (cl-flet ((ding)) ; avoid the (ding) when hippie-expand exhausts its options.
-	    (while (progn
-		     (funcall hippie-expand-function nil)
-		     (setq last-command 'my-hippie-expand-completions)
-		     (not (equal he-num -1)))))
-	  ;; Evaluating the completions modifies the buffer, however we will finish
-	  ;; up in the same state that we began, and (save-current-buffer) seems a
-	  ;; bit heavyweight in the circumstances.
-	  (set-buffer-modified-p buffer-modified)
-	  ;; Provide the options in the order in which they are normally generated.
-	  (delete he-search-string (reverse he-tried-table))))
-
-      (defmacro my-ido-hippie-expand-with (hippie-expand-function)
-	"Generate an interactively-callable function that offers ido-based completion
-      using the specified hippie-expand function."
-	`(call-interactively
-	  (lambda (&optional selection)
-	    (interactive
-	     (let ((options (my-hippie-expand-completions ,hippie-expand-function)))
-	       (if options
-		   (list (ido-completing-read "Completions: " options)))))
-	    (if selection-
-		(he-substitute-string selection t)
-	      (message "No expansion found")))))
-
-      (defun my-ido-hippie-expand ()
-	"Offer ido-based completion for the word at point."
-	(interactive)
-	(my-ido-hippie-expand-with 'hippie-expand-case-sensitive))
-
-      ;;yas/hippie-try-expand)) (add-to-list
-      ;;'hippie-expand-try-functions-list )
-    )
 #+END_SRC
 
 * ESS
@@ -995,10 +918,12 @@ install.packages(“languageserver”)
     "Documentation..."
     (interactive)
     (require 'ess-inf)
-    (let* ((buf (current-buffer)))
+    (let* ((buf (current-buffer))
+                (pyt nil))
       (if (or (eq major-mode 'octave-mode) (eq major-mode 'python-mode))
 	  (if (eq major-mode 'python-mode)
 	      (progn
+                (setq pyt t)
 		(run-python)
 		(switch-to-buffer "*Python*"))
 	    (progn
@@ -1014,7 +939,8 @@ install.packages(“languageserver”)
       (if my/split-ess-horizontal (split-window-horizontally) (split-window-vertically))
       (other-window 1)
       (switch-to-buffer buf)
-      (my/swap-buffers-in-windows)))
+;;      (unless pyt
+        (my/swap-buffers-in-windows)))
 
 #+END_SRC
 
@@ -1030,6 +956,9 @@ install.packages(“languageserver”)
     (add-hook 'org-mode-hook 'org-fragtog-mode)
 	  (require 'my-org-latex))
 #+END_SRC
+
+
+
 
 Encryption
 #+BEGIN_SRC emacs-lisp
@@ -1091,19 +1020,12 @@ References
     (define-key org-mode-map (kbd "C-c )") 'reftex-citation)
     (define-key org-mode-map (kbd "C-c (") 'org-mode-reftex-search))
 
-
   (add-hook 'org-mode-hook (lambda () (org-mode-reftex-setup)))
 #+END_SRC
 
 
 Babel / source code content
 #+BEGIN_SRC emacs-lisp
-
- (add-hook 'org-ctrl-c-ctrl-c-final-hook 'org-display-inline-images)
- (add-hook 'org-ctrl-c-ctrl-c-hook 'org-display-inline-images)
-  ;; Down-size inline images
-  (setq org-image-actual-width 300)
-
   ;; Hide =bold=, /italic/, ...
   (setq org-hide-emphasis-markers t)
 
@@ -1117,74 +1039,39 @@ Babel / source code content
 	(setq org-src-window-setup 'current-window)
 	;; Do not confirm source block evaluation
 	(setq org-confirm-babel-evaluate nil)
-;;	(setq org-src-fontify-natively t)
-;;	      org-src-tab-acts-natively t)
-	;;; Seems to crash emacs?!?! ^ ^
+  ;;(setq org-src-fontify-natively t
+  ;;	    org-src-tab-acts-natively t)
 
-	;; Show date/time in hash og org-babel result blocks
-	;;(setq org-babel-hash-show-time t)
+	;; Do not show date/time in hash og org-babel result blocks
 	(setq org-babel-hash-show-time nil)
-	;; most convenient to *not* let export actions
-	;; evaluate code:
-	;; No long works with org 9? Instead :eval never-export
-	;;(setq org-export-babel-evaluate nil)
-	;;       org-src-tab-acts-natively nil)
-
-	;;(setq org-babel-inline-result-wrap "=%s=") ;; default
 	(setq org-babel-inline-result-wrap "%s")
 
+	;; most convenient to *not* let export actions evaluate code:
 	(setq org-babel-default-header-args
 	      (cons '(:eval . "never-export")
 		    (assq-delete-all :eval org-babel-default-header-args)))
 
-	;; enable R, elisp, perl, sh interpretation, ... in Babel
 	(if (not (boundp 'inferior-julia-program-name)) (setq inferior-julia-program-name "julia"))
-	(if (not (boundp 'inferior-STA-program-name)) (setq inferior-STA-program-name "stata"))
 
-	(setq org-plantuml-jar-path
-	      (expand-file-name "~/local/plantuml/plantuml.jar"))
+  (setq org-plantuml-jar-path 'plantuml-jar-path)
 
-	     ;; ;; Convert inline pdf
-	(if (not (system-type-is-darwin))
-	    (progn
-	      (add-to-list 'image-type-file-name-regexps '("\\.pdf\\'" . imagemagick))
-	      (add-to-list 'image-file-name-extensions "pdf")
-	      (setq imagemagick-types-inhibit (remove 'PDF imagemagick-types-inhibit))
-	      (setq imagemagick-render-type 1) ;; never rendering
-	      ))
-	(add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
+  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
+  (add-hook 'org-ctrl-c-ctrl-c-final-hook 'org-display-inline-images)
+  (add-hook 'org-ctrl-c-ctrl-c-hook 'org-display-inline-images)
+  ;; Down-size inline images
+  (setq org-image-actual-width 300)
 
-	;; (add-hook 'org-shiftup-final-hook 'windmove-up)
-	;; (add-hook 'org-shiftleft-final-hook 'windmove-left)
-	       ;; (add-hook 'org-shiftdown-final-hook 'windmove-down)
-	;; (add-hook 'org-sehiftright-final-hook 'windmove-right)
+  ;; (add-hook 'org-shiftup-final-hook 'windmove-up)
+  ;; (add-hook 'org-shiftleft-final-hook 'windmove-left)
+  ;; (add-hook 'org-shiftdown-final-hook 'windmove-down)
+  ;; (add-hook 'org-sehiftright-final-hook 'windmove-right)
 
+  (defun org-babel-clear-all-results ()
+   "clear all results from babel-org-mode"
+    (interactive)
+    (org-babel-map-src-blocks nil (org-babel-remove-result)))
 
-	;; Clean-up stata output
-	(defun org-babel-stata-evaluate
-	    (session body result-type result-params column-names-p row-names-p)
-	  "Evaluate stata code in BODY."
-	  (let* ((body-list (split-string body "\n"))
-		 (return-list ())
-		 (result-list (if session
-				  (org-babel-stata-evaluate-session
-				   session body result-type result-params column-names-p row-names-p)
-				(org-babel-stata-evaluate-external-process
-				 body result-type result-params column-names-p row-names-p))))
-	    (setq result-list (split-string result-list "\n"))
-	    (while result-list
-	      (unless (member (car result-list) body-list)
-		(setq return-list (cons (car result-list) return-list)))
-	      (setq result-list (cdr result-list)))
-	    (mapconcat 'identity (reverse return-list) "\n")))
-
-	(defun org-babel-clear-all-results ()
-	  "clear all results from babel-org-mode"
-	  (interactive)
-	  (org-babel-map-src-blocks nil (org-babel-remove-result))
-	  )
-
-	) ;; after! org
+) ;; after! org
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -1204,13 +1091,13 @@ Babel / source code content
          (setq org-file-apps
            '((auto-mode . emacs)
              ("\\.mm\\'" . default)
-             ("\\.x?html?\\'" . default)
-	     ("\\.pdf\\'" . (lambda (file link) (org-pdfview-open link)))))))
+             ("\\.x?html?\\'" . default)))))
+;;	     ("\\.pdf\\'" . (lambda (file link) (org-pdfview-open link)))))))
 ;;             ("\\.pdf\\'" . "evince %s")))))
 
 #+END_SRC
 
-* Keybindings
+* Key bindings
 
   #+BEGIN_SRC emacs-lisp
     (setq mac-option-key-is-meta nil
@@ -1221,40 +1108,27 @@ Babel / source code content
 
 ** Editor
 
-
 #+BEGIN_SRC emacs-lisp
-  ;; CUA-mode but disable key bindings (copy C-c, cut C-x, paste C-v, undo
-  ;; C-z)
-  (setq cua-enable-cua-keys nil)
-  (setq cua-delete-selection t)
-  ;; (setq cua-highlight-region-shift-only t) ;; no transient mark mode
-  ;; (setq cua-toggle-set-mark t) ;; original set-mark behavior, i.e. no transient-mark-mode
-  (cua-mode 1)
-
   (add-hook 'emacs-lisp-mode-hook
 	    (lambda ()
 	      (define-key emacs-lisp-mode-map "\C-c\C-c"
 		'eval-region)))
 
-
   (defun my-revert ()
 	(define-key ess-transcript-mode-map (kbd "C-c C-c")
 	  (lambda () (interactive) (revert-buffer t t))))
-  ;;'revert-buffer))
+
   (add-hook 'ess-transcript-mode-hook 'my-revert)
 
   (define-key comint-mode-map (kbd "M-<up>") 'comint-previous-input)
   (define-key comint-mode-map (kbd "M-<down>") 'comint-next-input)
 
+  (map! "C-z" #'undo-fu-only-undo)
+  (map! "C-S-z" #'undo-fu-only-redo)
 
-  ;;(map! "C-z" #'undo)
-  ;;(global-unset-key (kbd "C-z"))
-(map! "C-z" #'undo-fu-only-undo)
-   (map! "C-S-z" #'undo-fu-only-redo)
-
-  ;;(global-set-key (kbd "C-i") 'indent-region)
-  (map! "C-c S" #'swiper)
-
+  (map! :leader "S" #'swiper)
+  (map! "C-x b" #'counsel-switch-buffer)
+  (map! :leader "b" #'+ivy/switch-workspace-buffer)
   (map! "<f3>" #'kmacro-start-macro-or-insert-counter)
   (map! "<f4>" #'kmacro-end-or-call-macro)
   (map! :leader "<f8>" #'ielm)
@@ -1264,8 +1138,6 @@ Babel / source code content
   ;; (global-set-key (kbd "S-C-<down>") 'shrink-window)
   ;; (global-set-key (kbd "S-C-<up>") 'enlarge-window)
 
-  (global-set-key [C-right] 'forward-word)
-  (global-set-key [C-left] 'backward-word)
   (global-set-key [M-right] 'forward-word)
   (global-set-key [M-left] 'backward-word)
   (global-set-key [M-up] 'backward-paragraph)
@@ -1322,11 +1194,9 @@ Babel / source code content
 
   (map! "M-q" #'my/fill) ;; M-q: fill, C-u M-q: unfill
 
-  ;;(global-set-key "\M-Q" 'my/unfill-region)
-
   (global-set-key "\M-s" 'ispell-word) ;; Ispell word
 
-  (global-set-key (kbd "C-x C-M-<return>")  (lambda() (interactive) (revert-buffer t t)))
+  (global-set-key (kbd "C-x M-<return>")  (lambda() (interactive) (revert-buffer t t)))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -1341,6 +1211,7 @@ Babel / source code content
       :bind
       ("<f8>" . winner-undo)
       ("<C-f8>" . winner-redo)
+      ("<S-f8>" . winner-redo)
       ("<M-f8>" . winner-redo)
       :init (setq winner-dont-bind-my-keys t)
       :config
@@ -1352,20 +1223,24 @@ Avy (ace-jump-mode replacement)
 (setq avy-all-windows t)
 ;;(global-set-key (kbd "C-c j") 'avy-goto-word-or-subword-1)
 (map! :leader
+      "c p" #'ivy-push-view
+      "c P" #'ivy-pop-view
       "SPC" #'avy-goto-word-or-subword-1
       "O" #'ace-window)
 #+END_SRC
 
-** Helm / Ivy / Yas
-
+Yasnippet
 #+BEGIN_SRC emacs-lisp
 ;; Disable yasnippet tab completion
 (after! yasnippet
-(define-key yas-minor-mode-map [(tab)]        nil)
-(define-key yas-minor-mode-map (kbd "TAB")    nil)
-(define-key yas-minor-mode-map (kbd "<tab>")  nil)
+;; (define-key yas-minor-mode-map [(tab)]        nil)
+;; (define-key yas-minor-mode-map (kbd "TAB")    nil)
+;; (define-key yas-minor-mode-map (kbd "<tab>")  nil)
 )
+#+END_SRC
 
+Helm
+#+BEGIN_SRC emacs-lisp
 (map!
  ;;"M-m" #'helm-show-kill-ring
  ;; "C-x b"  #'helm-mini
@@ -1382,23 +1257,23 @@ Avy (ace-jump-mode replacement)
 ;; (after! dired-ranger
   (map!
    (:map dired-mode-map
-    "C-c C-c"  #'dired-ranger-copy
-    "C-r C-r" #'dired-ranger-move
-    "C-c C-x C-v" #'dired-ranger-move
-    "C-c C-v" #'dired-ranger-paste
-    "C-c C-SPC" #'peep-dired
-    "C-c RET" #'dired-open-file
-    "C-c %" #'helm-ag
-    "C-c /" #'helm-find))
+    "C-c C-c"      #'dired-ranger-copy
+    "C-r C-r"      #'dired-ranger-move
+    "C-c C-x C-v"  #'dired-ranger-move
+    "C-c C-v"      #'dired-ranger-paste
+    "C-c C-SPC"    #'peep-dired
+    "C-c RET"      #'dired-open-file
+    "C-c %"        #'helm-ag
+    "C-c /"        #'helm-find))
 #+END_SRC
 
 
 #+BEGIN_SRC emacs-lisp
 (if IS-MAC
-    (map! :leader "<f7>" (lambda () (interactive)
+    (map! "<f7>" (lambda () (interactive)
 			   (let ((cmd (concat "open -a Terminal " (expand-file-name default-directory))))
 			       (call-process-shell-command cmd nil 0))))
-    (map! :leader "<f7>" (lambda () (interactive)
+    (map!  "<f7>" (lambda () (interactive)
 			   (let ((cmd (concat "gnome-terminal --working-directory=" (expand-file-name default-directory))))
 			     (call-process-shell-command cmd nil 0)))))
 #+END_SRC
@@ -1419,7 +1294,7 @@ Avy (ace-jump-mode replacement)
 
 #+BEGIN_SRC emacs-lisp
   (map! :leader :desc
-"compile" "C-z" #'counsel-compile)
+        "compile" "C-z" #'counsel-compile)
 #+END_SRC
 
 Gist note snippets
@@ -1429,40 +1304,41 @@ Gist note snippets
   (map! :map prog-mode-map  :leader "h" #'lsp-describe-thing-at-point)
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+(map! :map python-mode-map "C-c C-c" #'python-shell-send-dwim)
+#+END_SRC
+
 ** Org
 
 Note that cdlatex steals the backquote for entering math symbols. To enter a
 backquote use 'C-q `'
 #+BEGIN_SRC emacs-lisp
 (add-hook 'org-mode-hook (lambda ()
-			   ;; AUCTeX Light (major-mode cannot be used in org major-mode)
-			   (org-cdlatex-mode)
-			   (turn-off-auto-fill)
-			   (local-set-key (kbd "M-j") 'my/org-export-to-latex)
-			   (local-set-key (kbd "C-c M-j") 'org-export-to-latex)
-			   ;; Rebind org-export keybinding conflicting
-			   ;; with favourite windmove bindings
-			   ;; (local-unset-key [M-left]) ;; Reserver for windmove
-			   ;; (local-unset-key [M-right])
-			   ;; (local-unset-key [M-up])
-			   ;; (local-unset-key [M-down])
-			   ;; (local-set-key (kbd "C-c <left>") 'org-metaleft)
-			   ;; (local-set-key (kbd "C-c <right>") 'org-metaright)
-			   ;; (local-set-key (kbd "C-c <up>")  'org-metaup)
-			   ;; (local-set-key (kbd "C-c <down>") 'org-metadown)
-			   ;; Rebind org-export keybinding conflicting
-			   (local-set-key (kbd "M-e") 'hippie-expand-case-sensitive)
-			   (local-set-key (kbd "M-r") (lambda ()(interactive)(hippie-expand-case-sensitive t)))
-			   (local-set-key (kbd "C-c C-e") 'org-export-dispatch)
-			   (local-set-key (kbd "C-c e") 'cdlatex-environment)
-			   (local-set-key (kbd "C-c S") 'org-occur)
-			   (local-set-key (kbd "C-c C") 'org-babel-execute-buffer)
-			   (local-set-key (kbd "C-c C-g") 'org-babel-remove-result)
-			   (local-set-key [C-M-return] 'superman-open-at-point)
-			   (local-set-key (kbd "C-c C-r") 'my/org-eval-region)
-
-			   (local-set-key (kbd "C-c C-v C-c") 'org-babel-clear-all-results)
-			   ))
+;; AUCTeX Light (major-mode cannot be used in org major-mode)
+  (org-cdlatex-mode)
+  (turn-off-auto-fill)
+  (local-set-key (kbd "M-j") 'my/org-export-to-latex)
+  ;; Rebind org-export keybinding conflicting
+  ;; with favourite windmove bindings
+  ;; (local-unset-key [M-left]) ;; Reserver for windmove
+  ;; (local-unset-key [M-right])
+  ;; (local-unset-key [M-up])
+  ;; (local-unset-key [M-down])
+  ;; (local-set-key (kbd "C-c <left>") 'org-metaleft)
+  ;; (local-set-key (kbd "C-c <right>") 'org-metaright)
+  ;; (local-set-key (kbd "C-c <up>")  'org-metaup)
+  ;; (local-set-key (kbd "C-c <down>") 'org-metadown)
+  ;; Rebind org-export keybinding conflicting
+  ;; (local-set-key (kbd "M-r") 'hippie-expand-case-sensitive)
+  ;;(local-set-key (kbd "M-r") (lambda ()(interactive)(hippie-expand-case-sensitive t)))
+  (local-set-key (kbd "C-c C-e") 'org-export-dispatch)
+  (local-set-key (kbd "C-c e") 'cdlatex-environment)
+  (local-set-key (kbd "C-c C") 'org-babel-execute-buffer)
+  (local-set-key (kbd "C-c C-g") 'org-babel-remove-result)
+  ;;(local-set-key [C-M-return] 'superman-open-at-point)
+  (local-set-key (kbd "C-c C-r") 'my/org-eval-region)
+  (local-set-key (kbd "C-c C-v C-c") 'org-babel-clear-all-results)
+))
 ;; org-store-link should be accessible from all buffers
 (map! :localleader "RET" #'org-store-link) ;; C-c l RET
 #+END_SRC
@@ -1597,4 +1473,86 @@ M-x replacement
     :after helm
     :bind
     ("M-m" . helm-show-kill-ring))
+#+END_SRC
+
+** hippie expand
+
+#+BEGIN_SRC emacs-lisp
+  (use-package! hippie-exp
+    :if (not noninteractive)
+    :commands (hippie-expand hippie-expand-case-sensitive)
+    :bind
+    ;;("M-e" . hippie-expand)
+    ("M-r" . hippie-expand-case-sensitive)
+    :config
+    (eval-after-load "dabbrev" '(defalias 'dabbrev-expand 'hippie-expand-case-sensitive 'hippie-expand))
+    (setq hippie-expand-try-functions-list
+	    '(yas/hippie-try-expand
+	      try-expand-dabbrev
+	      try-expand-dabbrev-all-buffers
+	      try-expand-dabbrev-from-kill
+	      try-expand-all-abbrevs
+	      try-complete-file-name
+	      try-complete-file-name-partially
+	      try-expand-list
+	      ;;try-complete-lisp-symbol-partially
+	      ;;try-complete-lisp-symbol
+	      try-expand-whole-kill
+	      ispell-complete-word ;;as a last resort, use ispell completion
+	      ;;to complete words.
+	      ))
+
+    (defun my-ido-hippie-expand ()
+      "Offer ido-based completion for the word at point."
+      (interactive)
+      (my-ido-hippie-expand-with 'hippie-expand-case-sensitive))
+
+    (defun hippie-expand-case-sensitive (arg)
+      "Do case sensitive searching so we deal with gtk_xxx and GTK_YYY."
+      (interactive "P")
+      (let ((case-fold-search nil))
+	(hippie-expand arg)))
+      ;; The following is an approach for obtaining the complete list of
+      ;; possible expansions from hippie-expand, and letting the user select
+      ;; the one they want via the ido interface.
+      (defun my-hippie-expand-completions (&optional hippie-expand-function)
+	"Return the full list of possible completions generated by `hippie-expand'.
+      The optional argument can be generated with `make-hippie-expand-function'."
+	(let ((this-command 'my-hippie-expand-completions)
+	      (last-command last-command)
+	      (buffer-modified (buffer-modified-p))
+	      (hippie-expand-try-functions-list (or hippie-expand-function 'hippie-expand)))
+	  (cl-flet ((ding)) ; avoid the (ding) when hippie-expand exhausts its options.
+	    (while (progn
+		     (funcall hippie-expand-function nil)
+		     (setq last-command 'my-hippie-expand-completions)
+		     (not (equal he-num -1)))))
+	  ;; Evaluating the completions modifies the buffer, however we will finish
+	  ;; up in the same state that we began, and (save-current-buffer) seems a
+	  ;; bit heavyweight in the circumstances.
+	  (set-buffer-modified-p buffer-modified)
+	  ;; Provide the options in the order in which they are normally generated.
+	  (delete he-search-string (reverse he-tried-table))))
+
+      (defmacro my-ido-hippie-expand-with (hippie-expand-function)
+	"Generate an interactively-callable function that offers ido-based completion
+      using the specified hippie-expand function."
+	`(call-interactively
+	  (lambda (&optional selection)
+	    (interactive
+	     (let ((options (my-hippie-expand-completions ,hippie-expand-function)))
+	       (if options
+		   (list (ido-completing-read "Completions: " options)))))
+	    (if selection-
+		(he-substitute-string selection t)
+	      (message "No expansion found")))))
+
+      (defun my-ido-hippie-expand ()
+	"Offer ido-based completion for the word at point."
+	(interactive)
+	(my-ido-hippie-expand-with 'hippie-expand-case-sensitive))
+
+      ;;yas/hippie-try-expand)) (add-to-list
+      ;;'hippie-expand-try-functions-list )
+    )
 #+END_SRC

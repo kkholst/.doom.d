@@ -18,6 +18,7 @@
 (package! google-translate)
 ;;(package! ivy-bibtex)
 (package! ivy-yasnippet)
+(package! counsel-dash)
 ;;(package! mini-frame)
 
 (package! org-fragtog)
@@ -25,12 +26,10 @@
 (package! ox-tufte)
 
 (package! helm)
-;; (package! helm-org-rifle)
-;; (package! helm-swoop)
+;;(package! helm-org-rifle)
 (package! helm-ag)
 (package! helm-flycheck)
 (package! helm-bibtex)
-(package! helm-dash)
 (package! helm-c-yasnippet)
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:

@@ -27,7 +27,7 @@
 Language Server Protocol (lsp)
 - Python:
   #+BEGIN_SRC sh
-  pip install python-language-server[all] nose pytest cmake
+pip3 install 'python-language-server[all]' nose pytest cmake
   #+END_SRC
 - R:
   #+BEGIN_SRC R
