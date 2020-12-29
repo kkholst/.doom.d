@@ -1185,7 +1185,7 @@ Babel / source code content
 
 ** Editor
 
-½#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (if (not IS-MAC) (map! "M-+" #'doom/increase-font-size))
 
   (add-hook 'emacs-lisp-mode-hook
