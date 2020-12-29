@@ -1,3 +1,4 @@
+local.el
 *.html
 test.el
 *.tex

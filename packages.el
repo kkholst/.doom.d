@@ -24,7 +24,7 @@
 (package! flycheck-clang-analyzer)
 
 (package! processing-mode)
-(package! arduino-mode)
+;;(package! arduino-mode)
 (package! platformio-mode)
 
 (package! org-fragtog)
