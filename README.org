@@ -48,6 +48,21 @@ dap-debug:
 harfbuzz
 
 
+#+BEGIN_SRC sh
+pip3 install cpplint cclint cppcheck
+#+END_SRC
+
+
+#+BEGIN_SRC emacs-lisp
+(require 'flycheck-google-cpplint)
+(setq flycheck-c/c++-googlelint-executable "cpplint")
+(flycheck-add-next-checker 'c/c++-clang '(t . c/c++-googlelint))
+(flycheck-add-next-checker 'c/c++-gcc '(t . c/c++-googlelint))
+
+#+END_SRC
+
+#+RESULTS:
+: ((t . c/c++-googlelint) (warning . c/c++-cppcheck))
 
 * Configuration
 # How to configure this module, including common problems and how to address them.

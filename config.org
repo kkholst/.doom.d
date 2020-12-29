@@ -13,52 +13,15 @@ computer to perform automatically a task that would otherwise take me
 a good ten seconds to do by hand.” - /Douglas Adams/
 #+END_QUOTE
 
-* References
+This is my personal [[https://github.com/hlissner/doom-emacs][doom-emacs]] configuration.
 
-https://github.com/hlissner/doom-emacs
+API reference:
 https://github.com/hlissner/doom-emacs/blob/develop/docs/api.org
 https://github.com/hlissner/emacs-doom-themes
 
-themes
+Themes:
 https://github.com/hlissner/emacs-doom-themes/tree/screenshots
 
-Inspiration:
-https://github.com/jwiegley/use-package/
-http://pages.sachachua.com/.emacs.d/Sacha.html
-[[http://www.lunaryorn.com/2015/01/06/my-emacs-configuration-with-use-package.html]]
-http://emacs.stackexchange.com/questions/18881/use-package-for-a-mode
-
-Doom emacs configurations
-
-https://blog.jethro.dev/posts/migrating_to_doom_emacs/
-
-https://github.com/sunnyhasija/Academic-Doom-Emacs-Config
-https://github.com/MatthewZMD/.emacs.d#org05a0245
-https://zzamboni.org/post/my-doom-emacs-configuration-with-commentary/
-https://tecosaur.github.io/emacs-config/config.html
-https://dotdoom.rgoswami.me/
-https://www.gtrun.org/post/config/
-
-
-Place your private configuration here! Remember, you do not need to
-run 'doom sync' after modifying this file!
-
- Here are some additional functions/macros that could help you configure Doom:
-
- - `load!' for loading external *.el files relative to this one
- - `use-package!' for configuring packages
- - `after!' for running code after a package has loaded
- - `add-load-path!' for adding directories to the `load-path', relative to
-   this file. Emacs searches the `load-path' when you load packages with
-   `require' or `use-package'.
- - `map!' for binding new keys
-
- To get information about any of these functions/macros, move the cursor over
- the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
- This will open documentation for it, including demos of how they are used.
-
- You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
- they are implemented.
 
 * Variable definitions
 
@@ -584,7 +547,7 @@ https://emacs-lsp.github.io/lsp-mode/page/lsp-r/
 
 #+BEGIN_SRC emacs-lisp
 (setq lsp-auto-guess-root t ) ;; Get root of projetct from projectile (i.e., .git location)
-
+(setq lsp-prefer-flymake nil) ;; use flycheck
 (defun dap-clean(&optional arg)
   (interactive)
   (kill-matching-buffers ".*LLDB::" nil t)
@@ -595,12 +558,46 @@ https://emacs-lsp.github.io/lsp-mode/page/lsp-r/
 #+END_SRC
 
 
-[disabled] Always delete trailing white spaces
-#+BEGIN_SRC emacs-lisp :tangle no
- (defun my-prog-nuke-trailing-whitespace ()
-   (when (derived-mode-p 'prog-mode)
-       (delete-trailing-whitespace)))
-  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+Code linters
+#+BEGIN_SRC emacs-lisp
+(after! flycheck
+  (require 'flycheck-google-cpplint)
+  (setq flycheck-c/c++-googlelint-executable "cpplint"
+        flycheck-c/c++-cppcheck-executable "cppcheck"
+        flycheck-python-pylint-executable "pylint"
+        flycheck-r-lintr-executable "R"
+        flycheck-pylintrc "~/.pylintrc"
+        flycheck-cppcheck-standards '("c++11"))
+  (flycheck-add-next-checker 'c/c++-cppcheck '(warning . c/c++-googlelint)))
+
+(setq lsp-clients-clangd-args
+          '("-j=2"
+            "--background-index"
+            "--clang-tidy"
+            "--completion-style=bundled"
+            "--pch-storage=memory"
+            "--header-insertion=never"
+            "--header-insertion-decorators=0"))
+
+(add-hook! 'lsp-after-initialize-hook
+  (run-hooks (intern (format "%s-lsp-hook" major-mode))))
+
+(defun my-c++-linter-setup ()
+  (flycheck-add-next-checker 'lsp 'c/c++-googlelint))
+(add-hook 'c++-mode-lsp-hook #'my-c++-linter-setup)
+
+(defun my-python-linter-setup ()
+  (flycheck-add-next-checker 'lsp 'python-pylint))
+(add-hook 'python-mode-lsp-hook #'my-python-linter-setup)
+
+(defun my-r-linter-setup ()
+   (flycheck-add-next-checker 'lsp 'r-lintr))
+(add-hook 'R-mode-lsp-hook #'my-r-linter-setup)
+
+;; (use-package! flycheck-clang-analyzer
+;;   :init
+;;   (require 'flycheck-clang-analyzer)
+;;   (flycheck-clang-analyzer-setup))
 #+END_SRC
 
 ** python
@@ -958,6 +955,44 @@ install.packages(“languageserver”)
 #+END_SRC
 
 
+Capture
+#+BEGIN_SRC emacs-lisp
+(setq org-capture-templates
+      `(
+	("l" "Log" entry (file+olp-datetree ,(concat superman-home "Log.org"))
+	"* %?\nEntered on %T\n  %i\n  %a")
+
+	("t" "Todo" entry
+	 (file+headline ,(concat superman-home "Tasks.org") "Tasks")
+	 "* TODO %?
+  %U
+  %i
+  %a" :prepend t)
+
+	("s" "Code Snippet" entry
+	 (file+headline ,my/snippets)
+	 "* %?	%^g
+#+BEGIN_SRC %^{language}
+
+#+END_SRC" :prepend :jump-to-captured t)
+
+	("k" "Templates for consultancy")
+	("kt" "Telefontid" entry (file+olp+datetree ,(concat superman-home "Journal.org"))
+	 "** %^{Heading} :telefontid:\n:PROPERTIES:\n:Date: %T\n:Type: telefontid\n:Effort: 0\n:END:\n %? \n"
+	 :prepend t :jump-to-captured t)
+	("kn" "Cimbi/NRU" entry (file+olp+datetree ,(concat superman-home "Journal.org"))
+	 "** %^{Heading} :konsulent:\n:PROPERTIES:\n:Date: %T\n:Type: cimbi\n:Effort: 0\n:END:\n %? \n"
+	 :prepend t :jump-to-captured t)
+	("kk" "Konsulent" entry (file+olp+datetree ,(concat superman-home "Journal.org"))
+	 "** %^{Heading} :konsulent:\n:PROPERTIES:\n:Date: %T\n:Type: konsulent\n:Effort: 0\n:END:\n %? \n"
+	 :prepend t :jump-to-captured t)
+
+	("n" "Notes" entry (file+headline ,(concat superman-home "Notes.org") "New notes")
+	 "*** %^{Heading} \n:PROPERTIES:\n:NoteDate: %T\n:END:\n\n %?" :prepend t)
+	))
+
+#+END_SRC
+
 
 
 Encryption
@@ -1243,12 +1278,15 @@ Helm
 #+BEGIN_SRC emacs-lisp
 (map!
  ;;"M-m" #'helm-show-kill-ring
- ;; "C-x b"  #'helm-mini
+ ;;"C-x b"  #'helm-mini
  ;;"C-<f4>" #'helm-execute-kmacro
  "<f12>" #'helm-bibtex
- ;; "C-<f9>" #'helm-resume
- ;; "C-c h" #'helm-resume)
+ ;;"C-<f9>" #'helm-resume
+ ;;"C-c h" #'helm-resume)
 )
+(map! :leader "! !" #'helm-flycheck)
+(map! :leader "<tab>" #'ivy-yasnippet)
+
 #+END_SRC
 
 ** Dired / shell
@@ -1365,6 +1403,53 @@ backquote use 'C-q `'
 
 
 * COMMENT Misc
+
+Place your private configuration here! Remember, you do not need to
+run 'doom sync' after modifying this file!
+
+ Here are some additional functions/macros that could help you configure Doom:
+
+ - `load!' for loading external *.el files relative to this one
+ - `use-package!' for configuring packages
+ - `after!' for running code after a package has loaded
+ - `add-load-path!' for adding directories to the `load-path', relative to
+   this file. Emacs searches the `load-path' when you load packages with
+   `require' or `use-package'.
+ - `map!' for binding new keys
+
+ To get information about any of these functions/macros, move the cursor over
+ the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
+ This will open documentation for it, including demos of how they are used.
+
+ You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
+ they are implemented.
+
+
+Inspiration:
+https://github.com/jwiegley/use-package/
+http://pages.sachachua.com/.emacs.d/Sacha.html
+[[http://www.lunaryorn.com/2015/01/06/my-emacs-configuration-with-use-package.html]]
+http://emacs.stackexchange.com/questions/18881/use-package-for-a-mode
+
+Doom emacs configurations
+
+https://blog.jethro.dev/posts/migrating_to_doom_emacs/
+
+https://github.com/sunnyhasija/Academic-Doom-Emacs-Config
+https://github.com/MatthewZMD/.emacs.d#org05a0245
+https://zzamboni.org/post/my-doom-emacs-configuration-with-commentary/
+https://tecosaur.github.io/emacs-config/config.html
+https://dotdoom.rgoswami.me/
+https://www.gtrun.org/post/config/
+
+
+[disabled] Always delete trailing white spaces
+#+BEGIN_SRC emacs-lisp :tangle no
+ (defun my-prog-nuke-trailing-whitespace ()
+   (when (derived-mode-p 'prog-mode)
+       (delete-trailing-whitespace)))
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+#+END_SRC
 
   #+BEGIN_SRC emacs-lisp
 (use-package expand-region

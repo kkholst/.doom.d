@@ -20,6 +20,8 @@
 (package! ivy-yasnippet)
 (package! counsel-dash)
 ;;(package! mini-frame)
+(package! flycheck-google-cpplint)
+(package! flycheck-clang-analyzer)
 
 (package! org-fragtog)
 (package! org-ref)
