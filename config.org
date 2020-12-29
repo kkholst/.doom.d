@@ -82,11 +82,11 @@ Load local configuration (not version controlled)
 Binaries locations
 #+BEGIN_SRC emacs-lisp
 (setq langtool-language-tool-jar (concat my/localbin "languagetool-commandline.jar"))
-(setq langtool-java-bin "/usr/local/opt/openjdk/bin/java")
+(setq langtool-java-bin (if IS-MAC "/usr/local/opt/openjdk/bin/java" "java"))
 (setq langtool-mother-tongue "en")
-(setq org-babel-C++-compiler "ccache /usr/local/opt/llvm/bin/clang++"
+(setq org-babel-C++-compiler (concat "ccache" (if IS-MAC "/usr/local/opt/llvm/bin/clang++" "clang++"))
 		org-babel-python-command "python3")
-(setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd")
+(setq lsp-clients-clangd-executable (if IS-MAC "/usr/local/opt/llvm/bin/clangd" "clangd"))
 (setq plantuml-jar-path (expand-file-name "~/local/plantuml/plantuml.jar"))
 (defvar my/opencmd (if IS-MAC "open" "/usr/bin/xdg-open") "Program for opening files and applications")
 #+END_SRC
