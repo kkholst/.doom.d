@@ -17,7 +17,6 @@ This is my personal [[https://github.com/hlissner/doom-emacs][doom-emacs]] confi
 
 API reference:
 https://github.com/hlissner/doom-emacs/blob/develop/docs/api.org
-https://github.com/hlissner/emacs-doom-themes
 
 Themes:
 https://github.com/hlissner/emacs-doom-themes/tree/screenshots
@@ -634,6 +633,48 @@ manager or manually:
           pyvenv-virtual-env-name ".virtualenvs"
           pyvenv-show-active-python-in-modeline t)
   #+END_SRC
+
+* Embedded development
+
+Processing
+#+BEGIN_SRC emacs-lisp
+(use-package! processing-mode
+  :init
+  (setq processing-location "/opt/processing/processing-java"
+	;;processing-application-dir "/path/to/processing-application-dir"
+	;;processing-sketchbook-dir "/path/to/processing-sketchbook-dir"
+	)
+  :commands (processing-mode)
+  :mode ("\\.pde\\'" . processing-mode))
+#+END_SRC
+
+Arduino
+#+BEGIN_SRC emacs-lisp
+(use-package arduino-mode
+  :commands (arduino-mode)
+  :mode ("\\.ino\\'" . arduino-mode))
+#+END_SRC
+
+Platformio
+#+BEGIN_SRC emacs-lisp
+(use-package platformio-mode
+  :after arduino-mode
+  :init
+  (defun platformio-reupload ()
+    (interactive)
+    (ignore-errors (kill-buffer "*Async Shell Command*"))
+    (platformio-upload ""))
+  (defun platformio-monitor ()
+    (interactive)
+    (async-shell-command "platformio device monitor -b 115200"))
+  (add-hook 'arduino-mode-hook (lambda () (platformio-mode 1)))
+  :commands (platformio-build platform-upload)
+  :bind
+  (:map platformio-mode-map
+	("C-c C-b" . platformio-build)
+	("C-c C-c" . platformio-monitor)
+	("C-c C-r" . platformio-reupload)))
+#+END_SRC
 
 * Shell / dired
 
@@ -1401,243 +1442,3 @@ backquote use 'C-q `'
 
 
 
-
-* COMMENT Misc
-
-Place your private configuration here! Remember, you do not need to
-run 'doom sync' after modifying this file!
-
- Here are some additional functions/macros that could help you configure Doom:
-
- - `load!' for loading external *.el files relative to this one
- - `use-package!' for configuring packages
- - `after!' for running code after a package has loaded
- - `add-load-path!' for adding directories to the `load-path', relative to
-   this file. Emacs searches the `load-path' when you load packages with
-   `require' or `use-package'.
- - `map!' for binding new keys
-
- To get information about any of these functions/macros, move the cursor over
- the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
- This will open documentation for it, including demos of how they are used.
-
- You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
- they are implemented.
-
-
-Inspiration:
-https://github.com/jwiegley/use-package/
-http://pages.sachachua.com/.emacs.d/Sacha.html
-[[http://www.lunaryorn.com/2015/01/06/my-emacs-configuration-with-use-package.html]]
-http://emacs.stackexchange.com/questions/18881/use-package-for-a-mode
-
-Doom emacs configurations
-
-https://blog.jethro.dev/posts/migrating_to_doom_emacs/
-
-https://github.com/sunnyhasija/Academic-Doom-Emacs-Config
-https://github.com/MatthewZMD/.emacs.d#org05a0245
-https://zzamboni.org/post/my-doom-emacs-configuration-with-commentary/
-https://tecosaur.github.io/emacs-config/config.html
-https://dotdoom.rgoswami.me/
-https://www.gtrun.org/post/config/
-
-
-[disabled] Always delete trailing white spaces
-#+BEGIN_SRC emacs-lisp :tangle no
- (defun my-prog-nuke-trailing-whitespace ()
-   (when (derived-mode-p 'prog-mode)
-       (delete-trailing-whitespace)))
-  (add-hook 'before-save-hook 'delete-trailing-whitespace)
-#+END_SRC
-
-  #+BEGIN_SRC emacs-lisp
-(use-package expand-region
-  :if (not noninteractive)
-  :config
-  :bind
-  ("s-ø" .  er/expand-region)
-  ("M-ø" .  er/expand-region))
-
-  #+END_SRC
-
-M-x replacement
-#+BEGIN_SRC emacs-lisp
-  (use-package smex
-  :if (and (not noninteractive) (>= emacs-major-version 25))
-  :bind (("M-x" . smex)))
-#+END_SRC
-
-
-** Visual bookmarks
-#+BEGIN_SRC emacs-lisp
-  (use-package bm
-    :disabled t
-    :defer t
-    :bind
-    ("<C-f5>" . bm-toggle)
-    ("<S-f5>" . bm-remove-all-all-buffers)
-    ("<f5>" . bm-next)
-    ("<f6>" . bm-previous)
-    :config
-    (setq bm-highlight-style 'bm-highlight-only-fringe)
-    (setq bm-marker 'bm-marker-right)
-    ;; Allow cross-buffer 'next'
-    (setq bm-cycle-all-buffers t))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (use-package bookmark+
-  :demand t
-  :init
-  (require 'bookmark+-lit)
-  (add-hook 'after-init-hook (lambda ()
-			       (bookmark-bmenu-list)
-			       (switch-to-buffer "*Bookmark List*")))
-  :config
-  (setq bmkp-light-style-autonamed 'lfringe)
-  (setq bmkp-light-style-non-autonamed 'rfringe)
-  :bind
-  ("<C-f5>" . bookmark-set)
-  ("<S-f5>" . bookmark-bmenu-list)
-  ("<f5>" . bmkp-previous-bookmark)
-  ("<f6>" . bmkp-next-bookmark)
-  :ensure nil)
-#+END_SRC
-
-** Recursive narrow
-#+BEGIN_SRC emacs-lisp :eval never
-  (use-package recursive-narrow
-  :ensure t
-  :bind
-  ("C-x n n" . recursive-narrow-or-widen-dwim)
-  ("C-x n w" . recursive-widen-dwim))
-
-#+END_SRC
-
-** Ace-jump
-#+BEGIN_SRC emacs-lisp
-
-  ;; Ace-jump
-  (use-package ace-jump-mode
-    :ensure t
-    :defer t
-    :bind
-    ("C-c SPC" . ace-jump-mode)
-    ("C-c TAB" . ace-jump-mode-pop-mark)
-    :config
-    (ace-jump-mode-enable-mark-sync)
-    :init
-    (setq ace-jump-mode-case-fold t) ;; case-sensitive
-    ;; you can select the key you prefer to
-    )
-
-  (use-package ace-isearch
-    :disabled t
-    :ensure t
-    :config
-    (global-ace-isearch-mode +1)
-    (setq
-     ace-isearch-input-length 6
-     ace-isearch-jump-delay nil
-     ace-isearch-pop-mark 'avy-pop-mark
-     ace-isearch-function 'avy-goto-char
-     ace-isearch-use-jump 'printing-char)
-    (define-key isearch-mode-map (kbd "M-'") 'ace-isearch-jump-during-isearch))
-
-#+END_SRC
-
-** kill-ring
-
-#+BEGIN_SRC emacs-lisp
-  (use-package browse-kill-ring+
-    :if (and (not noninteractive) (>= emacs-major-version 25))
- ;;   :ensure t
-    :defer t
-    :load-path my/emacslib
-    :after helm
-    :bind
-    ("M-m" . helm-show-kill-ring))
-#+END_SRC
-
-** hippie expand
-
-#+BEGIN_SRC emacs-lisp
-  (use-package! hippie-exp
-    :if (not noninteractive)
-    :commands (hippie-expand hippie-expand-case-sensitive)
-    :bind
-    ;;("M-e" . hippie-expand)
-    ("M-r" . hippie-expand-case-sensitive)
-    :config
-    (eval-after-load "dabbrev" '(defalias 'dabbrev-expand 'hippie-expand-case-sensitive 'hippie-expand))
-    (setq hippie-expand-try-functions-list
-	    '(yas/hippie-try-expand
-	      try-expand-dabbrev
-	      try-expand-dabbrev-all-buffers
-	      try-expand-dabbrev-from-kill
-	      try-expand-all-abbrevs
-	      try-complete-file-name
-	      try-complete-file-name-partially
-	      try-expand-list
-	      ;;try-complete-lisp-symbol-partially
-	      ;;try-complete-lisp-symbol
-	      try-expand-whole-kill
-	      ispell-complete-word ;;as a last resort, use ispell completion
-	      ;;to complete words.
-	      ))
-
-    (defun my-ido-hippie-expand ()
-      "Offer ido-based completion for the word at point."
-      (interactive)
-      (my-ido-hippie-expand-with 'hippie-expand-case-sensitive))
-
-    (defun hippie-expand-case-sensitive (arg)
-      "Do case sensitive searching so we deal with gtk_xxx and GTK_YYY."
-      (interactive "P")
-      (let ((case-fold-search nil))
-	(hippie-expand arg)))
-      ;; The following is an approach for obtaining the complete list of
-      ;; possible expansions from hippie-expand, and letting the user select
-      ;; the one they want via the ido interface.
-      (defun my-hippie-expand-completions (&optional hippie-expand-function)
-	"Return the full list of possible completions generated by `hippie-expand'.
-      The optional argument can be generated with `make-hippie-expand-function'."
-	(let ((this-command 'my-hippie-expand-completions)
-	      (last-command last-command)
-	      (buffer-modified (buffer-modified-p))
-	      (hippie-expand-try-functions-list (or hippie-expand-function 'hippie-expand)))
-	  (cl-flet ((ding)) ; avoid the (ding) when hippie-expand exhausts its options.
-	    (while (progn
-		     (funcall hippie-expand-function nil)
-		     (setq last-command 'my-hippie-expand-completions)
-		     (not (equal he-num -1)))))
-	  ;; Evaluating the completions modifies the buffer, however we will finish
-	  ;; up in the same state that we began, and (save-current-buffer) seems a
-	  ;; bit heavyweight in the circumstances.
-	  (set-buffer-modified-p buffer-modified)
-	  ;; Provide the options in the order in which they are normally generated.
-	  (delete he-search-string (reverse he-tried-table))))
-
-      (defmacro my-ido-hippie-expand-with (hippie-expand-function)
-	"Generate an interactively-callable function that offers ido-based completion
-      using the specified hippie-expand function."
-	`(call-interactively
-	  (lambda (&optional selection)
-	    (interactive
-	     (let ((options (my-hippie-expand-completions ,hippie-expand-function)))
-	       (if options
-		   (list (ido-completing-read "Completions: " options)))))
-	    (if selection-
-		(he-substitute-string selection t)
-	      (message "No expansion found")))))
-
-      (defun my-ido-hippie-expand ()
-	"Offer ido-based completion for the word at point."
-	(interactive)
-	(my-ido-hippie-expand-with 'hippie-expand-case-sensitive))
-
-      ;;yas/hippie-try-expand)) (add-to-list
-      ;;'hippie-expand-try-functions-list )
-    )
-#+END_SRC
