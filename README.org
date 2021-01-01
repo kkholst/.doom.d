@@ -25,7 +25,7 @@ git clone git@github.com:kkholst/.doom.d ~/.doom.d
 ~/.emacs.d/bin/doom install
 #+END_SRC
 
-Alter the section *Variable definitions* in =config.org= to your needs or add a custom =.doom.d/init.el= file to override definitions (for example =doom-theme=, =doom-font= variables)
+Alter the section [[file:config.org::*Variable definitions]['Variable definitions']] in =config.org= to your needs or add a custom =.doom.d/init.el= file to override definitions (for example =doom-theme=, =doom-font= variables)
 
 VIM users should enable *evil mode* by uncommenting the relevant lines in  =init.el=
 #+BEGIN_SRC emacs-lisp
@@ -84,7 +84,7 @@ Can be based on either =ccls= (from =PyPi=) or =clangd=. On Mac OS X this can be
   #+END_SRC
 
 For debugging (C++) with =dap-debug=, I recommend LLDB's machine interface driver
-https://github.com/lldb-tools/lldb-mi. For example, on Fedora this can be compiled with
+https://github.com/lldb-tools/lldb-mi. On Fedora this can be compiled with
 #+BEGIN_SRC sh
 dnf install llvm-devel -y
 git clone https://github.com/lldb-tools/lldb-mi
