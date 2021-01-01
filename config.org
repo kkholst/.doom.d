@@ -162,8 +162,8 @@ Set default working directory
     (delete-selection-mode t)
     (pending-delete-mode t))
 
-  ;; Disable opening compressed tarballs as a directory
-  (auto-compression-mode -1)
+  ;; opening compressed tarballs as a directory
+  (setq auto-compression-mode 1)
 
   ;; Emacs will not automatically add new lines
   (setq next-line-add-newlines nil)
