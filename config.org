@@ -72,13 +72,6 @@ Org related directories
   (setq org-roam-directory (concat org-directory "notes"))
 #+END_SRC
 
-
-Load local configuration (not version controlled)
-#+BEGIN_SRC emacs-lisp
-  (if (file-exists-p (concat my/emacshome "local.el"))
-      (load (concat my/emacshome "local.el")))
-#+END_SRC
-
 Binaries locations
 #+BEGIN_SRC emacs-lisp
 (setq langtool-language-tool-jar (concat my/localbin "languagetool-commandline.jar"))
@@ -91,7 +84,7 @@ Binaries locations
 (defvar my/opencmd (if IS-MAC "open" "/usr/bin/xdg-open") "Program for opening files and applications")
 #+END_SRC
 
-* Appearance
+** Appearance
 
 Doom exposes five (optional) variables for controlling fonts in Doom. Here
 are the three important ones:
@@ -113,9 +106,6 @@ available. You can either set `doom-theme' or manually load a theme with the
 `load-theme' function. This is the default:
 #+BEGIN_SRC emacs-lisp
 (setq doom-theme 'doom-one)
-(setq doom-theme 'doom-challenger-deep)
-;;(setq doom-theme 'doom-city-lights)
-;;(setq doom-theme 'doom-solarized-dark)
 #+END_SRC
 
 This determines the style of line numbers in effect. If set to `nil', line
@@ -152,6 +142,13 @@ Other styles
              (format (if (buffer-modified-p)  " ◉ %s" "  ●  %s") project-name))))))
 #+END_SRC
 
+** Local configuration
+Load local configuration (not version controlled)
+#+BEGIN_SRC emacs-lisp
+  (if (file-exists-p (concat my/emacshome "local.el"))
+      (load (concat my/emacshome "local.el")))
+#+END_SRC
+
 * Miscellaneous / Editor behaviour
 
 Set default working directory
@@ -165,8 +162,8 @@ Set default working directory
     (delete-selection-mode t)
     (pending-delete-mode t))
 
-  ;; Open compressed tarballs as a directory
-  (auto-compression-mode 1)
+  ;; Disable opening compressed tarballs as a directory
+  (auto-compression-mode -1)
 
   ;; Emacs will not automatically add new lines
   (setq next-line-add-newlines nil)
@@ -258,7 +255,7 @@ Pdf-view
 #+END_SRC
 
 Encryption
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
   (setq gnutls-min-prime-bits 1024)
 
   ;;Setup for transparent, automatic encryption and decryption:
@@ -985,60 +982,29 @@ install.packages(“languageserver”)
 
 * Org
 
+Org R markdown export
 #+BEGIN_SRC emacs-lisp
   (use-package! ox-ravel
 	      :after ox)
 #+END_SRC
 
+Latex
 #+BEGIN_SRC emacs-lisp
   (after! org
     (add-hook 'org-mode-hook 'org-fragtog-mode)
-	  (require 'my-org-latex))
+    (require 'my-org-latex))
 #+END_SRC
-
 
 Capture
 #+BEGIN_SRC emacs-lisp
-(setq org-capture-templates
-      `(
-	("l" "Log" entry (file+olp-datetree ,(concat superman-home "Log.org"))
-	"* %?\nEntered on %T\n  %i\n  %a")
-
-	("t" "Todo" entry
-	 (file+headline ,(concat superman-home "Tasks.org") "Tasks")
-	 "* TODO %?
-  %U
-  %i
-  %a" :prepend t)
-
-	("s" "Code Snippet" entry
-	 (file+headline ,my/snippets)
-	 "* %?	%^g
-#+BEGIN_SRC %^{language}
-
-#+END_SRC" :prepend :jump-to-captured t)
-
-	("k" "Templates for consultancy")
-	("kt" "Telefontid" entry (file+olp+datetree ,(concat superman-home "Journal.org"))
-	 "** %^{Heading} :telefontid:\n:PROPERTIES:\n:Date: %T\n:Type: telefontid\n:Effort: 0\n:END:\n %? \n"
-	 :prepend t :jump-to-captured t)
-	("kn" "Cimbi/NRU" entry (file+olp+datetree ,(concat superman-home "Journal.org"))
-	 "** %^{Heading} :konsulent:\n:PROPERTIES:\n:Date: %T\n:Type: cimbi\n:Effort: 0\n:END:\n %? \n"
-	 :prepend t :jump-to-captured t)
-	("kk" "Konsulent" entry (file+olp+datetree ,(concat superman-home "Journal.org"))
-	 "** %^{Heading} :konsulent:\n:PROPERTIES:\n:Date: %T\n:Type: konsulent\n:Effort: 0\n:END:\n %? \n"
-	 :prepend t :jump-to-captured t)
-
-	("n" "Notes" entry (file+headline ,(concat superman-home "Notes.org") "New notes")
-	 "*** %^{Heading} \n:PROPERTIES:\n:NoteDate: %T\n:END:\n\n %?" :prepend t)
-	))
-
+  (after! org
+    (if (file-exists-p (concat my/emacslib "my-org-capture.el"))
+        (load (concat my/emacslib "my-org-capture.el"))))
 #+END_SRC
 
 
-
 Encryption
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
   (after! org
 	(require 'org-crypt)
 	(setq org-tags-exclude-from-inheritance (quote ("crypt")))
@@ -1231,6 +1197,7 @@ Babel / source code content
 
   (map! "M-g" #'goto-line)
   (map! "C-x '" #'next-error)
+  ;;(map! :leader "'" #'next-error)
 
   ;; Makes control+pgup/pgdn arrow keys scroll one line at the time
   (define-key global-map [C-prior] (lambda() (interactive) (scroll-down 1)))
@@ -1308,16 +1275,6 @@ Avy (ace-jump-mode replacement)
       "O" #'ace-window)
 #+END_SRC
 
-Yasnippet
-#+BEGIN_SRC emacs-lisp
-;; Disable yasnippet tab completion
-(after! yasnippet
-;; (define-key yas-minor-mode-map [(tab)]        nil)
-;; (define-key yas-minor-mode-map (kbd "TAB")    nil)
-;; (define-key yas-minor-mode-map (kbd "<tab>")  nil)
-)
-#+END_SRC
-
 Helm
 #+BEGIN_SRC emacs-lisp
 (map!
@@ -1371,7 +1328,6 @@ Helm
 		:commands (comment-dwim-2)
 		:init
 		(map! "M-c" #'comment-dwim-2))
-
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -1381,9 +1337,9 @@ Helm
 
 Gist note snippets
 #+BEGIN_SRC emacs-lisp
-  (map! "C-<f12>" #'gist-list)
-  (map! "C-<f11>" #'gist-region-private)
-  (map! :map prog-mode-map  :leader "h" #'lsp-describe-thing-at-point)
+(map! "C-<f12>" #'gist-list)
+(map! "C-<f11>" #'gist-region-private)
+;; (map! :map prog-mode-map  :leader "h" #'lsp-describe-thing-at-point)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp

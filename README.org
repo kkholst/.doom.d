@@ -2,124 +2,93 @@
 #+DATE:    December 23, 2020
 #+STARTUP: inlineimages nofold
 
-* Table of Contents :TOC_3:noexport:
-- [[#description][Description]]
-  - [[#maintainers][Maintainers]]
-- [[#prerequisites][Prerequisites]]
-- [[#lsp][LSP]]
-- [[#configuration][Configuration]]
-- [[#troubleshooting][Troubleshooting]]
+#+BEGIN_QUOTE
+“I’m rarely happier than when spending an entire day programming my
+computer to perform automatically a task that would otherwise take me
+a good ten seconds to do by hand.” - /Douglas Adams/
+#+END_QUOTE
 
-* Description
-# A summary of what this module does.
+This respository contains my [[https://github.com/hlissner/doom-emacs][doom-emacs]] configuration.
 
-+ If possible, include a brief list of feature highlights here
-+ Like code completion, syntax checking or available snippets
-+ Include links to packages & external things where possible
+API reference:
+https://github.com/hlissner/doom-emacs/blob/develop/docs/api.org
 
-** Maintainers
-+ @kkholst (Author)
-
-* Prerequisites
+Themes:
+https://github.com/hlissner/emacs-doom-themes/tree/screenshots
 
 
-- Language Tool
+* Installation
 
-Language Server Protocol (lsp)
+#+BEGIN_SRC sh
+git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d
+git clone git@github.com:kkholst/.doom.d ~/.doom.d
+~/.emacs.d/bin/doom install
+#+END_SRC
+
+Alter the section *Variable definitions* in =config.org= to your needs or add a custom =.doom.d/init.el= file to override definitions (for example =doom-theme=, =doom-font= variables)
+
+VIM users should enable *evil mode* by uncommenting the relevant lines in  =init.el=
+#+BEGIN_SRC emacs-lisp
+:editor
+(evil +everywhere)
+#+END_SRC
+make sure that relevant directory structures exists (e.g., =~/Projects/notes= and =~/Projects/org= unless altered in the above step).
+
+
+Afterwards the doom configuration needs to be synchronized (will also expose your shell environment variables to emacs)
+#+BEGIN_SRC sh
+~/.emacs.d/bin/doom sync
+#+END_SRC
+
+
+* Configuration
+
+This configuration depends on the following components
+- =emacs= (>= 27.1)
+- =git=
+- =R=
+- =python3=
+- =clang++=
+- =texlive=
+- =ripgrep=
+plus recommendations: =zsh=, =tmux=, =ImageMagick= (and probably a lot of other dependencies I forgot here).
+
+To try out the newest features of Emacs checkout the source code from git://git.sv.gnu.org/emacs.git and build your own binaries (for example with support for ligatures using =harfbuzz=). In Fedora you will need the following packages:
+#+BEGIN_SRC sh
+sudo dnf install -y libXpm-devel Xaw3d-devel openjpeg-devel libpng-devel librsvg2-devel giflib-devel cairo-devel gpm-devel gnutls-devel libxml2-devel libXft-devel libotf zlib-devel harfbuzz-devel ImageMagick-devel libtiff-devel wxGTK3 git R python3 llvm texlive ripgrep
+#+END_SRC
+
+** Other dependencies
+
+For the Python envionment you may need to install [[https://github.com/pyenv/pyenv][pyenv]] (here assuming you are using =zsh=)
+#+BEGIN_SRC sh
+git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
+echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
+#+END_SRC
+
+*** Language Server Protocol (lsp)
 - Python:
   #+BEGIN_SRC sh
-pip3 install 'python-language-server[all]' nose pytest cmake
+pip3 install pip setuptools wheel --upgrade --user
+pip3 install "python-language-server[all]" pylint nose pytest --user
   #+END_SRC
 - R:
   #+BEGIN_SRC R
-  install.packages("languageserver")
+R -e 'install.packages(c("languageserver")'
   #+END_SRC
 - C++:
-
-  On Mac OS X install LLVM (clangd) via homebrew
+Can be based on either =ccls= (from =PyPi=) or =clangd=. On Mac OS X this can be installed with [[https://brew.sh/][homebrew]]
   #+BEGIN_SRC sh
   brew install llvm
   #+END_SRC
 
-
-dap-debug:
-[[file:~/local/lldb-mi][file:~/local/lldb-mi]]
-
-- Ligatures:
-harfbuzz
-
-
-#+BEGIN_SRC sh
-pip3 install cpplint cclint cppcheck
-#+END_SRC
-
-
-#+BEGIN_SRC emacs-lisp
-(require 'flycheck-google-cpplint)
-(setq flycheck-c/c++-googlelint-executable "cpplint")
-(flycheck-add-next-checker 'c/c++-clang '(t . c/c++-googlelint))
-(flycheck-add-next-checker 'c/c++-gcc '(t . c/c++-googlelint))
-
-#+END_SRC
-
-#+RESULTS:
-: ((t . c/c++-googlelint) (warning . c/c++-cppcheck))
-
-
-
-
- git clone https://github.com/pyenv/pyenv.git ~/.pyenv
-echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
-echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
-
-
-compile emacs with harfbuzz
-sudo dnf install -y libXpm-devel Xaw3d-devel openjpeg-devel libpng-devel librsvg2-devel giflib-devel cairo-devel gpm-devel gnutls-devel libxml2-devel libXft-devel libotf zlib-devel harfbuzz-devel ImageMagick-devel libtiff-devel wxGTK3
-
-
-emacs, git, R, python3, clang++, texlive, imagemagick,
-
-tmux
-zsh
-
-and probably a lot of other dependencies I forgot here.
-
-sudo dnf install ripgrep
-
-git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d
-git clone git@github.com:kkholst/.doom.d
-
-.emacs.d/bin/doom install
-
-Adapt .doom.d/config.org to your needs and run
-.emacs.d/bin/doom install
-
-make sure that relevant directory structure exists
-- Projects/notes
-- Projects/org
-
-
-* LSP
-lldb debugger:
-https://github.com/lldb-tools/lldb-mi
-
+For debugging (C++) with =dap-debug=, I recommend LLDB's machine interface driver
+https://github.com/lldb-tools/lldb-mi. For example, on Fedora this can be compiled with
 #+BEGIN_SRC sh
 dnf install llvm-devel -y
-
 git clone https://github.com/lldb-tools/lldb-mi
 cd lldb-mi
 cmake -Bbuild -GNinja
 #+END_SRC
 
-clangd
-pip3 install pip setuptools wheel --upgrade
-pip3 install "python-language-server[all]" pylint--user
-R -e 'install.packages(c("languageserver")''
-
-
-* Configuration
-# How to configure this module, including common problems and how to address them.
-
-
-* Troubleshooting
-# Common issues and their solution, or places to look for help.

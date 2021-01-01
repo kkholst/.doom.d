@@ -1,7 +1,7 @@
 
 ;;; my-org-latex.el --- ...
 
-;; Copyright (C) 2013-2020  Klaus Kähler Holst
+;; Copyright (C) 2013-2021  Klaus Kähler Holst
 
 ;; Authors: Klaus Kähler Holst <klaus@holst.it>
 ;;

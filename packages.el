@@ -19,7 +19,6 @@
 ;;(package! ivy-bibtex)
 (package! ivy-yasnippet)
 (package! counsel-dash)
-;;(package! mini-frame)
 (package! flycheck-google-cpplint)
 (package! flycheck-clang-analyzer)
 
