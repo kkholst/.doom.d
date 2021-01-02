@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# group: file templates
+# --
+/*!
+  @file `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`.cpp
+  @author `user-full-name`
+  @copyright `(format-time-string "%Y")`, `user-full-name`
+
+  @brief $1
+
+*/
+#include "`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`.h"
+
+
+$0

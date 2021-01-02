@@ -1,0 +1,27 @@
+# -*- mode: snippet -*-
+# group: file templates
+# --
+/*!
+  @file `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`.hpp
+  @author `user-full-name`
+  @copyright `(format-time-string "%Y")`, `user-full-name`
+
+  @brief $1
+
+*/
+#pragma once
+
+namespace ${2:name} {
+    /*!
+      Class description
+    */
+
+    class ${3:name} {
+        public:
+            //! Constructor
+            $3();
+    };  // class $3
+
+    $0
+
+}  // $2
