@@ -830,10 +830,17 @@ Platformio
 * Completion
 
   #+BEGIN_SRC emacs-lisp
-    (setq abbrev-mode nil) ;; We want to activate ourself: M-e
-    ;;(read-abbrev-file "~/.abbrev_defs")
-    (setq abbrev-file-name (concat my/emacshome "abbrev_defs"))
-    (setq save-abbrevs t)
+(setq abbrev-mode nil) ;; We want to activate ourself: M-e
+;;(read-abbrev-file "~/.abbrev_defs")
+(setq abbrev-file-name (concat my/emacshome "abbrev_defs"))
+(setq save-abbrevs t)
+
+(setq yas-triggers-in-field t) ;; allow expansion inside active snippet
+(setq yas-wrap-around-region t)
+(if (or (not (boundp 'warning-suppress-types)) (not warning-suppress-types))
+    (setq warning-suppress-types '(yasnippet backquote-change))
+  (add-to-list 'warning-suppress-types '(yasnippet backquote-change)))
+
   #+END_SRC
 
   Helm
@@ -841,7 +848,7 @@ Platformio
 ;; Show results in a child-frame
 (setq helm-display-function 'helm-display-buffer-in-own-frame
         helm-display-buffer-reuse-frame t
-        helm-display-buffer-width 110
+        helm-display-buffer-width 11
         helm-display-buffer-height 30
         helm-use-undecorated-frame-option t)
 (use-package! helm-c-yasnippet

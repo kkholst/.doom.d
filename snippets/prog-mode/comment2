@@ -2,6 +2,6 @@
 # name: comment-simple
 # key: com
 # --
-`(loop repeat 50 concat comment-start)`
-`(loop repeat 3 concat comment-start)` $1
-`(loop repeat 50 concat comment-start)`
+`(loop repeat 50 concat (string-trim comment-start))`
+`(loop repeat 2  concat (string-trim comment-start))` $1
+`(loop repeat 50 concat (string-trim comment-start))`

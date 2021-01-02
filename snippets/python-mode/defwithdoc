@@ -1,0 +1,35 @@
+# -*- mode: snippet -*-
+#name : defwithdoc
+#key : defwithdoc
+# --
+def ${1:function}(${2:args}):
+    """${3:short description}
+
+    $0
+
+    Examples
+    ----------
+    >>> print(2+2)
+    4
+
+    See Also
+    ----------
+    package.module.func:
+        description
+
+    References
+    ----------
+    Details in [1]_.
+
+    .. [1] Nomen Nescio (2000). ...
+
+    Returns
+    ----------
+    type
+        description
+
+    Parameters
+    ----------
+    ${4:Please press the tab key twice.$(replace-regexp-in-string
+                                           ".*" "parameters" yas-text)}
+    }"""

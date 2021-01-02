@@ -1,0 +1,4 @@
+# name: file variable line
+# key: varline
+# --
+`comment-start` -*- var: ${1:value}; ${2:var: value; mode: modename; eval: (message "hi"); coding: utf-8} -*-
