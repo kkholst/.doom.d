@@ -9,7 +9,7 @@
   @brief $1
 
 */
-#include "`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`.h"
+#include "`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`.hpp"
 
 
 $0
