@@ -4,18 +4,16 @@
 # --
 * Header							     :IGNORE::ARCHIVE:
 #+TITLE: ${1:environment}
-#+AUTHOR: Klaus Kähler Holst
-#+EMAIL: klaus.holst@maersk.com
+#+AUTHOR: `user-full-name`
+#+EMAIL: `user-mail-address`
 #+DATE: \today
 #+LATEX_CLASS: beamer
 #+LATEX_CLASS: presentation+tikz
-#+LATEX_CLASS_OPTIONS: [table,onlymath,10pt,handout]
+#+LATEX_CLASS_OPTIONS: [table,onlymath,12pt,handout]
 #+BEAMER_THEME: maersk
 # +BEAMER_THEME: maersk [titlebackground]
 #+BEAMER_COLOR_THEME: maersk
 #+BEAMER_FONT_THEME: professionalfonts
-# +LATEX_HEADER: \institute{Principal Scientist, Advanced Analytics, Maersk}
-# +LATEX_HEADER: \subtitle{Part II: non-linear models}
 #+LATEX_HEADER: \usepackage{bm}\usepackage[normalem]{ulem}
 #+LATEX_HEADER: \usepackage{ifthen}
 #+LATEX_HEADER: \renewcommand{\one}{\bm{1}}

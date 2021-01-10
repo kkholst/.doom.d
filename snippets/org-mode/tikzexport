@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: tikzexport
+# key: tikzexp
+# condition: t
+# --
+#+BEGIN_SRC latex :packages '(("" "tikz")) :exports none :file ${1:figs/out.tex} :fit t
+${2:\usetikzlibrary{qtree}
+\begin{tikzpicture}[level distance=4em,
+  sibling distance=4em,
+  every node/.style={inner sep=3pt},
+  %arrow/.style={edge from parent/.style={draw,-latex}}
+]
+
+\node[inner sep=0pt, sibling distance=0em, level distance=0em] {}
+child[grow=right,level distance=0em] {
+child[level distance=4em] {node[fill=blue!30,circle]{\(S\)} edge from parent [->] node[below,sloped] {\tiny \(1-\pi\)}}
+child[level distance=4em] {node[fill=blue!30,circle]{\(F\)} edge from parent [->] node[above,sloped] {\tiny \(\pi\)}}
+};}
+\end{tikzpicture}

@@ -847,10 +847,10 @@ Platformio
   #+BEGIN_SRC emacs-lisp
 ;; Show results in a child-frame
 (setq helm-display-function 'helm-display-buffer-in-own-frame
-        helm-display-buffer-reuse-frame t
-        helm-display-buffer-width 11
-        helm-display-buffer-height 30
-        helm-use-undecorated-frame-option t)
+      helm-display-buffer-reuse-frame t
+      helm-display-buffer-width 80
+      helm-display-buffer-height 30
+      helm-use-undecorated-frame-option t)
 (use-package! helm-c-yasnippet
   :after helm yasnippet)
 (use-package! helm-flycheck
