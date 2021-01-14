@@ -2,21 +2,22 @@
 # name: presentation
 # key: presentation
 # --
+#  -*- eval: (my-org-buffer-local-mode); eval: (define-key my-org-buffer-local-mode-map (kbd "C-x C-s") 'my/org-export-to-latex); coding: utf-8 -*-
+#+STARTUP: beamer overview
 * Header							     :IGNORE::ARCHIVE:
-#+TITLE: ${1:environment}
+#+TITLE: ${1:title}
 #+AUTHOR: `user-full-name`
 #+EMAIL: `user-mail-address`
 #+DATE: \today
 #+LATEX_CLASS: beamer
 #+LATEX_CLASS: presentation+tikz
 #+LATEX_CLASS_OPTIONS: [table,onlymath,12pt,handout]
-#+BEAMER_THEME: maersk
+#+BEAMER_THEME: maersk [nofooter]
 # +BEAMER_THEME: maersk [titlebackground]
 #+BEAMER_COLOR_THEME: maersk
 #+BEAMER_FONT_THEME: professionalfonts
 #+LATEX_HEADER: \usepackage{bm}\usepackage[normalem]{ulem}
-#+LATEX_HEADER: \usepackage{ifthen}
-#+LATEX_HEADER: \renewcommand{\one}{\bm{1}}
+#+LATEX_HEADER: \newcommand{\one}{\bm{1}}
 # +LATEX_HEADER: \usepackage{pgfpages}
 # +LATEX_HEADER: \mode<handout>{%
 # +LATEX_HEADER:    \pgfpagesuselayout{2 on 1}[a4paperborder shrink=5mm]
@@ -28,7 +29,6 @@
 # +LATEX_HEADER_EXTRA: \usepackage{newtxmath}
 #+LATEX_HEADER_EXTRA: \usepackage{libertine}
 #+LATEX_HEADER_EXTRA: \usepackage[libertine]{newtxmath}
-#+STARTUP: beamer hideall
 #+OPTIONS: toc:nil h:3 ^:{}
 #+PROPERTY: header-args:R  :session *R* :cache no :width 550 :height 450
 #+PROPERTY: header-args  :eval never-export :exports code :results output :tangle yes :comments yes
@@ -37,11 +37,4 @@
 * Introduction
 
 *** Outline
-
-* Local variables :NOEXPORT::ARCHIVE:
-
-# local variables:
-# eval: (my-org-buffer-local-mode)
-# eval: (define-key my-org-buffer-local-mode-map (kbd "M-j") 'my/org-export-to-latex)
-# eval: (define-key my-org-buffer-local-mode-map (kbd "C-x C-s") 'my/org-export-to-latex)
-# end:
+$0

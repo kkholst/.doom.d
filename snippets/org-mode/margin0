@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: margin0
+# key: margin0
+# condition: t
+# --
+\newgeometry{margin=0pt}
+$0
+\restoregeometry

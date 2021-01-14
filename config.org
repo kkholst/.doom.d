@@ -77,7 +77,7 @@ Binaries locations
 (setq langtool-language-tool-jar (concat my/localbin "languagetool-commandline.jar"))
 (setq langtool-java-bin (if IS-MAC "/usr/local/opt/openjdk/bin/java" "java"))
 (setq langtool-mother-tongue "en")
-(setq org-babel-C++-compiler (concat "ccache" (if IS-MAC "/usr/local/opt/llvm/bin/clang++" "clang++"))
+(setq org-babel-C++-compiler (concat "ccache " (if IS-MAC "/usr/local/opt/llvm/bin/clang++" "clang++"))
 		org-babel-python-command "python3")
 (setq lsp-clients-clangd-executable (if IS-MAC "/usr/local/opt/llvm/bin/clangd" "clangd"))
 (setq plantuml-jar-path (expand-file-name "~/local/plantuml/plantuml.jar"))
@@ -848,9 +848,11 @@ Platformio
 ;; Show results in a child-frame
 (setq helm-display-function 'helm-display-buffer-in-own-frame
       helm-display-buffer-reuse-frame t
-      helm-display-buffer-width 80
+      helm-display-buffer-width 120
       helm-display-buffer-height 30
-      helm-use-undecorated-frame-option t)
+      helm-use-undecorated-frame-option t
+;;      helm-use-undecorated-frame-option nil
+)
 (use-package! helm-c-yasnippet
   :after helm yasnippet)
 (use-package! helm-flycheck
@@ -999,6 +1001,7 @@ Latex
 #+BEGIN_SRC emacs-lisp
   (after! org
     (add-hook 'org-mode-hook 'org-fragtog-mode)
+    (add-hook 'org-mode-hook (lambda () (visual-line-mode -1)))
     (require 'my-org-latex))
 #+END_SRC
 

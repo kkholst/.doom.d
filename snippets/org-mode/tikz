@@ -1,10 +1,9 @@
 # name: tikz block 
 # key: tikz
 # --
-
 #+BEGIN_SRC latex :exports results :results latex
 \begin{center}
-  \resizebox{\linewidth}{!}{
+  $0\resizebox{\linewidth}{!}{
       \begin{tikzpicture}[>=latex] %%,text height=1.5ex,text depth=0.25ex,auto,on grid]
          \matrix[row sep=0.6cm,column sep=0.3cm,ampersand replacement=\&]{
            \node(r1) [endo2] {$R_1$}; \& \& \node(r2) [endo2] {$R_2$}; \\
