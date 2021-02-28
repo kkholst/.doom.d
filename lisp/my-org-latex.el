@@ -147,10 +147,12 @@
 \\newcommand{\\fork}[3]{\\ensuremath{#1\\!\\from\\!#2\\to\\!#3}}
 \\newcommand{\\ifork}[3]{\\ensuremath{#1\\!\\to\\!#2\\from\\!#3}}
 \\newcommand{\\pa}{\\text{pa}}
-\\newcommand{\\abs}[1]{\\ensuremath{\\left\\vert#1\\right\\vert}}
-\\newcommand{\\ipr}[1]{\\langle#1\\rangle}
-\\newcommand{\\set}[1]{\\left{#1\\right}}
-\\newcommand{\\seq}[1]{\\left<#1\\right>}
+\\DeclarePairedDelimiter\\abs{\\lvert}{\\rvert}
+\\DeclarePairedDelimiter\\ipr{\\lange}{\\rangle}
+\\DeclarePairedDelimiter\\seq{\\lange}{\\rangle}
+\\DeclarePairedDelimiter\\norm{\\lVert}{\\rVert}
+\\newcommand{\\norm}[1]{\\ensuremath{\\left\\Vert#1\\right\\Vert}}
+\\DeclarePairedDelimiter\\set{\\lvert}{\\rvert}
 \\renewcommand{\\subset}{\\subseteq}
 \\renewcommand{\\supset}{\\supseteq}
 \\DeclareMathOperator*{\\argmax}{arg\\,max}

@@ -58,6 +58,12 @@ To try out the newest features of Emacs checkout the source code from git://git.
 sudo dnf install -y libXpm-devel Xaw3d-devel openjpeg-devel libpng-devel librsvg2-devel giflib-devel cairo-devel gpm-devel gnutls-devel libxml2-devel libXft-devel libotf zlib-devel harfbuzz-devel ImageMagick-devel libtiff-devel wxGTK3 git R python3 llvm texlive ripgrep
 #+END_SRC
 
+On Mac OS X via homebrew (here the native-comp branch, i.e. gccemacs):
+#+BEGIN_SRC sh
+brew tap d12frosted/emacs-plus 
+brew install emacs-plus@28 --with-modern-doom3-icon --with-native-comp
+#+END_SRC
+
 ** Other dependencies
 
 For the Python envionment you may need to install [[https://github.com/pyenv/pyenv][pyenv]] (here assuming you are using =zsh=)
