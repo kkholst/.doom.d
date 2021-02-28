@@ -34,6 +34,7 @@ clients, file templates and snippets
 Splash screen setup
 #+BEGIN_SRC emacs-lisp
 (setq +doom-dashboard-banner-file (expand-file-name "mascot.svg" doom-private-dir))
+(setq +doom-dashboard-banner-file (expand-file-name "mascot.png" doom-private-dir))
 #+END_SRC
 
 
@@ -846,13 +847,13 @@ Platformio
   Helm
   #+BEGIN_SRC emacs-lisp
 ;; Show results in a child-frame
-(setq helm-display-function 'helm-display-buffer-in-own-frame
-      helm-display-buffer-reuse-frame t
-      helm-display-buffer-width 120
-      helm-display-buffer-height 30
-      helm-use-undecorated-frame-option t
+;; (setq helm-display-function 'helm-display-buffer-in-own-frame
+;;       helm-display-buffer-reuse-frame t
+;;       helm-display-buffer-width 120
+;;       helm-display-buffer-height 30
+;;       helm-use-undecorated-frame-option t
 ;;      helm-use-undecorated-frame-option nil
-)
+;;)
 (use-package! helm-c-yasnippet
   :after helm yasnippet)
 (use-package! helm-flycheck
