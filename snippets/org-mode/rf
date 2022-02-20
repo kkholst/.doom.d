@@ -1,0 +1,9 @@
+/Users/klaus/.doom.d/snippets/org-mode/# name: R figure
+# key: rf
+# --
+
+#+NAME: $1
+#+HEADER:  :exports results :results graphics file :file tmp/$1.jpg :width 500 :height 500
+#+BEGIN_SRC R
+$2 
+#+END_SRC

@@ -3,7 +3,7 @@
 # --
 
 #+NAME: $1
-#+BEGIN_SRC R :exports results :results output graphics :file tmp/$1.pdf :width 7 :height 7
+#+BEGIN_SRC R :exports results :results graphics file :file tmp/$1.pdf :width 7 :height 7
 $2 
 #+END_SRC
 

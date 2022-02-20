@@ -1,3 +1,5 @@
+*archive
+*.sav
 local.el
 *.html
 test.el

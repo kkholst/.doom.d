@@ -85,6 +85,7 @@
 
 (setq org-preview-latex-image-directory "tmp/ltximg")
 (setq org-preview-latex-default-process 'dvipng) ;;'imagemagick)
+(setq org-preview-latex-default-process 'dvisvgm)
 
 (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.75))
 (setq org-format-latex-options (plist-put org-format-latex-options :foreground 'default))
@@ -120,78 +121,7 @@
   "org header tikz template")
 
 (defvar my/org-latex-default
- "\\usepackage{xspace}
-\\usepackage{url}
-\\usepackage{amsthm}
-\\newtheorem{thm}{Theorem.}
-\\newtheorem{prop}{Proposition.}
-\\theoremstyle{definition}
-\\newtheorem{defn}[thm]{Definition.}
-\\newtheorem{exa}[thm]{Example}
-\\newcommand{\\R}{\\ensuremath{\\mathbb{R}}}
-\\newcommand{\\Real}{\\ensuremath{\\mathbb{R}}}
-\\newcommand{\\Complex}{\\ensuremath{\\mathbb{C}}}
-\\newcommand{\\Z}{\\ensuremath{\\mathbb{Z}}}
-\\newcommand{\\N}{\\ensuremath{\\mathbb{N}}}
-\\newcommand{\\norm}[1]{\\ensuremath{\\left\\Vert#1\\right\\Vert}}
-\\newcommand{\\var}{\\ensuremath{\\mathbb{V}\\text{ar}}}
-\\newcommand{\\cov}{\\ensuremath{\\mathbb{C}\\text{ov}}}
-\\newcommand{\\cor}{\\ensuremath{\\mathbb{C}\\text{or}}}
-\\newcommand{\\E}{\\ensuremath{\\mathbb{E}}}
-\\newcommand{\\pr}{\\ensuremath{\\mathbb{P}}}
-\\newcommand{\\from}{\\leftarrow}
-\\newcommand{\\To}[2]{\\ensuremath{#1\\!\\to\\!#2}}
-\\newcommand{\\From}[2]{\\ensuremath{#1\\!\\from\\!#2}}
-\\newcommand{\\chain}[3]{\\ensuremath{#1\\!\\to\\!#2\\to\\!#3}}
-\\newcommand{\\ichain}[3]{\\ensuremath{#1\\!\\from\\!#2\\from\\!#3}}
-\\newcommand{\\fork}[3]{\\ensuremath{#1\\!\\from\\!#2\\to\\!#3}}
-\\newcommand{\\ifork}[3]{\\ensuremath{#1\\!\\to\\!#2\\from\\!#3}}
-\\newcommand{\\pa}{\\text{pa}}
-\\DeclarePairedDelimiter\\abs{\\lvert}{\\rvert}
-\\DeclarePairedDelimiter\\ipr{\\lange}{\\rangle}
-\\DeclarePairedDelimiter\\seq{\\lange}{\\rangle}
-\\DeclarePairedDelimiter\\norm{\\lVert}{\\rVert}
-\\newcommand{\\norm}[1]{\\ensuremath{\\left\\Vert#1\\right\\Vert}}
-\\DeclarePairedDelimiter\\set{\\lvert}{\\rvert}
-\\renewcommand{\\subset}{\\subseteq}
-\\renewcommand{\\supset}{\\supseteq}
-\\DeclareMathOperator*{\\argmax}{arg\\,max}
-\\DeclareMathOperator*{\\argmin}{arg\\,min}
-\\DeclareMathOperator{\\sgn}{sgn}
-\\DeclareMathOperator{\\mvec}{vec}
-\\DeclareMathOperator{\\tr}{tr}
-\\DeclareMathOperator{\\im}{im}
-\\DeclareMathOperator{\\diag}{diag}
-\\DeclareMathOperator{\\bias}{bias}
-\\DeclareMathOperator{\\rank}{rank}
-\\DeclareMathOperator{\\logit}{logit}
-\\DeclareMathOperator{\\expit}{expit}
-\\makeatletter
- \\def\\mathcolor#1#{\\@mathcolor{#1}}
- \\def\\@mathcolor#1#2#3{%
-   \\protect\\leavevmode
-   \\begingroup
-     \\color#1{#2}#3%
-  \\endgroup
- }
-\\newcommand{\\Dto}{\\overset{\\mathcal{D}}{\\longrightarrow}}
-\\newcommand{\\Pto}{\\overset{P}{\\longrightarrow}}
-\\newcommand{\\Wto}{\\rightsquigarrow}
-\\newcommand{\\VV}{\\bm{\\Omega}_\\theta}
-\\newcommand{\\independenT}[2]{\\mathrel{\\setbox0\\hbox{$#1#2$}\\copy0\\kern-\\wd0\\mkern4mu\\box0}}
-\\newcommand{\\indep}{\\protect\\mathpalette{\\protect\\independenT}{\\perp}}
-\\DefineVerbatimEnvironment{verbatim}{Verbatim}{xleftmargin=0.5em,xrightmargin=0em,numbers=none,frame=none,fontsize=\\footnotesize,formatcom={\\color[rgb]{0.2,0.2,0.2}}}
-\\setlength{\\parindent}{0pt} % Kills annoying indents.
-\\let\\iint\\relax
-\\let\\iiint\\relax
-
-\\lstset{basicstyle=\\ttfamily\\small,keywordstyle=\\color{black},commentstyle=\\color{gray}\\ttfamily\\itshape,stringstyle=\\color[rgb]{0,0,0.5},columns=fullflexible,alsoletter=.,texcl=true,escapeinside={*@}{@*)},escapebegin=\\lst@commentstyle\\,,breaklines=true,breakatwhitespace=false,numbers=left,numberstyle=\\ttfamily\\tiny\\color{gray},stepnumber=1,numbersep=10pt,backgroundcolor=\\color{white},tabsize=4,showspaces=false,showstringspaces=false,xleftmargin=.23in,frame=lines
-,rulesepcolor=\\color[rgb]{0.85,0.85,0.85},basewidth={0.5em,0.42em},language=r,label=
-,caption= ,captionpos=b}
-\\lstset{basicstyle=\\ttfamily\\small,keywordstyle=\\color{black},commentstyle=\\color{gray}\\ttfamily\\itshape,stringstyle=\\color[rgb]{0,0,0.5},columns=fullflexible,alsoletter=.,texcl=true,escapeinside={*@}{@*)},escapebegin=\\lst@commentstyle\\,,breaklines=true,breakatwhitespace=false,numbers=left,numberstyle=\\ttfamily\\tiny\\color{gray},stepnumber=1,numbersep=10pt,backgroundcolor=\\color{white},tabsize=4,showspaces=false,showstringspaces=false,xleftmargin=.23in,frame=lines
-,rulesepcolor=\\color[rgb]{0.85,0.85,0.85},basewidth={0.5em,0.42em},language=python,label=
-,caption= ,captionpos=b}
-
+ "
 "
 "org latex template used in several org-latex-classes elements")
 ;; %%\\rowcolors[]{1}{beamer@blendedblue!2%%0}{beamer@blendedblue!10}\naboberies"
@@ -583,34 +513,35 @@ my/org-latex-tikz
 ;; Default packages included in every tex file, pdflatex or xelatex
 (setq org-latex-default-packages-alist
       '(
-	("" "etex" nil)
-	("" "etoolbox" nil)
+        ("ext" "orgstd" nil)
+	;; ("" "etex" nil)
+	;; ("" "etoolbox" nil)
 	;; ("l2tabu,orthodox" "nag" nil) ;; Old habits die hard.
 	;;("" "units" nil) ;; non-stacked fractions and better unit spacing
-	("utf8" "inputenc" t)
-	("T1" "fontenc" t)
+	;; ("utf8" "inputenc" t)
+	;; ("T1" "fontenc" t)
 ;;	("" "fixltx2e" nil) ;; All fixes should now be in new releases
-	("" "mathtools,amssymb" nil)  ;; extended mathematics
-	("strict=true" "csquotes" nil)
-	("" "xcolor" nil)
-	("" "natbib" nil)
-	("" "bm" t)
-	("" "graphicx" t)
-	("" "wrapfig" nil)
+	;; ("" "mathtools,amssymb" nil)  ;; extended mathematics
+	;; ("strict=true" "csquotes" nil)
+	;; ("" "xcolor" nil)
+	;; ("" "natbib" nil)
+	;; ("" "bm" t)
+	;; ("" "graphicx" t)
+	;; ("" "wrapfig" nil)
 	;;("" "ulem" t)
 	;;("textcomp","", nil)
-	("" "rotating" nil)
+	;; ("" "rotating" nil)
 	;;("" "capt-of" nil)
-	("" "listings" nil)
-	("" "booktabs" nil) ;; book-quality tables
-	("" "multicol" nil)
-	("" "longtable" nil)
-	("" "zlmtt" nil) ;; Modern typewriter (i.e., bf,it)
-	("" "float" nil)
-	("" "fancyvrb" nil)
-	("" "verbatim" nil)
-	("english" "babel" nil)
-	("" "hyperref" nil)
+	;;("" "listings" nil)
+	;; ("" "booktabs" nil) ;; book-quality tables
+	;; ("" "multicol" nil)
+	;; ("" "longtable" nil)
+	;; ("" "zlmtt" nil) ;; Modern typewriter (i.e., bf,it)
+	;; ("" "float" nil)
+	;; ("" "fancyvrb" nil)
+	;; ("" "verbatim" nil)
+	;; ("english" "babel" nil)
+	;; ("" "hyperref" nil)
 	))
 ;;(add-to-list 'org-latex-packages-alist '("" "listings"))
 
@@ -692,7 +623,8 @@ my/org-latex-tikz
   (if (string= major-mode 'org-mode)
       (if (bound-and-true-p org-beamer-mode)
 	  (org-beamer-export-to-latex)
-	(org-latex-export-to-latex)
+        (ignore-errors
+	  (org-latex-export-to-latex))
 	)))
 
 

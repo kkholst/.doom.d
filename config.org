@@ -597,6 +597,16 @@ Code linters
 ;;   (require 'flycheck-clang-analyzer)
 ;;   (flycheck-clang-analyzer-setup))
 #+END_SRC
+** magit - version control
+
+#+BEGIN_SRC emacs-lisp
+(after! magit
+(magit-add-section-hook
+   'magit-status-sections-hook
+   'magit-insert-tracked-files
+   nil
+   'append))
+#+END_SRC
 
 ** python
 
@@ -873,7 +883,7 @@ Platformio
 
 Ivy
 #+BEGIN_SRC emacs-lisp
-(setq +ivy-buffer-preview t)
+(setq +ivy-buffer-preview nil)
 
 #+END_SRC
 
@@ -980,7 +990,8 @@ install.packages(“languageserver”)
 	    (progn
 	      (switch-to-buffer "*iESS[SAS]*")
 	      )
-	  (ess-switch-to-inferior-or-script-buffer t))))
+	  ;;(ess-switch-to-inferior-or-script-buffer t))))
+          (ess-switch-to-ESS nil))))
       (delete-other-windows)
       (if my/split-ess-horizontal (split-window-horizontally) (split-window-vertically))
       (other-window 1)
@@ -988,6 +999,29 @@ install.packages(“languageserver”)
 ;;      (unless pyt
         (my/swap-buffers-in-windows)))
 
+#+END_SRC
+
+Roxygen
+#+BEGIN_SRC emacs-lisp
+(defun ess-roxy-edit-examples ()
+  "Edit roxygen examples in an indirect buffer."
+  (interactive)
+  (unless (ess-roxy-entry-p "examples")
+    (user-error "Not in a roxygen examples field"))
+  (unless (and (require 'edit-indirect nil t)
+               (fboundp 'edit-indirect-region))
+    (user-error "The package 'edit-indirect' is not installed"))
+  ;; We need to cache the roxygen prefix (e.g. #' or ##') to be able
+  ;; to insert correctly later
+  (let ((roxygen (progn (goto-char (point-at-bol))
+                        (search-forward-regexp ess-roxy-re)
+                        (match-string 0))))
+    (edit-indirect-region (ess-roxy-beg-of-field) (ess-roxy-end-of-field) t)
+    (ess-r-mode)
+    (ess-roxy-mode)
+    (setq-local ess-roxy-str roxygen)
+    (add-hook 'edit-indirect-before-commit-hook (lambda () (ess-roxy-toggle-roxy-region (point-min) (point-max))) nil t)
+    (ess-roxy-toggle-roxy-region (point-min) (point-max))))
 #+END_SRC
 
 * Org
@@ -1003,7 +1037,9 @@ Latex
   (after! org
     (add-hook 'org-mode-hook 'org-fragtog-mode)
     (add-hook 'org-mode-hook (lambda () (visual-line-mode -1)))
-    (require 'my-org-latex))
+    (require 'my-org-latex)
+    (require 'ox-extra)
+    (ox-extras-activate '(ignore-headlines)))
 #+END_SRC
 
 Capture
@@ -1150,6 +1186,46 @@ Babel / source code content
 ;;             ("\\.pdf\\'" . "evince %s")))))
 
 #+END_SRC
+
+Org-roam https://github.com/org-roam/org-roam-ui
+#+BEGIN_SRC emacs-lisp
+(use-package! websocket
+    :after org-roam)
+
+(use-package! org-roam-ui
+    :after org-roam ;; or :after org
+;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+;;         a hookable mode anymore, you're advised to pick something yourself
+;;         if you don't care about startup time, use
+;;  :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+#+END_SRC
+
+
+deft
+#+BEGIN_SRC emacs-lisp
+(setq deft-recursive t
+      deft-use-filter-string-for-filename t
+      deft-use-filename-as-title t
+      deft-file-naming-rules '((noslash . "-")
+                                   (nospace . "-")
+                                   (case-fn . downcase))
+      deft-text-mode 'org-mode
+      deft-default-extension "org"
+      deft-strip-summary-regexp ":PROPERTIES:\n\\(.+\n\\)+:END:\n"
+      deft-directory org-roam-directory)
+
+(defun deft-or-close () (interactive) (if (eq major-mode 'deft-mode)
+                                          (progn (kill-buffer "*Deft*"))
+                                        (deft)
+                                        ))
+(map! :leader "n d" #'deft-or-close)
+#+END_SRC
+
 
 * Key bindings
 
@@ -1400,6 +1476,7 @@ backquote use 'C-q `'
   (after! ess
 	  (map! :map ess-mode-map
 		"M-j" #'tag-ess-eval-and-go
+        "C-c C-o e" #'ess-roxy-edit-examples
 		"C-c C-r" #'my/ess-eval))
 
 #+END_SRC

@@ -6,6 +6,8 @@
 ;; use 'M-x doom/reload'.
 
 (add-load-path! "lisp")
+(unpin! org-roam)
+(package! org-roam-ui)
 (package! dired+)
 (package! peep-dired)
 (package! dired-ranger)

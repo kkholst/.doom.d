@@ -2,5 +2,10 @@
 # name: bib
 # key: bib
 # --
-bibliographystyle:unsrtnat$1 # apalike
+*** Bibliography
+:PROPERTIES:
+:beamer_opt: allowframebreaks
+:END:
+
+bibliographystyle:unsrtnat$1
 bibliography:huge.bib
