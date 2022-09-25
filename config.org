@@ -58,6 +58,8 @@ Various variable definitions
   (defvar my/superman (concat my/project-home "metropolis/") "SuperMan project directory")
   (setq superman-home my/superman)
   (setq superman-profile (concat my/superman "Projects.org"))
+  (doom/reload-env) ;; Seems to be necessary for now
+  (add-to-list 'load-path my/emacslib)
 #+END_SRC
 
 
@@ -76,11 +78,11 @@ Org related directories
 Binaries locations
 #+BEGIN_SRC emacs-lisp
 (setq langtool-language-tool-jar (concat my/localbin "languagetool-commandline.jar"))
-(setq langtool-java-bin (if IS-MAC "/usr/local/opt/openjdk/bin/java" "java"))
+(setq langtool-java-bin "java")
 (setq langtool-mother-tongue "en")
-(setq org-babel-C++-compiler (concat "ccache " (if IS-MAC "/usr/local/opt/llvm/bin/clang++" "clang++"))
+(setq org-babel-C++-compiler (concat "ccache clang++")
 		org-babel-python-command "python3")
-(setq lsp-clients-clangd-executable (if IS-MAC "/usr/local/opt/llvm/bin/clangd" "clangd"))
+(setq lsp-clients-clangd-executable "clangd")
 (setq plantuml-jar-path (expand-file-name "~/local/plantuml/plantuml.jar"))
 (defvar my/opencmd (if IS-MAC "open" "/usr/bin/xdg-open") "Program for opening files and applications")
 #+END_SRC
@@ -107,6 +109,15 @@ available. You can either set `doom-theme' or manually load a theme with the
 `load-theme' function. This is the default:
 #+BEGIN_SRC emacs-lisp
 (setq doom-theme 'doom-one)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+;; Whether display the workspace name. Non-nil to display in the mode-line.
+(setq doom-modeline-workspace-name t)
+;; Whether display the perspective name. Non-nil to display in the mode-line.
+(setq doom-modeline-persp-name t)
+;; If non nil the default perspective name is displayed in the mode-line.
+(setq doom-modeline-display-default-persp-name nil)
 #+END_SRC
 
 This determines the style of line numbers in effect. If set to `nil', line
@@ -546,6 +557,14 @@ https://emacs-lsp.github.io/lsp-mode/page/lsp-r/
 #+BEGIN_SRC emacs-lisp
 (setq lsp-auto-guess-root t ) ;; Get root of projetct from projectile (i.e., .git location)
 (setq lsp-prefer-flymake nil) ;; use flycheck
+(setq lsp-pyright-auto-import-completions nil
+      lsp-pyright-multi-root nil ;; way too slow
+      lsp-pyright-typechecking-mode "off")
+
+(setq dap-lldb-debug-program '("/opt/homebrew/opt/llvm/bin/lldb-vscode"))
+(setq dap-lldb-debug-program '("lldb"))
+
+
 (defun dap-clean(&optional arg)
   (interactive)
   (kill-matching-buffers ".*LLDB::" nil t)
@@ -817,6 +836,7 @@ Platformio
         bibtex-completion-pdf-field "File"
 	bibtex-completion-library-path `(,my/pdf-directory) ;;'("~/Documents/PDF" "~/Projects/Publications")
 	bibtex-completion-bibliography `(,my/bibliography)
+  bibtex-completion-additional-search-fields '(keywords)
 	bibtex-completion-notes-path (concat my/bibliography-directory "helm-bibtex-notes"))
 
 (after! helm-bibtex (advice-add 'bibtex-completion-candidates :filter-return 'reverse))
@@ -899,6 +919,8 @@ install.packages(“languageserver”)
 	(setq ess-ask-for-ess-directory nil)
 	(setq ess-local-process-name "R")
 	(setq timeout-ms 1) ;; still necessary to avoid slow evaluation?
+
+  (setq polymode-lsp-integration nil) ;; Creates problems with poly-R
 
 	 ;; Code check via lintr
 	 (setq flycheck-lintr-linters
@@ -1177,7 +1199,7 @@ Babel / source code content
 
 ;; PDFs visited in Org-mode are opened in org-pdf-view (and other file extensions are handled according to the defaults)
 (add-hook 'org-mode-hook
-      '(lambda ()
+      #'(lambda ()
          (setq org-file-apps
            '((auto-mode . emacs)
              ("\\.mm\\'" . default)
@@ -1203,6 +1225,11 @@ Org-roam https://github.com/org-roam/org-roam-ui
           org-roam-ui-follow t
           org-roam-ui-update-on-save t
           org-roam-ui-open-on-start t))
+
+(use-package! org-roam-bibtex
+  :after org-roam
+  :config
+  (require 'org-ref))
 #+END_SRC
 
 
@@ -1230,10 +1257,16 @@ deft
 * Key bindings
 
   #+BEGIN_SRC emacs-lisp
-    (setq mac-option-key-is-meta nil
-	  mac-command-key-is-meta t
-	  mac-command-modifier 'meta
-	  mac-option-modifier 'none)
+  ;;  (setq ns-right-option-modifier 'super)
+(setq ns-right-alternate-modifier 'none
+      mac-right-option-modifier 'none
+      mac-option-modifier 'meta
+      mac-command-modifier 'meta
+      mac-right-command-modifier 'super)
+    ;; (setq mac-option-key-is-meta nil
+    ;;       mac-command-key-is-meta t
+    ;;       mac-command-modifier 'meta
+	  ;; mac-option-modifier 'none)
   #+END_SRC
 
 ** Editor
@@ -1468,7 +1501,18 @@ backquote use 'C-q `'
 (map! :localleader "RET" #'org-store-link) ;; C-c l RET
 #+END_SRC
 
+** PDF
+
+#+BEGIN_SRC emacs-lisp
+;; (after! dired-ranger
+  (map!
+   (:map pdf-view-mode-map
+    "s l"      #'pdf-view-goto-page
+    ))
+#+END_SRC
+
 ** ESS
+
 #+BEGIN_SRC emacs-lisp
 
   (map! :leader "R" #'my/split-ess)

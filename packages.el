@@ -6,6 +6,10 @@
 ;; use 'M-x doom/reload'.
 
 (add-load-path! "lisp")
+;;(package! f)
+;;(package! dash)
+;;(package! pkg-info)
+;;(package! epl)
 (unpin! org-roam)
 (package! org-roam-ui)
 (package! dired+)
@@ -28,6 +32,8 @@
 (package! helm-flycheck)
 (package! helm-bibtex)
 (package! helm-c-yasnippet)
+(package! org-roam-bibtex
+  :recipe (:host github :repo "org-roam/org-roam-bibtex"))
 ;;(package! helm-org-rifle)
 ;;(package! hippie-exp)
 ;;(package! ace-jump-mode)

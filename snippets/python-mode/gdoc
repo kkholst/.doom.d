@@ -1,0 +1,33 @@
+# -*- mode: snippet -*-
+#name : gdoc
+#key : gdoc
+# --
+
+"""${1:short description}
+   $0
+   Examples
+   ----------
+   >>> print(2+2)
+   4
+
+   See Also
+   ----------
+   package.module.func:
+       description
+
+   References
+   ----------
+       Details in [1]_.
+
+       .. [1] Nomen Nescio (2000). ...
+
+   Returns
+   ----------
+   type
+       description
+
+   Parameters
+   ----------
+   ${1:arg: type}
+       description
+"""

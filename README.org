@@ -98,3 +98,18 @@ cd lldb-mi
 cmake -Bbuild -GNinja
 #+END_SRC
 
+Customized configuration can go into the =local.el= file, e.g.
+
+#+BEGIN_SRC emacs-lisp
+
+(setq doom-font (font-spec :family "Literation Mono Powerline:style=Regular" :size 15 :weight 'normal)
+      doom-theme 'doom-challenger-deep
+      doom-theme 'doom-city-lights
+      doom-theme 'doom-solarized-dark
+      doom-theme 'doom-sourcerer)
+#+END_SRC
+
+Note, the font family can be found in the terminal with the command
+#+BEGIN_SRC sh
+fc-list :spacing=mono family style | sort
+#+END_SRC

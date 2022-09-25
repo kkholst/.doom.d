@@ -20,7 +20,7 @@
        ;;layout            ; auie,ctsrnm is the superior home row
 
        :completion
-       company           ; the ultimate code completion backend
+       company          ; the ultimate code completion backend
        ;;(helm               ; the *other* search engine for love and life
        ;; +childframe +org)
        ;;ido               ; the other *other* search engine...
@@ -182,7 +182,7 @@
         +pyenv             ; Python virtual environment support
 	+poetry            ; Python packaging, dependency management, and virtual environment
         +lsp
-        ;;+pyright
+        +pyright
         )
        ;;qt                ; the 'cutest' gui framework ever
        ;;racket            ; a DSL for DSLs
