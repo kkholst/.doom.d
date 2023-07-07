@@ -24,11 +24,15 @@
        ;;(helm               ; the *other* search engine for love and life
        ;; +childframe +org)
        ;;ido               ; the other *other* search engine...
-       (ivy               ; a search engine for love and life
-        +prescient +icons
+       (
+        ;;ivy               ; a search engine for love and life
+        ;;+prescient +icons
         ;;+fuzzy
-        +childframe)
-
+       ;; +childframe)
+       vertico           ; the search engine of the future
+       ;;+childframe
+       +icons
+       )
        :ui
        deft              ; notational velocity for Emacs
        doom              ; what makes DOOM look the way it does
@@ -37,7 +41,7 @@
        ;;(emoji +unicode)  ; 🙂
        ;;fill-column       ; a `fill-column' indicator
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
-       ;;hydra
+       hydra
        indent-guides     ; highlighted indent columns
        ;;(ligatures        ; ligatures and symbols to make your code pretty again
 	;; +extra)
@@ -53,7 +57,7 @@
        ;;tabs            ; a tab bar for Emacs
        treemacs          ; a project drawer, like neotree but cooler
        ;;unicode         ; extended unicode support for various languages
-       vc-gutter         ; vcs diff in the fringe
+       (vc-gutter +pretty) ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        ;; (window-select ; visually switch windows
         ;; +switch-window)
@@ -100,6 +104,7 @@
        :tools
        ;;ansible
        (debugger +lsp)          ; FIXME stepping through code, to help you add bugs
+       biblio            ; Writes a PhD for you (citation needed)
        ;;direnv
        docker
        editorconfig      ; let someone else argue about tabs vs spaces
@@ -107,7 +112,7 @@
        (eval +overlay)     ; run code, run (also, repls)
        gist              ; interacting with github gists
        lookup              ; navigate your code and its documentation
-       lsp
+       (lsp +eglot)
        magit             ; a git porcelain for Emacs
        make              ; run make tasks from Emacs
        pass              ; password manager for nerds
@@ -118,6 +123,7 @@
        ;;terraform         ; infrastructure as code
        tmux              ; an API for interacting with tmux
        upload            ; map local to remote projects via ssh/ftp
+       tree-sitter       ; syntax and parsing, sitting in a tree...
 
        :os
        (:if IS-MAC macos)  ; improve compatibility with macOS
@@ -179,10 +185,11 @@
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
        (python
-        +pyenv             ; Python virtual environment support
-	+poetry            ; Python packaging, dependency management, and virtual environment
+        ;; +pyenv             ; Python virtual environment support
+	;;+poetry            ; Python packaging, dependency management, and virtual environment
         +lsp
-        +pyright
+        +tree-sitter
+        ;;+pyright
         )
        ;;qt                ; the 'cutest' gui framework ever
        ;;racket            ; a DSL for DSLs
@@ -203,7 +210,7 @@
        yaml              ; JSON, but readable
 
        :email
-       ;;(mu4e +gmail)
+       ;;(mu4e +org +gmail)
        ;;notmuch
        ;;(wanderlust +gmail)
 

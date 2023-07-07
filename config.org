@@ -1,4 +1,5 @@
-#+TITLE: Doom Emacs Configuration
+#+TITLE: Doom Emacs Configu
+ration
 #+AUTHOR: Klaus Kähler Holst
 #+PROPERTY: header-args :exports code :results silent :tangle yes :comment no
 #+STARTUP: overview
@@ -40,7 +41,7 @@ Splash screen setup
 
 Various variable definitions
 #+BEGIN_SRC emacs-lisp
-  (setq my/bibliography-directory "~/Bibliography/")
+  (setq my/bibliography-directory (expand-file-name "~/Bibliography/"))
   (defvar my/emacshome "~/.doom.d/" "emacs configuration files")
   (defvar my/emacslib "~/.doom.d/lisp/" "emacs libraries")
   (defvar my/local "~/local/" "Local libraries")
@@ -249,7 +250,15 @@ Don't clutter my directories with ~backup files. Place backups in =~/.saves=
 
 Save history across sessions
 #+BEGIN_SRC emacs-lisp
-(savehist-mode 1)
+;;(savehist-mode 1)
+#+END_SRC
+
+Enable automatic cheat-sheet
+#+BEGIN_SRC emacs-lisp
+(use-package which-key
+:config
+(which-key-mode 1)
+)
 #+END_SRC
 
 Press tab one time it will indent, press it again and you get completion
@@ -279,6 +288,7 @@ Encryption
     ;; (epa-file-enable) ;; Already enabled
   )
 #+END_SRC
+
 
 * Functions
 
@@ -327,8 +337,16 @@ Close buffers easily
   (defalias 'unicode 'my/unicode)
   #+END_SRC
 
-
 #+BEGIN_SRC emacs-lisp
+(defun my/find-nonascii()
+  "Find unicode character"
+  (interactive)
+  (swiper "[[:nonascii:]]."))
+(defalias 'my/find-unicode 'my/find-nonascii)
+#+END_SRC
+
+
+,#+BEGIN_SRC emacs-lisp
 ;; Define a search for duplicate wordskey
 ;; Handy for for spotting errors like this this!
 (defun my/search-duplicates ()
@@ -562,7 +580,7 @@ https://emacs-lsp.github.io/lsp-mode/page/lsp-r/
       lsp-pyright-typechecking-mode "off")
 
 (setq dap-lldb-debug-program '("/opt/homebrew/opt/llvm/bin/lldb-vscode"))
-(setq dap-lldb-debug-program '("lldb"))
+;;(setq dap-lldb-debug-program '("lldb"))
 
 
 (defun dap-clean(&optional arg)
@@ -661,6 +679,19 @@ manager or manually:
           pyvenv-virtual-env-name ".virtualenvs"
           pyvenv-show-active-python-in-modeline t)
   #+END_SRC
+
+
+
+
+** Rmarkdown
+
+#+BEGIN_SRC emacs-lisp
+ (add-hook 'markdown-mode-hook
+   (lambda ()
+     (texfrag-mode)
+     (cdlatex-mode))
+     )
+#+END_SRC
 
 * Embedded development
 
@@ -839,6 +870,8 @@ Platformio
   bibtex-completion-additional-search-fields '(keywords)
 	bibtex-completion-notes-path (concat my/bibliography-directory "helm-bibtex-notes"))
 
+(setq citar-bibliography `(,my/bibliography))
+
 (after! helm-bibtex (advice-add 'bibtex-completion-candidates :filter-return 'reverse))
 (add-hook! '(LaTeX-mode-hook) #'writegood-mode)
 
@@ -899,12 +932,12 @@ Platformio
       helm-candidate-number-limit 500
       helm-idle-delay 0.1
       helm-input-idle-delay 0.1)
-  #+END_SRC
+#+END_SRC
 
 Ivy
 #+BEGIN_SRC emacs-lisp
-(setq +ivy-buffer-preview nil)
-
+;;(setq +ivy-buffer-preview nil)
+(map! :leader "n b" #'ivy-bibtex)
 #+END_SRC
 
 * ESS
@@ -1102,17 +1135,17 @@ Encryption
 
 References
 #+BEGIN_SRC emacs-lisp
-    (use-package org-ref
-      :after org
-      :config
-      (setq
-       reftex-default-bibliography `(,my/bibliography)
-       org-ref-bibliography-notes (concat my/bibliography-directory "notes.org")
-       org-ref-default-bibliography `(,my/bibliography)
-       org-ref-pdf-directory `(,my/pdf-directory)
-       ;; org-ref-insert-key "C-c )"
-       )
-      :bind ("C-c )" . org-ref))
+  ;;    (use-package org-ref
+  ;;    :after org
+  ;;    :config
+  ;;    (setq
+  ;;     reftex-default-bibliography `(,my/bibliography)
+  ;;     org-ref-bibliography-notes (concat my/bibliography-directory "notes.org")
+  ;;     org-ref-default-bibliography `(,my/bibliography)
+  ;;     org-ref-pdf-directory `(,my/pdf-directory)
+  ;;     ;; org-ref-insert-key "C-c )"
+  ;;     )
+  ;;    :bind ("C-c )" . org-ref))
 
   (defun org-mode-reftex-setup ()
     (setq TeX-master t)
@@ -1229,7 +1262,8 @@ Org-roam https://github.com/org-roam/org-roam-ui
 (use-package! org-roam-bibtex
   :after org-roam
   :config
-  (require 'org-ref))
+  ;;(require 'org-ref)
+  )
 #+END_SRC
 
 
@@ -1253,6 +1287,17 @@ deft
 (map! :leader "n d" #'deft-or-close)
 #+END_SRC
 
+
+* Projectile
+
+
+#+BEGIN_SRC emacs-lisp
+(after! projectile
+  (setq projectile-project-root-files
+        (append projectile-project-root-files-bottom-up
+                projectile-project-root-files)
+        projectile-project-root-files-bottom-up nil))
+#+END_SRC
 
 * Key bindings
 
@@ -1292,8 +1337,9 @@ deft
   (map! "C-S-z" #'undo-fu-only-redo)
 
   (map! :leader "S" #'swiper)
-  (map! "C-x b" #'counsel-switch-buffer)
-  (map! :leader "b" #'+ivy/switch-workspace-buffer)
+  ;;(map! "C-x b" #'counsel-switch-buffer)
+  (map! :leader "b" #'+vertico/switch-workspace-buffer)
+  ;; (map! :leader "b" #'+ivy/switch-workspace-buffer)
   (map! "<f3>" #'kmacro-start-macro-or-insert-counter)
   (map! "<f4>" #'kmacro-end-or-call-macro)
   (map! :leader "<f8>" #'ielm)
@@ -1368,7 +1414,7 @@ deft
 #+BEGIN_SRC emacs-lisp
   (map!  :leader "_" #'visual-line-mode)
   (map! "C-y" #'yank-or-pop) ;;  cycles through kill-ring it when called repeatedly
-  (map! "M-y" #'counsel-yank-pop) ;; kill-ring
+ ;; (map! "M-y" #'counsel-yank-pop) ;; kill-ring
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -1389,8 +1435,8 @@ Avy (ace-jump-mode replacement)
 (setq avy-all-windows t)
 ;;(global-set-key (kbd "C-c j") 'avy-goto-word-or-subword-1)
 (map! :leader
-      "c p" #'ivy-push-view
-      "c P" #'ivy-pop-view
+      ;; "c p" #'ivy-push-view
+      ;; "c P" #'ivy-pop-view
       "SPC" #'avy-goto-word-or-subword-1
       "O" #'ace-window)
 #+END_SRC
