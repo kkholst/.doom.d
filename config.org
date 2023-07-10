@@ -1,5 +1,4 @@
-#+TITLE: Doom Emacs Configu
-ration
+#+TITLE: Doom Emacs Configuration
 #+AUTHOR: Klaus Kähler Holst
 #+PROPERTY: header-args :exports code :results silent :tangle yes :comment no
 #+STARTUP: overview
@@ -1317,7 +1316,10 @@ deft
 ** Editor
 
 #+BEGIN_SRC emacs-lisp
-  (if (not IS-MAC) (map! "M-+" #'doom/increase-font-size))
+  (if (not IS-MAC)
+      (progn
+      (map! "C-u M-+" #'doom/decrease-font-size)
+      (map! "M-+" #'doom/increase-font-size)))
 
   (add-hook 'emacs-lisp-mode-hook
 	    (lambda ()
