@@ -40,7 +40,7 @@ Splash screen setup
 
 Various variable definitions
 #+BEGIN_SRC emacs-lisp
-  (setq my/bibliography-directory (expand-file-name "~/Bibliography/"))
+  ;; (setq my/bibliography-directory (expand-file-name "~/Projects/Bibliography/"))
   (defvar my/emacshome "~/.doom.d/" "emacs configuration files")
   (defvar my/emacslib "~/.doom.d/lisp/" "emacs libraries")
   (defvar my/local "~/local/" "Local libraries")
