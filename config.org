@@ -33,7 +33,6 @@ clients, file templates and snippets
 
 Splash screen setup
 #+BEGIN_SRC emacs-lisp
-(setq +doom-dashboard-banner-file (expand-file-name "mascot.svg" doom-private-dir))
 (setq +doom-dashboard-banner-file (expand-file-name "mascot.png" doom-private-dir))
 #+END_SRC
 
@@ -869,7 +868,8 @@ Platformio
   bibtex-completion-additional-search-fields '(keywords)
 	bibtex-completion-notes-path (concat my/bibliography-directory "helm-bibtex-notes"))
 
-(setq citar-bibliography `(,my/bibliography))
+(setq citar-bibliography `(,my/bibliography)
+      citar-library-paths `(,my/pdf-directory))
 
 (after! helm-bibtex (advice-add 'bibtex-completion-candidates :filter-return 'reverse))
 (add-hook! '(LaTeX-mode-hook) #'writegood-mode)
