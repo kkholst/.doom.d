@@ -55,8 +55,8 @@
 (unpin! org-noter)
 (package! org-noter
   :recipe (:host github :repo "petermao/org-noter"))
-(package! org-project-capture)
-(package! org-projectile)
+;;(package! org-project-capture)
+;;(package! org-projectile)
 (package! org-project
   :recipe (:host github :repo "delehef/org-project"))
 

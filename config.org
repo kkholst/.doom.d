@@ -1282,7 +1282,7 @@ deft
 (map! :leader "n d" #'deft-or-close)
 #+END_SRC
 
-* Projects
+* Projects, Agenda
 
 
 #+BEGIN_SRC emacs-lisp
@@ -1341,6 +1341,8 @@ Capture
   (after! org
     (if (file-exists-p (concat my/emacslib "my-org-capture.el"))
         (load (concat my/emacslib "my-org-capture.el"))))
+
+(setq org-agenda-files `(,org-directory))
 #+END_SRC
 
 * Key bindings
