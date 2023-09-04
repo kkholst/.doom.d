@@ -52,7 +52,13 @@
 (package! texfrag)
 (package! superman
   :recipe (:host github :repo "tagteam/superman"))
-
+(unpin! org-noter)
+(package! org-noter
+  :recipe (:host github :repo "petermao/org-noter"))
+(package! org-project-capture)
+(package! org-projectile)
+(package! org-project
+  :recipe (:host github :repo "delehef/org-project"))
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)

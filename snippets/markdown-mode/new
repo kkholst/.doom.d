@@ -1,0 +1,25 @@
+# -*- mode: snippet -*-
+# name: new
+# key: new
+# --
+---
+title: "..."
+author: "Klaus K. Holst (KKZH)"
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+bibliography: ref.bib
+---
+
+# Introduction
+
+Citation: [@R-base]
+
+$\int f$
+\begin{align}
+\mu &= \int f\,dm \\
+&= \xi(\theta)
+\end{align}
+
+```{r myplot, echo=FALSE}
+plot(1:10)
+```

@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: bib_beamer
+# key: bib_beamer
+# --
+*** Bibliography
+:PROPERTIES:
+:beamer_opt: allowframebreaks
+:END:
+
+[nocite:@targetedlearning_2018]$1
+#+print_bibliography:

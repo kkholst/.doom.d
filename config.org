@@ -40,8 +40,8 @@ Splash screen setup
 Various variable definitions
 #+BEGIN_SRC emacs-lisp
   ;; (setq my/bibliography-directory (expand-file-name "~/Projects/Bibliography/"))
-  (defvar my/emacshome "~/.doom.d/" "emacs configuration files")
-  (defvar my/emacslib "~/.doom.d/lisp/" "emacs libraries")
+  (defvar my/emacshome "~/.config/doom/" "emacs configuration files")
+  (defvar my/emacslib "~/.config/doom/lisp/" "emacs libraries")
   (defvar my/local "~/local/" "Local libraries")
   (defvar my/localbin (concat my/emacshome "bin/") "Primary binary path")
   (defvar my/localscript (concat my/local "/scripts/") "Primary script path")
@@ -50,7 +50,7 @@ Various variable definitions
   (defvar my/homepage "http://www.holst.it" "Personal homepage")
   (defvar my/project-home "~/Projects/" "Personal project directory")
   (defvar my/base-directory "~/" "Base directory")
-  (defvar my/snippets (concat my/base-directory "Snippets/") "Code snippets directory")
+  (defvar my/snippets (concat my/project-home "Snippets/") "Code snippets directory")
   (defvar my/bibliography-directory (concat my/project-home "Bibliography/") "Bibliography default path")
   (defvar my/bibliography (concat my/bibliography-directory "huge.bib") "Primary bibtex file")
   (defvar my/pdf-directory "~/Documents/PDF/" "Location of articles")
@@ -69,9 +69,9 @@ GPG key to use for encryption (Either the Key ID or set to nil to use symmetric 
 
 Org related directories
 #+BEGIN_SRC emacs-lisp
-  (setq org-directory my/project-home)
+  (setq org-directory (concat my/project-home "org/"))
   (setq org-project-directory org-directory)
-  (setq org-roam-directory (concat org-directory "notes"))
+  (setq org-roam-directory (concat org-project-directory "roam/"))
 #+END_SRC
 
 Binaries locations
@@ -82,7 +82,7 @@ Binaries locations
 (setq org-babel-C++-compiler (concat "ccache clang++")
 		org-babel-python-command "python3")
 (setq lsp-clients-clangd-executable "clangd")
-(setq plantuml-jar-path (expand-file-name "~/local/plantuml/plantuml.jar"))
+(setq plantuml-jar-path (expand-file-name (concat my/localbin "plantuml/plantuml.jar")))
 (defvar my/opencmd (if IS-MAC "open" "/usr/bin/xdg-open") "Program for opening files and applications")
 #+END_SRC
 
@@ -165,6 +165,11 @@ Load local configuration (not version controlled)
 Set default working directory
 #+BEGIN_SRC emacs-lisp
   (setq default-directory "~/")
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+;; (setq save-place-mode nil)
+(setq save-place-ignore-files-regexp "pdf$")
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -287,7 +292,6 @@ Encryption
   )
 #+END_SRC
 
-
 * Functions
 
  Bury *scratch* buffer instead of kill it
@@ -339,7 +343,7 @@ Close buffers easily
 (defun my/find-nonascii()
   "Find unicode character"
   (interactive)
-  (swiper "[[:nonascii:]]."))
+  (consult-line "[[:nonascii:]]."))
 (defalias 'my/find-unicode 'my/find-nonascii)
 #+END_SRC
 
@@ -933,12 +937,6 @@ Platformio
       helm-input-idle-delay 0.1)
 #+END_SRC
 
-Ivy
-#+BEGIN_SRC emacs-lisp
-;;(setq +ivy-buffer-preview nil)
-(map! :leader "n b" #'ivy-bibtex)
-#+END_SRC
-
 * ESS
 
 Note that lintr and languageserver needs to be installed in R for this
@@ -1096,13 +1094,6 @@ Latex
     (ox-extras-activate '(ignore-headlines)))
 #+END_SRC
 
-Capture
-#+BEGIN_SRC emacs-lisp
-  (after! org
-    (if (file-exists-p (concat my/emacslib "my-org-capture.el"))
-        (load (concat my/emacslib "my-org-capture.el"))))
-#+END_SRC
-
 
 Encryption
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -1246,6 +1237,11 @@ Org-roam https://github.com/org-roam/org-roam-ui
 (use-package! websocket
     :after org-roam)
 
+(setq
+ org-noter-highlight-selected-text t
+ org-noter-notes-search-path '((concat org-project-directory "noter")))
+
+
 (use-package! org-roam-ui
     :after org-roam ;; or :after org
 ;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
@@ -1277,7 +1273,7 @@ deft
       deft-text-mode 'org-mode
       deft-default-extension "org"
       deft-strip-summary-regexp ":PROPERTIES:\n\\(.+\n\\)+:END:\n"
-      deft-directory org-roam-directory)
+      deft-directory org-directory)
 
 (defun deft-or-close () (interactive) (if (eq major-mode 'deft-mode)
                                           (progn (kill-buffer "*Deft*"))
@@ -1286,16 +1282,65 @@ deft
 (map! :leader "n d" #'deft-or-close)
 #+END_SRC
 
-
-* Projectile
+* Projects
 
 
 #+BEGIN_SRC emacs-lisp
-(after! projectile
-  (setq projectile-project-root-files
-        (append projectile-project-root-files-bottom-up
-                projectile-project-root-files)
-        projectile-project-root-files-bottom-up nil))
+;; (after! projectile
+;;   (setq projectile-project-root-files
+;;         (append projectile-project-root-files-bottom-up
+;;                 projectile-project-root-files)
+;;         projectile-project-root-files-bottom-up nil))
+;; (setq projectile-git-command "fd . -0 --type f --hidden --color=never")
+(setq projectile-indexing-method 'alien)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+;; (use-package! org-project-capture
+;;   :after org
+;;   :bind (("C-c n p" . org-project-capture-project-todo-completing-read))
+;;   :config
+;;   (progn
+;;     (setq org-project-capture-backend
+;;           (make-instance 'org-project-capture-projectile-backend))
+;;           ;;(make-instance 'org-project-capture-project-backend))
+;;     (setq org-project-capture-projects-file "~/Projects/projects.org")
+;;     (org-project-capture-single-file)))
+
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package! org-project
+  :custom
+  ;; If invoked outside of a project, prompt for a valid project to capture for
+  (org-project-prompt-for-project t)
+
+  ;; Store all TODOs in a ORG_DIRECTORY/project.org
+  (org-project-todos-per-project nil)
+  (org-project-todos-file (concat org-project-directory "/projects.org"))
+
+  ;; Or use a single file per project, PROJECT_ROOT/todos.org
+  ;; (org-project-todos-per-project t)
+  ;; (org-project-per-project-file "todos.org")
+
+  ;; Use custom capture templates
+  (org-project-capture-template "* TODO %?\n%t\n") ;; Ask for a TODO and a date
+  (org-project-quick-capture-template "* TODO %? %(org-insert-time-stamp (org-read-date nil t \"+2d\"))\n") ;; Quick TODOs ae scheduled in two days
+
+  ;; Add some binding for org-project in project.el map
+  :bind (:map project-prefix-map
+              ("t" . org-project-quick-capture)
+              ("T" . org-project-capture)
+              ("o" . org-project-open-todos)))
+
+  (map! :leader "n T" #'org-project-open-todos)
+#+END_SRC
+
+Capture
+#+BEGIN_SRC emacs-lisp
+  (after! org
+    (if (file-exists-p (concat my/emacslib "my-org-capture.el"))
+        (load (concat my/emacslib "my-org-capture.el"))))
 #+END_SRC
 
 * Key bindings
@@ -1338,9 +1383,9 @@ deft
   (map! "C-z" #'undo-fu-only-undo)
   (map! "C-S-z" #'undo-fu-only-redo)
 
-  (map! :leader "S" #'swiper)
+  (map! :leader "S" #'consult-line)
   ;;(map! "C-x b" #'counsel-switch-buffer)
-  (map! :leader "b" #'+vertico/switch-workspace-buffer)
+  ;;(map! :leader "b" #'+vertico/switch-workspace-buffer)
   ;; (map! :leader "b" #'+ivy/switch-workspace-buffer)
   (map! "<f3>" #'kmacro-start-macro-or-insert-counter)
   (map! "<f4>" #'kmacro-end-or-call-macro)
@@ -1453,6 +1498,9 @@ Helm
  ;;"C-<f9>" #'helm-resume
  ;;"C-c h" #'helm-resume)
 )
+(map! :leader "n +" #'citar-open)
+(map! :leader "n B" #'citar-open)
+(map! :leader "n ?" #'biblio-lookup)
 (map! :leader "! !" #'helm-flycheck)
 (map! :leader "<tab>" #'ivy-yasnippet)
 
@@ -1497,12 +1545,7 @@ Helm
 		:init
 		(map! "M-c" #'comment-dwim-2))
 #+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (map! :leader :desc
-        "compile" "C-z" #'counsel-compile)
-#+END_SRC
-
+#
 Gist note snippets
 #+BEGIN_SRC emacs-lisp
 (map! "C-<f12>" #'gist-list)
@@ -1568,7 +1611,7 @@ backquote use 'C-q `'
   (after! ess
 	  (map! :map ess-mode-map
 		"M-j" #'tag-ess-eval-and-go
-        "C-c C-o e" #'ess-roxy-edit-examples
+                "C-c C-o e" #'ess-roxy-edit-examples
 		"C-c C-r" #'my/ess-eval))
 
 #+END_SRC

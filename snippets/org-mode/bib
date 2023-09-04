@@ -2,10 +2,6 @@
 # name: bib
 # key: bib
 # --
-*** Bibliography
-:PROPERTIES:
-:beamer_opt: allowframebreaks
-:END:
 
-bibliographystyle:unsrtnat$1
-bibliography:huge.bib
+[cite:@targetedlearning_2018]$1
+#+print_bibliography:

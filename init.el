@@ -177,6 +177,7 @@
        (org               ; organize your plain life in plain text
         +pretty
 	+hugo
+        +noter
 	+present
 	+roam2
         +pandoc            ; export-with-pandoc support

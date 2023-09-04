@@ -2,12 +2,13 @@
 # name: new
 # key: new
 # --
-#+LATEX_CLASS: article
-#+LATEX_CLASS_OPTIONS: [a4paper,12pt]
-#+PROPERTY: header-args:python :session :results value
-#+PROPERTY: header-args:julia :session *julia*
-#+PROPERTY: header-args:R :session *R* :cache no :width 550 :height 450
-#+PROPERTY: header-args:R+ :colnames yes :rownames no :hlines yes
-#+PROPERTY: header-args :eval never-export :exports both :results output :tangle yes :comments yes 
-#+OPTIONS: timestamp:nil title:t date:t author:t creator:nil toc:nil 
-#+OPTIONS: h:4 num:t tags:nil d:t ^:{}
+#+latex_class: article
+#+latex_class_options: [a4paper,12pt]
+#+property: header-args:python :session :results value
+#+property: header-args:julia :session *julia*
+#+property: header-args:R :session *R* :cache no :width 550 :height 450
+#+property: header-args:R+ :colnames yes :rownames no :hlines yes
+#+property: header-args :eval never-export :exports both :results output :tangle yes :comments yes
+#+options: timestamp:nil title:t date:t author:t creator:nil toc:nil h:4 num:t tags:nil d:t ^:{}
+#+cite_export: natbib unsrtnat
+#+bibliography: huge.bib
