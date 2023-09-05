@@ -1342,7 +1342,11 @@ Capture
     (if (file-exists-p (concat my/emacslib "my-org-capture.el"))
         (load (concat my/emacslib "my-org-capture.el"))))
 
-(setq org-agenda-files `(,org-directory))
+(setq org-agenda-files
+      (seq-filter (lambda(x) (not (string-match "/roam/"(file-name-directory x))))
+       (directory-files-recursively org-directory "\\.org$")
+       ))
+;; (setq org-agenda-files `(,org-directory))
 #+END_SRC
 
 * Key bindings
