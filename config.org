@@ -872,8 +872,20 @@ Platformio
   bibtex-completion-additional-search-fields '(keywords)
 	bibtex-completion-notes-path (concat my/bibliography-directory "helm-bibtex-notes"))
 
-(setq citar-bibliography `(,my/bibliography)
-      citar-library-paths `(,my/pdf-directory))
+
+  (setq citar-bibliography `(,my/bibliography)
+      citar-library-paths `(,my/pdf-directory)
+      citar-notes-paths `(,(concat org-directory "citar/"))
+      citar-org-roam-note-title-template "${author} (${year}) - ${title}")
+;; (use-package! citar-org-roam
+;;   :config
+;;   (setq citar-bibliography `(,my/bibliography)
+;;       citar-library-paths `(,my/pdf-directory)
+;;       citar-notes-paths `(,(concat org-directory "citar/"))
+;;       citar-org-roam-note-title-template "${author} (${year}) - ${title}"
+;;       )
+;;   :after (citar org-roam)
+;;   :config (citar-org-roam-mode))
 
 (after! helm-bibtex (advice-add 'bibtex-completion-candidates :filter-return 'reverse))
 (add-hook! '(LaTeX-mode-hook) #'writegood-mode)
@@ -1237,9 +1249,16 @@ Org-roam https://github.com/org-roam/org-roam-ui
 (use-package! websocket
     :after org-roam)
 
-(setq
- org-noter-highlight-selected-text t
- org-noter-notes-search-path '((concat org-project-directory "noter")))
+
+(use-package! org-noter
+  :after citar
+  :init
+  ;;(require 'org-noter-pdftools)
+  (setq
+   org-noter-highlight-selected-text t
+   org-noter-notes-search-path `(,(concat org-project-directory "citar")))
+  (advice-add 'citar-open-note :after #'org-noter)
+  )
 
 
 (use-package! org-roam-ui
@@ -1414,7 +1433,8 @@ Capture
   (global-set-key [S-home] 'beginning-of-buffer)
   (global-set-key [S-end] 'end-of-buffer)
 
-  (map! "M-g" #'goto-line)
+  (map! "M-g M-g" #'goto-line)
+  (map! "M-g g" #'avy-goto-line)
   (map! "C-x '" #'next-error)
   ;;(map! :leader "'" #'next-error)
 
@@ -1500,7 +1520,7 @@ Helm
  ;;"M-m" #'helm-show-kill-ring
  ;;"C-x b"  #'helm-mini
  ;;"C-<f4>" #'helm-execute-kmacro
- "<f12>" #'helm-bibtex
+ "<f12>" #'citar-open ;;#'helm-bibtex
  ;;"C-<f9>" #'helm-resume
  ;;"C-c h" #'helm-resume)
 )
