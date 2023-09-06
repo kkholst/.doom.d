@@ -52,7 +52,7 @@ Various variable definitions
   (defvar my/base-directory "~/" "Base directory")
   (defvar my/snippets (concat my/project-home "Snippets/") "Code snippets directory")
   (defvar my/bibliography-directory (concat my/project-home "Bibliography/") "Bibliography default path")
-  (defvar my/bibliography (concat my/bibliography-directory "huge.bib") "Primary bibtex file")
+  (defvar my/bibliography (expand-file-name (concat my/bibliography-directory "huge.bib")) "Primary bibtex file")
   (defvar my/pdf-directory "~/Documents/PDF/" "Location of articles")
   (defvar my/superman (concat my/project-home "metropolis/") "SuperMan project directory")
   (setq superman-home my/superman)
@@ -170,6 +170,11 @@ Set default working directory
 #+BEGIN_SRC emacs-lisp
 ;; (setq save-place-mode nil)
 (setq save-place-ignore-files-regexp "pdf$")
+#+END_SRC
+
+Allows =which-key= to cycle pages via C-h (n)
+#+BEGIN_SRC emacs-lisp
+(setq which-key-use-C-h-commands t)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -868,22 +873,28 @@ Platformio
   (setq helm-bib-pdf-file "pdf"
         bibtex-completion-pdf-field "File"
 	bibtex-completion-library-path `(,my/pdf-directory) ;;'("~/Documents/PDF" "~/Projects/Publications")
-	bibtex-completion-bibliography `(,my/bibliography)
-  bibtex-completion-additional-search-fields '(keywords)
+	bibtex-completion-bibliography `(,my/bibliography "huge.bib")
+        bibtex-completion-additional-search-fields '(keywords)
 	bibtex-completion-notes-path (concat my/bibliography-directory "helm-bibtex-notes"))
 
 
+(use-package! citar
+  :init
+  ;;(citar-bibliography '("~//references.bib"))
   (setq citar-bibliography `(,my/bibliography)
-      citar-library-paths `(,my/pdf-directory)
-      citar-notes-paths `(,(concat org-directory "citar/"))
-      citar-org-roam-note-title-template "${author} (${year}) - ${title}")
+        citar-library-paths `(,my/pdf-directory)
+        citar-notes-paths `(,(concat org-directory "citar/"))
+        citar-org-roam-note-title-template "${author} (${year}) - ${title}")
+  :hook
+  (LaTeX-mode . citar-capf-setup)
+  (org-mode . citar-capf-setup))
+
+(use-package! citar-embark
+  :after citar embark
+  :no-require
+  :config (citar-embark-mode))
 ;; (use-package! citar-org-roam
 ;;   :config
-;;   (setq citar-bibliography `(,my/bibliography)
-;;       citar-library-paths `(,my/pdf-directory)
-;;       citar-notes-paths `(,(concat org-directory "citar/"))
-;;       citar-org-roam-note-title-template "${author} (${year}) - ${title}"
-;;       )
 ;;   :after (citar org-roam)
 ;;   :config (citar-org-roam-mode))
 
@@ -1409,12 +1420,13 @@ Capture
   (map! "C-S-z" #'undo-fu-only-redo)
 
   (map! :leader "S" #'consult-line)
-  ;;(map! "C-x b" #'counsel-switch-buffer)
   ;;(map! :leader "b" #'+vertico/switch-workspace-buffer)
-  ;; (map! :leader "b" #'+ivy/switch-workspace-buffer)
+  (map! "C-x C-b" #'consult-buffer)
+  (map! "C-x B" #'ibuffer)
+
+  ;;(map! :leader "b" #'+vertico/switch-workspace-buffer)
   (map! "<f3>" #'kmacro-start-macro-or-insert-counter)
   (map! "<f4>" #'kmacro-end-or-call-macro)
-  (map! :leader "<f8>" #'ielm)
 
   ;; (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
   ;; (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
@@ -1484,6 +1496,27 @@ Capture
   (global-set-key (kbd "C-x M-<return>")  (lambda() (interactive) (revert-buffer t t)))
 #+END_SRC
 
+Narrow-Widen
+#+BEGIN_SRC emacs-lisp
+(defun narrow-or-widen-dwim (p)
+  "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.
+Intelligently means: region, subtree, or defun, whichever applies
+first.
+
+With prefix P, don't widen, just narrow even if buffer is already
+narrowed."
+  (interactive "P")
+  (declare (interactive-only))
+  (cond ((and (buffer-narrowed-p) (not p)) (widen))
+        ((region-active-p)
+         (narrow-to-region (region-beginning) (region-end)))
+        ((derived-mode-p 'org-mode) (org-narrow-to-subtree))
+        (t (narrow-to-defun))))
+
+(map! "C-x n SPC" #'narrow-or-widen-dwim)
+#+END_SRC
+
+
 #+BEGIN_SRC emacs-lisp
   (map!  :leader "_" #'visual-line-mode)
   (map! "C-y" #'yank-or-pop) ;;  cycles through kill-ring it when called repeatedly
@@ -1514,7 +1547,7 @@ Avy (ace-jump-mode replacement)
       "O" #'ace-window)
 #+END_SRC
 
-Helm
+
 #+BEGIN_SRC emacs-lisp
 (map!
  ;;"M-m" #'helm-show-kill-ring
@@ -1531,6 +1564,8 @@ Helm
 (map! :leader "<tab>" #'ivy-yasnippet)
 
 #+END_SRC
+
+
 
 ** Dired / shell
 
