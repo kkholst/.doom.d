@@ -704,14 +704,14 @@ manager or manually:
 
 Processing
 #+BEGIN_SRC emacs-lisp
-(use-package! processing-mode
-  :init
-  (setq processing-location "/opt/processing/processing-java"
-	;;processing-application-dir "/path/to/processing-application-dir"
-	;;processing-sketchbook-dir "/path/to/processing-sketchbook-dir"
-	)
-  :commands (processing-mode)
-  :mode ("\\.pde\\'" . processing-mode))
+;; (use-package! processing-mode
+;;   :init
+;;   (setq processing-location "/opt/processing/processing-java"
+;; 	;;processing-application-dir "/path/to/processing-application-dir"
+;; 	;;processing-sketchbook-dir "/path/to/processing-sketchbook-dir"
+;; 	)
+;;   :commands (processing-mode)
+;;   :mode ("\\.pde\\'" . processing-mode))
 #+END_SRC
 
 Arduino
@@ -1114,6 +1114,10 @@ Latex
     (add-hook 'org-mode-hook (lambda () (visual-line-mode -1)))
     (require 'my-org-latex)
     (require 'ox-extra)
+    (setq
+     org-attach-dir-relative t
+     org-attach-method 'lns
+     )
     (ox-extras-activate '(ignore-headlines)))
 #+END_SRC
 

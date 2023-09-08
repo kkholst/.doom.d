@@ -33,7 +33,7 @@
 ;;(package! counsel-dash)
 (package! flycheck-google-cpplint)
 (package! flycheck-clang-analyzer)
-(package! processing-mode)
+;; (package! processing-mode)
 (package! platformio-mode)
 (package! org-fragtog)
 ;;(package! org-ref)
