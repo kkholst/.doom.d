@@ -1454,6 +1454,8 @@ Capture
   (map! "C-x '" #'next-error)
   ;;(map! :leader "'" #'next-error)
 
+  (map! "M-e" #'hippie-expand)
+
   ;; Makes control+pgup/pgdn arrow keys scroll one line at the time
   (define-key global-map [C-prior] (lambda() (interactive) (scroll-down 1)))
   (define-key global-map [C-next] (lambda() (interactive) (scroll-up 1)))
