@@ -1615,8 +1615,8 @@ Avy (ace-jump-mode replacement)
 #
 Gist note snippets
 #+BEGIN_SRC emacs-lisp
-(map! "C-<f12>" #'gist-list)
-(map! "C-<f11>" #'gist-region-private)
+;;(map! "C-<f12>" #'gist-list)
+;;(map! "C-<f11>" #'gist-region-private)
 ;; (map! :map prog-mode-map  :leader "h" #'lsp-describe-thing-at-point)
 #+END_SRC
 

@@ -4,6 +4,7 @@
 # --
 #+latex_class: article
 #+latex_class_options: [a4paper,12pt]
+#+latex_header: \usepackage{mathtools, amssymb}
 #+property: header-args:python :session :results value
 #+property: header-args:julia :session *julia*
 #+property: header-args:R :session *R* :cache no :width 550 :height 450
