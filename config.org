@@ -21,8 +21,7 @@ https://github.com/hlissner/doom-emacs/blob/develop/docs/api.org
 Themes:
 https://github.com/hlissner/emacs-doom-themes/tree/screenshots
 
-
-* Variable definitions
+* Variable definitions (override in =local.el=)
 
 Some functionality uses this to identify you, e.g. GPG configuration, email
 clients, file templates and snippets
@@ -31,36 +30,24 @@ clients, file templates and snippets
       user-mail-address "klaus@holst.it")
 #+END_SRC
 
-Splash screen setup
-#+BEGIN_SRC emacs-lisp
-(setq +doom-dashboard-banner-file (expand-file-name "mascot.png" doom-private-dir))
-#+END_SRC
-
-
 Various variable definitions
 #+BEGIN_SRC emacs-lisp
   ;; (setq my/bibliography-directory (expand-file-name "~/Projects/Bibliography/"))
   (defvar my/emacshome "~/.config/doom/" "emacs configuration files")
   (defvar my/emacslib "~/.config/doom/lisp/" "emacs libraries")
-  (defvar my/local "~/local/" "Local libraries")
-  (defvar my/localbin (concat my/emacshome "bin/") "Primary binary path")
-  (defvar my/localscript (concat my/local "/scripts/") "Primary script path")
-  (defvar my/fullname user-full-name "Full name")
-  (defvar my/email user-mail-address "Personal email")
-  (defvar my/homepage "http://www.holst.it" "Personal homepage")
+  (defvar my/local "~/.config/" "Local libraries")
   (defvar my/project-home "~/Projects/" "Personal project directory")
   (defvar my/base-directory "~/" "Base directory")
+  (defvar my/localbin (concat my/emacshome "bin/") "Primary binary path")
+  (defvar my/localscript (concat my/local "scripts/") "Primary script path")
+  (defvar my/homepage "http://www.holst.it" "Personal homepage")
   (defvar my/snippets (concat my/project-home "Snippets/") "Code snippets directory")
   (defvar my/bibliography-directory (concat my/project-home "Bibliography/") "Bibliography default path")
   (defvar my/bibliography (expand-file-name (concat my/bibliography-directory "huge.bib")) "Primary bibtex file")
   (defvar my/pdf-directory "~/Documents/PDF/" "Location of articles")
-  (defvar my/superman (concat my/project-home "metropolis/") "SuperMan project directory")
-  (setq superman-home my/superman)
-  (setq superman-profile (concat my/superman "Projects.org"))
   (doom/reload-env) ;; Seems to be necessary for now
   (add-to-list 'load-path my/emacslib)
 #+END_SRC
-
 
 GPG key to use for encryption (Either the Key ID or set to nil to use symmetric encryption).
 #+BEGIN_SRC emacs-lisp
@@ -80,7 +67,7 @@ Binaries locations
 (setq langtool-java-bin "java")
 (setq langtool-mother-tongue "en")
 (setq org-babel-C++-compiler (concat "ccache clang++")
-		org-babel-python-command "python3")
+      org-babel-python-command "python3")
 (setq lsp-clients-clangd-executable "clangd")
 (setq plantuml-jar-path (expand-file-name (concat my/localbin "plantuml/plantuml.jar")))
 (defvar my/opencmd (if IS-MAC "open" "/usr/bin/xdg-open") "Program for opening files and applications")
@@ -102,6 +89,11 @@ They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
 ;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
  #+END_SRC
+
+Splash screen setup
+#+BEGIN_SRC emacs-lisp
+(setq +doom-dashboard-banner-file (expand-file-name "mascot.png" doom-private-dir))
+#+END_SRC
 
 There are two ways to load a theme. Both assume the theme is installed and
 available. You can either set `doom-theme' or manually load a theme with the
@@ -1566,7 +1558,7 @@ Avy (ace-jump-mode replacement)
 (map! :leader "n +" #'citar-open)
 (map! :leader "n B" #'citar-open)
 (map! :leader "n ?" #'biblio-lookup)
-(map! :leader "! !" #'helm-flycheck)
+(map! :leader "! !" #'consult-flycheck)
 (map! :leader "<tab>" #'ivy-yasnippet)
 
 #+END_SRC
