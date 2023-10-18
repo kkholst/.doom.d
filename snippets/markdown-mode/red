@@ -1,0 +1,7 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: Red color paragraph
+# --
+
+<span style="color: red;">
+${1:text}
+</span>

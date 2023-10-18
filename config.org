@@ -381,7 +381,7 @@ Close buffers easily
 #+BEGIN_SRC emacs-lisp
 (defun my/transpose-buffers (arg)
   "Transpose the buffers shown in two windows."
-  ((interactive)eractive "p")
+  ((interactive) "p")
   (let ((selector (if (>= arg 0) 'next-window 'previous-window)))
     (while (/= arg 0)
       (let ((this-win (window-buffer))
@@ -866,8 +866,7 @@ Platformio
         bibtex-completion-pdf-field "File"
 	bibtex-completion-library-path `(,my/pdf-directory) ;;'("~/Documents/PDF" "~/Projects/Publications")
 	bibtex-completion-bibliography `(,my/bibliography "huge.bib")
-        bibtex-completion-additional-search-fields '(keywords)
-	bibtex-completion-notes-path (concat my/bibliography-directory "helm-bibtex-notes"))
+        bibtex-completion-additional-search-fields '(keywords))
 
 
 (use-package! citar
@@ -890,7 +889,7 @@ Platformio
 ;;   :after (citar org-roam)
 ;;   :config (citar-org-roam-mode))
 
-(after! helm-bibtex (advice-add 'bibtex-completion-candidates :filter-return 'reverse))
+;;(after! helm-bibtex (advice-add 'bibtex-completion-candidates :filter-return 'reverse))
 (add-hook! '(LaTeX-mode-hook) #'writegood-mode)
 
 (use-package! reftex
@@ -935,10 +934,10 @@ Platformio
 ;;       helm-use-undecorated-frame-option t
 ;;      helm-use-undecorated-frame-option nil
 ;;)
-(use-package! helm-c-yasnippet
-  :after helm yasnippet)
-(use-package! helm-flycheck
-  :after helm flycheck)
+;;(use-package! helm-c-yasnippet
+;;  :after helm yasnippet)
+;;(use-package! helm-flycheck
+;;  :after helm flycheck)
 (setq helm-recentf-fuzzy-match t
       helm-buffers-fuzzy-matching t
       helm-locate-fuzzy-match t
@@ -1379,16 +1378,22 @@ Capture
 
   #+BEGIN_SRC emacs-lisp
   ;;  (setq ns-right-option-modifier 'super)
-(setq ns-right-alternate-modifier 'none
-      mac-right-option-modifier 'none
-      mac-option-modifier 'meta
-      mac-command-modifier 'meta
-      mac-right-command-modifier 'super)
+;;(setq ns-right-alternate-modifier 'none
+;;      mac-right-option-modifier 'none
+;;      mac-option-modifier 'meta
+;;      mac-command-modifier 'meta
+;;      mac-right-command-modifier 'super)
     ;; (setq mac-option-key-is-meta nil
     ;;       mac-command-key-is-meta t
     ;;       mac-command-modifier 'meta
 	  ;; mac-option-modifier 'none)
   #+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq ns-alternate-modifier 'none
+      mac-command-modifier 'meta
+      mac-right-command-modifier 'super)
+#+END_SRC
 
 ** Editor
 
@@ -1551,8 +1556,7 @@ Avy (ace-jump-mode replacement)
  ;;"M-m" #'helm-show-kill-ring
  ;;"C-x b"  #'helm-mini
  ;;"C-<f4>" #'helm-execute-kmacro
- "<f12>" #'citar-open ;;#'helm-bibtex
- ;;"C-<f9>" #'helm-resume
+ "<f12>" #'citar-open
  ;;"C-c h" #'helm-resume)
 )
 (map! :leader "n +" #'citar-open)
@@ -1598,6 +1602,25 @@ Avy (ace-jump-mode replacement)
 #+END_SRC
 
 ** Development
+
+#+begin_src emacs-lisp
+(defun my/rmd-export ()
+"Export Rmd buffer to default html/pdf"
+(interactive)
+(save-buffer)
+(let* ((buf (buffer-file-name))
+       (out  (concat (file-name-base (buffer-file-name)) ".html"))
+       (args (concat "'" buf "', output_format = NULL, knit_root_dir=getwd()"))
+       (cmd (concat "rmarkdown::render(" args ")"))
+       )
+  ;; (ess-execute cmd)
+  (message (concat "Processing " buf))
+  (ess-eval-linewise cmd)
+  (message (concat "Written to " out))
+  )
+)
+#+end_src
+
 #+BEGIN_SRC emacs-lisp
   (use-package! comment-dwim-2
 		:commands (comment-dwim-2)
@@ -1660,6 +1683,16 @@ backquote use 'C-q `'
     "s l"      #'pdf-view-goto-page
     ))
 #+END_SRC
+
+** Markdown
+
+#+begin_src emacs-lisp
+(after! markdown-mode
+	  (map!
+           :map markdown-mode-map
+           "C-c C-c r" #'my/rmd-export))
+#+end_src
+
 
 ** ESS
 
