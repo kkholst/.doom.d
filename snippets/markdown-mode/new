@@ -5,9 +5,10 @@
 ---
 title: "..."
 author: "Klaus K. Holst (KKZH)"
-date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+date: "Last compiled on \`r format(Sys.time(), '%d %B, %Y')\`"
 output: html_document
 bibliography: ref.bib
+csl: templates/electronic-journal-of-statistics.csl
 ---
 
 # Introduction
@@ -20,6 +21,12 @@ $\int f$
 &= \xi(\theta)
 \end{align}
 
-```{r myplot, echo=FALSE}
+\`\`\`{r myplot, echo=FALSE}
 plot(1:10)
-```
+\`\`\`
+
+
+<!-- Local Variables: -->
+<!-- eval: (define-minor-mode local-mode "local buffer mode" :init-value nil :key-map nil) -->
+<!-- my-org-buffer-local-mode: t -->
+<!-- End: -->

@@ -1,5 +1,5 @@
 #+TITLE:
-#+DATE:    December 23, 2020
+#+DATE:    October 18, 2023
 #+STARTUP: inlineimages nofold
 
 #+BEGIN_QUOTE
@@ -20,9 +20,9 @@ https://github.com/hlissner/emacs-doom-themes/tree/screenshots
 * Installation
 
 #+BEGIN_SRC sh
-git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d
-git clone git@github.com:kkholst/.doom.d ~/.doom.d
-~/.emacs.d/bin/doom install
+git clone git@github.com:kkholst/.doom.d .config/doom
+git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
+~/.config/emacs/bin/doom install
 #+END_SRC
 
 Alter the section [[file:config.org::*Variable definitions]['Variable definitions']] in =config.org= to your needs or add a custom =.doom.d/init.el= file to override definitions (for example =doom-theme=, =doom-font= variables)
