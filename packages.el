@@ -34,6 +34,7 @@
 (package! flycheck-google-cpplint)
 (package! flycheck-clang-analyzer)
 ;; (package! processing-mode)
+(package! arduino-mode)
 (package! platformio-mode)
 (package! org-fragtog)
 ;;(package! org-ref)

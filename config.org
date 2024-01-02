@@ -708,9 +708,9 @@ Processing
 
 Arduino
 #+BEGIN_SRC emacs-lisp
-;;(use-package arduino-mode
-;;  :commands (arduino-mode)
-;;  :mode ("\\.ino\\'" . arduino-mode))
+(use-package arduino-mode
+ :commands (arduino-mode)
+ :mode ("\\.ino\\'" . arduino-mode))
 #+END_SRC
 
 Platformio
