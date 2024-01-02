@@ -8,7 +8,7 @@ computer to perform automatically a task that would otherwise take me
 a good ten seconds to do by hand.” - /Douglas Adams/
 #+END_QUOTE
 
-This respository contains my [[https://github.com/hlissner/doom-emacs][doom-emacs]] configuration.
+This repository contains my [[https://github.com/hlissner/doom-emacs][doom-emacs]] configuration.
 
 API reference:
 https://github.com/hlissner/doom-emacs/blob/develop/docs/api.org
@@ -35,9 +35,9 @@ VIM users should enable *evil mode* by uncommenting the relevant lines in  =init
 make sure that relevant directory structures exists (e.g., =~/Projects/notes= and =~/Projects/org= unless altered in the above step).
 
 
-Afterwards the doom configuration needs to be synchronized (will also expose your shell environment variables to emacs)
+Afterwards, the doom configuration needs to be synchronized (will also expose your shell environment variables to emacs)
 #+BEGIN_SRC sh
-~/.emacs.d/bin/doom sync
+~/.config/emacs/bin/doom sync
 #+END_SRC
 
 

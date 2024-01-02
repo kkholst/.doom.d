@@ -6,49 +6,29 @@
 ;; use 'M-x doom/reload'.
 
 (add-load-path! "lisp")
-;;(package! f)
-;;(package! dash)
-;;(package! pkg-info)
-;;(package! epl)
-;;(unpin! org-roam)
-;;(package! docker-tramp)
+(package! yasnippet)
+(package! auto-yasnippet)
+(package! djvu)
 (package! org-roam-ui)
 (package! org-roam-bibtex
   :recipe (:host github :repo "org-roam/org-roam-bibtex"))
-(package! websocket)
-(package! async-await)
-(package! emacs-aichat
-  :recipe (:host github :repo "xhcoding/emacs-aichat" :files ("*.el" "snippets/")))
-  ;; :recipe (:host github :repo "https://github.com/xhcoding/emacs-aichat.git"))
 (package! dired+)
 ;; (package! emacs-jupyter
-  ;; :recipe (:host github :repo "nnicandro/emacs-jupyter"))
-(package! jupyter)
+;; :recipe (:host github :repo "nnicandro/emacs-jupyter"))
+;; (package! jupyter)
+(package! grammarly)
+(package! flycheck-grammarly)
 (package! peep-dired)
 (package! dired-ranger)
 (package! dired-narrow)
 (package! comment-dwim-2)
 (package! google-translate)
-;;(package! ivy-yasnippet)
-;;(package! counsel-dash)
 (package! flycheck-google-cpplint)
 (package! flycheck-clang-analyzer)
 ;; (package! processing-mode)
 (package! platformio-mode)
 (package! org-fragtog)
-;;(package! org-ref)
-;;(package! ebib)
 (package! ox-tufte)
-;; (package! helm)
-;; (package! helm-ag)
-;; (package! helm-flycheck)
-;; (package! helm-bibtex)
-;; (package! helm-c-yasnippet)
-;;(package! helm-org-rifle)
-;;(package! hippie-exp)
-;;(package! ace-jump-mode)
-;;(package! langtool)
-;;(package! ivy-bibtex)
 (package! texfrag)
 (package! superman
   :recipe (:host github :repo "tagteam/superman"))
@@ -59,7 +39,6 @@
 ;;(package! org-projectile)
 (package! org-project
   :recipe (:host github :repo "delehef/org-project"))
-
 
 ;; (package! pdf-tools :recipe
 ;;           (:host github

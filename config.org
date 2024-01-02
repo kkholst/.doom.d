@@ -63,7 +63,7 @@ Org related directories
 
 Binaries locations
 #+BEGIN_SRC emacs-lisp
-(setq langtool-language-tool-jar (concat my/localbin "languagetool-commandline.jar"))
+(setq langtool-language-tool-jar (concat my/localbin "langtool_cur/languagetool-commandline.jar"))
 (setq langtool-java-bin "java")
 (setq langtool-mother-tongue "en")
 (setq org-babel-C++-compiler (concat "ccache clang++")
@@ -291,7 +291,7 @@ Encryption
 
 * Functions
 
- Bury *scratch* buffer instead of kill it
+Bury *scratch* buffer instead of kill it
 #+BEGIN_SRC emacs-lisp
 (defadvice kill-buffer (around kill-buffer-around-advice activate)
   (let ((buffer-to-kill (ad-get-arg 0)))
@@ -564,6 +564,13 @@ Language tool (grammar checking)
 ))
 #+END_SRC
 
+
+Seems to slow down, so disabling for now
+#+BEGIN_SRC emacs-lisp
+;; (with-eval-after-load 'flycheck
+  ;; (flycheck-grammarly-setup))
+#+END_SRC
+
 * Development
 
 LSP and DAP debugger:
@@ -624,9 +631,9 @@ Code linters
   (flycheck-add-next-checker 'lsp 'python-pylint))
 (add-hook 'python-mode-lsp-hook #'my-python-linter-setup)
 
-(defun my-r-linter-setup ()
-   (flycheck-add-next-checker 'lsp 'r-lintr))
-(add-hook 'R-mode-lsp-hook #'my-r-linter-setup)
+;;(defun my-r-linter-setup ()
+;;   (flycheck-add-next-checker 'lsp 'r-lintr))
+;;(add-hook 'R-mode-lsp-hook #'my-r-linter-setup)
 
 ;; (use-package! flycheck-clang-analyzer
 ;;   :init
@@ -951,6 +958,12 @@ Platformio
       helm-input-idle-delay 0.1)
 #+END_SRC
 
+* Doom specific
+
+#+BEGIN_SRC emacs-lisp
+(set-popup-rule! "^\\*" :side 'bottom :height 0.5)
+#+END_SRC
+
 * ESS
 
 Note that lintr and languageserver needs to be installed in R for this
@@ -959,37 +972,67 @@ to work (https://emacs-lsp.github.io/lsp-mode/page/lsp-r/ )
 install.packages(“languageserver”)
 #+END_SRC
 
+#+begin_src emacs-lisp
+(setq ess-use-flymake nil)
+(setq ess-eval-visibly-p nil)
+(setq ess-r--no-company-meta t)
+#+end_src
+
 #+BEGIN_SRC emacs-lisp
-	(setq ess-ask-for-ess-directory nil)
-	(setq ess-local-process-name "R")
-	(setq timeout-ms 1) ;; still necessary to avoid slow evaluation?
+(defun my/r-lsp ()
+  "Dispatch lsp/eglot in actual R files (but not poly-mode blocks)"
+  (interactive)
+  (let* ((buf (buffer-file-name)))
+    (if buf
+        (pcase (downcase (file-name-extension buf))
+          ("R" (progn
+                 (lsp!)))
+          ("r" (progn
+                 (lsp!)))
+          ;; other file extensions?
+          ))
+    )
+  )
 
-  (setq polymode-lsp-integration nil) ;; Creates problems with poly-R
+(after! ess
+  ;; (when (modulep! +lsp)
+(add-hook 'ess-r-mode-local-vars-hook #'my/r-lsp 'append)
+)
+  ;; )
 
-	 ;; Code check via lintr
-	 (setq flycheck-lintr-linters
-		"default_linters[-which(names(default_linters)%in%c('absolute_paths_linter','commas_linter','infix_spaces_linter','spaces_left_parentheses_linter','no_tab_linter'))]")
-	 ;; 'Buggy-as-hell' ESS:
-	 (defun ess-turn-on-SAS-listing-mode (&optional arg) nil)
-	 (setq inferior-R-font-lock-keywords
-		'((ess-S-fl-keyword:prompt . t)
-		  (ess-R-fl-keyword:modifiers . t)
-		  (ess-R-fl-keyword:fun-defs . t)
-		  (ess-R-fl-keyword:keywords . t)
-		  (ess-R-fl-keyword:assign-ops . t)
-		  (ess-R-fl-keyword:constants . t)
-		  (ess-R-fl-keyword:messages . t)
-		  (ess-fl-keyword:matrix-labels . t)
-		  (ess-fl-keyword:fun-calls . t)
-		  (ess-fl-keyword:numbers . t)
-		  (ess-fl-keyword:operators . t)
-		  (ess-fl-keyword:delimiters . t)
-		  (ess-fl-keyword:= . t)
-		  (ess-R-fl-keyword:F&T . t)))
+
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq ess-ask-for-ess-directory nil)
+(setq ess-local-process-name "R")
+(setq-default ess-language "R")
+
+(setq timeout-ms 1) ;; still necessary to avoid slow evaluation?
+(setq polymode-lsp-integration nil) ;; Creates problems with poly-R
+ ;; Code check via lintr
+;; (setq flycheck-lintr-linters
+	;; "default_linters[-which(names(default_linters)%in%c('absolute_paths_linter','commas_linter','infix_spaces_linter','spaces_left_parentheses_linter','no_tab_linter'))]")
+;; 'Buggy-as-hell' ESS:
+;;(defun ess-turn-on-SAS-listing-mode (&optional arg) nil)
+;; (setq inferior-R-font-lock-keywords
+;; 		'((ess-S-fl-keyword:prompt . t)
+;; 		  (ess-R-fl-keyword:modifiers . t)
+;; 		  (ess-R-fl-keyword:fun-defs . t)
+;; 		  (ess-R-fl-keyword:keywords . t)
+;; 		  (ess-R-fl-keyword:assign-ops . t)
+;; 		  (ess-R-fl-keyword:constants . t)
+;; 		  (ess-R-fl-keyword:messages . t)
+;; 		  (ess-fl-keyword:matrix-labels . t)
+;; 		  (ess-fl-keyword:fun-calls . t)
+;; 		  (ess-fl-keyword:numbers . t)
+;; 		  (ess-fl-keyword:operators . t)
+;; 		  (ess-fl-keyword:delimiters . t)
+;; 		  (ess-fl-keyword:= . t)
+;; 		  (ess-R-fl-keyword:F&T . t)))
 	  (defun ess-tooltip-show-at-point (text xo yo)
 	    (with-no-warnings
 	      (popup-tip text)))
-	  (setq-default ess-language "R")
 
       (defun my/ess-eval ()
 	(interactive)
@@ -1376,24 +1419,18 @@ Capture
 
 * Key bindings
 
-  #+BEGIN_SRC emacs-lisp
-  ;;  (setq ns-right-option-modifier 'super)
-;;(setq ns-right-alternate-modifier 'none
-;;      mac-right-option-modifier 'none
-;;      mac-option-modifier 'meta
-;;      mac-command-modifier 'meta
-;;      mac-right-command-modifier 'super)
-    ;; (setq mac-option-key-is-meta nil
-    ;;       mac-command-key-is-meta t
-    ;;       mac-command-modifier 'meta
-	  ;; mac-option-modifier 'none)
-  #+END_SRC
-
 #+BEGIN_SRC emacs-lisp
 (setq ns-alternate-modifier 'none
       mac-command-modifier 'meta
       mac-right-command-modifier 'super)
 #+END_SRC
+
+
+#+BEGIN_SRC emacs-lisp
+(global-unset-key (kbd "C-x C-z"))
+;;(put 'suspend-frame 'disabled t)
+#+END_SRC
+
 
 ** Editor
 
@@ -1457,9 +1494,9 @@ Capture
   (define-key global-map [C-prior] (lambda() (interactive) (scroll-down 1)))
   (define-key global-map [C-next] (lambda() (interactive) (scroll-up 1)))
 
-  (global-set-key (kbd "M-o") 'other-window)
-  (global-set-key (kbd "C-M-o") 'other-frame)
-  (global-set-key (kbd "M-O") 'other-frame)
+  (map! "M-o" #'other-window)
+  (map! "C-M-o" #'other-frame)
+  (map! "M-O" #'other-frame)
 
   (defun scroll-down-in-place (n)
     (interactive "p")
@@ -1547,7 +1584,9 @@ Avy (ace-jump-mode replacement)
       ;; "c p" #'ivy-push-view
       ;; "c P" #'ivy-pop-view
       "SPC" #'avy-goto-word-or-subword-1
-      "O" #'ace-window)
+      ;; "O" #'ace-window
+      )
+(map! "C-x o" #'ace-window)
 #+END_SRC
 
 
@@ -1585,6 +1624,17 @@ Avy (ace-jump-mode replacement)
     "C-c /"        #'helm-find))
 #+END_SRC
 
+
+#+BEGIN_SRC emacs-lisp
+(defun consult-ripgrep-dir () (interactive)
+       (setq current-prefix-arg '(1))
+       (call-interactively 'consult-ripgrep)
+       )
+;;(map! :leader "f g" #'consult-ripgrep)
+(map! :leader "C-f g" #'consult-ripgrep)
+(map! :leader "f G" #'consult-ripgrep-dir)
+(map! :leader "C-f G" #'consult-ripgrep-dir)
+#+END_SRC
 
 #+BEGIN_SRC emacs-lisp
 (if IS-MAC
@@ -1672,6 +1722,14 @@ backquote use 'C-q `'
 ))
 ;; org-store-link should be accessible from all buffers
 (map! :localleader "RET" #'org-store-link) ;; C-c l RET
+
+(map!
+ (:map org-mode-map
+    :leader "e"     #'cdlatex-environment
+    )
+ (:map markdown-mode-map
+    :leader "e"     #'cdlatex-environment
+    ))
 #+END_SRC
 
 ** PDF
