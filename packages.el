@@ -18,8 +18,10 @@
 ;; (package! jupyter)
 (package! grammarly)
 (package! flycheck-grammarly)
+;; already included in dired-hacks?
 (package! peep-dired)
 (package! dired-ranger)
+(package! dired-narrow)
 (package! dired-narrow)
 (package! comment-dwim-2)
 (package! google-translate)

@@ -719,24 +719,6 @@ Arduino
  :commands (arduino-mode)
  :mode ("\\.ino\\'" . arduino-mode))
 #+END_SRC
-
-Platformio
-#+BEGIN_SRC emacs-lisp
-(use-package platformio-mode
-  :after arduino-mode
-  :init
-  (defun platformio-reupload ()
-    (interactive)
-    (ignore-errors (kill-buffer "*Async Shell Command*"))
-    (platformio-upload ""))
-  (defun platformio-monitor ()
-    (interactive)
-    (async-shell-command "platformio device monitor -b 115200"))
-  (add-hook 'arduino-mode-hook (lambda () (platformio-mode 1)))
-  :commands (platformio-build platform-upload)
-  :bind
-  (:map platformio-mode-map
-	("C-c C-b" . platformio-build)
 	("C-c C-c" . platformio-monitor)
 	("C-c C-r" . platformio-reupload)))
 #+END_SRC
@@ -973,7 +955,8 @@ install.packages(“languageserver”)
 #+END_SRC
 
 #+begin_src emacs-lisp
-(setq ess-use-flymake nil)
+;;(setq flycheck-disabled-checkers '(r-lintr))
+;; (setq ess-use-flymake nil)
 (setq ess-eval-visibly-p nil)
 (setq ess-r--no-company-meta t)
 #+end_src
@@ -1007,6 +990,11 @@ install.packages(“languageserver”)
 (setq ess-ask-for-ess-directory nil)
 (setq ess-local-process-name "R")
 (setq-default ess-language "R")
+
+;; remove the single-# indentation
+ (defun my-ess-settings ()
+     (setq ess-indent-with-fancy-comments nil))
+   (add-hook 'ess-mode-hook #'my-ess-settings)
 
 (setq timeout-ms 1) ;; still necessary to avoid slow evaluation?
 (setq polymode-lsp-integration nil) ;; Creates problems with poly-R
@@ -1141,7 +1129,7 @@ Org R markdown export
 	      :after ox)
 #+END_SRC
 
-Latex
+TeX
 #+BEGIN_SRC emacs-lisp
   (after! org
     (add-hook 'org-mode-hook 'org-fragtog-mode)
@@ -1226,7 +1214,7 @@ Babel / source code content
   (setq org-hide-emphasis-markers t)
 
   (after! org
-    (add-to-list 'org-link-abbrev-alist '("gmane" . "http://thread.gmane.org/%s"))
+;;    (add-to-list 'org-link-abbrev-alist '("gmane" . "http://thread.gmane.org/%s"))
 	  (add-to-list 'org-link-abbrev-alist '("arxiv" . "http://arxiv.org/abs/%s"))
 	  (add-to-list 'org-link-abbrev-alist '("doi" . "http://dx.doi.org/%s"))
 
@@ -1256,6 +1244,7 @@ Babel / source code content
   (add-hook 'org-ctrl-c-ctrl-c-hook 'org-display-inline-images)
   ;; Down-size inline images
   (setq org-image-actual-width 300)
+
 
   ;; (add-hook 'org-shiftup-final-hook 'windmove-up)
   ;; (add-hook 'org-shiftleft-final-hook 'windmove-left)
@@ -1330,6 +1319,9 @@ Org-roam https://github.com/org-roam/org-roam-ui
 #+END_SRC
 
 
+
+* Projects, Agenda
+
 deft
 #+BEGIN_SRC emacs-lisp
 (setq deft-recursive t
@@ -1349,8 +1341,6 @@ deft
                                         ))
 (map! :leader "n d" #'deft-or-close)
 #+END_SRC
-
-* Projects, Agenda
 
 
 #+BEGIN_SRC emacs-lisp
@@ -1433,6 +1423,15 @@ Capture
 
 
 ** Editor
+
+#+BEGIN_SRC emacs-lisp
+;;(windmove-default-keybindings 'ctrl)
+  (global-set-key [C-M-right] 'windmove-right)
+  (global-set-key [C-M-left] 'windmove-left)
+  (global-set-key [C-M-up] 'windmove-up)
+  (global-set-key [C-M-down] 'windmove-down)
+#+END_SRC
+
 
 #+BEGIN_SRC emacs-lisp
   (if (not IS-MAC)
@@ -1579,6 +1578,8 @@ narrowed."
 Avy (ace-jump-mode replacement)
 #+BEGIN_SRC emacs-lisp
 (setq avy-all-windows t)
+(setq aw-scope 'frame)  ;; ace-window only considers windows in current frame
+;;(setq aw-ignore-current t) ;; ignore current window
 ;;(global-set-key (kbd "C-c j") 'avy-goto-word-or-subword-1)
 (map! :leader
       ;; "c p" #'ivy-push-view

@@ -35,7 +35,7 @@ VIM users should enable *evil mode* by uncommenting the relevant lines in  =init
 make sure that relevant directory structures exists (e.g., =~/Projects/notes= and =~/Projects/org= unless altered in the above step).
 
 
-Afterwards, the doom configuration needs to be synchronized (will also expose your shell environment variables to emacs)
+Next, the doom configuration needs to be synchronized (will also expose your shell environment variables to emacs)
 #+BEGIN_SRC sh
 ~/.config/emacs/bin/doom sync
 #+END_SRC
@@ -61,12 +61,12 @@ sudo dnf install -y libXpm-devel Xaw3d-devel openjpeg-devel libpng-devel librsvg
 On Mac OS X via homebrew (here the native-comp branch, i.e. gccemacs):
 #+BEGIN_SRC sh
 brew tap d12frosted/emacs-plus 
-brew install emacs-plus@28 --with-modern-doom3-icon --with-native-comp
+brew install emacs-plus@28 --with-modern-doom3-icon --with-native-comp --with-xwidgets --with-no-frame-refocus
 #+END_SRC
 
 ** Other dependencies
 
-For the Python envionment you may need to install [[https://github.com/pyenv/pyenv][pyenv]] (here assuming you are using =zsh=)
+For the Python environment you may need to install [[https://github.com/pyenv/pyenv][pyenv]] (here assuming you are using =zsh=)
 #+BEGIN_SRC sh
 git clone https://github.com/pyenv/pyenv.git ~/.pyenv
 echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc

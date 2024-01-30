@@ -1,0 +1,23 @@
+# -*- mode: snippet -*-
+# name: presentation
+# key: <presentation
+# --
+\documentclass[table,10pt,aspectratio=1610]{beamer}
+\usepackage{novo_utils,tikz}
+\usetheme[nologo]{novo}
+\author{Klaus K. Holst (KKZH)}
+
+\begin{document}
+%% \maketitle
+
+\begin{frame}{Title}
+  \putrel[0][0][0.1]{\includegraphics[width=4cm]{nn_logo}}
+  \putrel[0][0]{\includegraphics[width=4cm]{icons/capsules}}
+\end{frame}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
