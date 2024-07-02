@@ -2,39 +2,82 @@
 # name: presentation
 # key: presentation
 # --
-#  -*- eval: (my-org-buffer-local-mode); eval: (define-key my-org-buffer-local-mode-map (kbd "C-x C-s") 'my/org-export-to-latex); coding: utf-8 -*-
-#+STARTUP: beamer overview
-* Header							     :IGNORE::ARCHIVE:
-#+TITLE: ${1:title}
-#+AUTHOR: `user-full-name`
-#+EMAIL: `user-mail-address`
-#+DATE: \today
-#+LATEX_CLASS: beamer
-#+LATEX_CLASS: presentation+tikz
-#+LATEX_CLASS_OPTIONS: [table,onlymath,12pt,handout]
-#+BEAMER_THEME: maersk [nofooter]
-# +BEAMER_THEME: maersk [titlebackground]
-#+BEAMER_COLOR_THEME: maersk
-#+BEAMER_FONT_THEME: professionalfonts
-#+LATEX_HEADER: \usepackage{bm}\usepackage[normalem]{ulem}
-#+LATEX_HEADER: \newcommand{\one}{\bm{1}}
-# +LATEX_HEADER: \usepackage{pgfpages}
-# +LATEX_HEADER: \mode<handout>{%
-# +LATEX_HEADER:    \pgfpagesuselayout{2 on 1}[a4paperborder shrink=5mm]
-# +LATEX_HEADER:    %\pgfpagesuselayout{4 on 1}[a4paper,landscape]
-# +LATEX_HEADER:    \setbeameroption{show notes}
-# +LATEX_HEADER: }
-# +LATEX_HEADER: \setbeameroption{show notes}
-# +LATEX_HEADER_EXTRA: \usepackage{newtxtext}
-# +LATEX_HEADER_EXTRA: \usepackage{newtxmath}
-#+LATEX_HEADER_EXTRA: \usepackage{libertine}
-#+LATEX_HEADER_EXTRA: \usepackage[libertine]{newtxmath}
-#+OPTIONS: toc:nil h:3 ^:{}
-#+PROPERTY: header-args:R  :session *R* :cache no :width 550 :height 450
-#+PROPERTY: header-args  :eval never-export :exports code :results output :tangle yes :comments yes
-#+PROPERTY: header-args:R+ :colnames yes :rownames no :hlines yes
+# -*- eval: (my-org-buffer-local-mode); eval: (define-key my-org-buffer-local-mode-map (kbd "C-x C-s") 'my/org-export-to-latex); coding: utf-8 -*-
+#+startup: beamer overview
+#+latex_class: beamer
+#+latex_class_options: [table,onlymath,10pt,aspectratio=1610]
+#+beamer_theme: novo [titlebackground]
+#+beamer_font_theme: professionalfonts
+#+title: ...
+#+subtitle: ...
+#+author: Klaus Kähler Holst
+#+date: May 23 2024
+#+options: toc:nil title:t ^:{} h:2
+#+property: header-args:R  :session *R* :cache no
+#+property: header-args  :eval never-export :exports code :results output :tangle yes :comments yes
+#+property: header-args:R+ :colnames yes :rownames no :hlines yes
+#+latex_header: \usepackage{novo_utils, pifont, enumitem}
+#+latex_header: \graphicspath{{./}{figs/}}
+#+latex_header: \usepackage[outputdir=tmp/build,cachedir=minted]{minted}
+#+latex_header: \usemintedstyle{tango}
+#+latex_header: \setminted{linenos,fontsize=\footnotesize,texcomments,breaklines=true,frame=lines,framerule=0.3pt,framesep=2.5pt}
+# +latex_header: \setbeameroption{show notes on second screen}
 
 * Introduction
 
-*** Outline
-$0
+** Outline
+
+# \ding{109}
+#+attr_latex: :options itemsep=2.5em,label={\ding{109}}
++ asdasd
++ asdasd
+
+** Slide 1
+\[\int f\,dm\]
+
+#+BEGIN_SRC R :exports both
+summary(iris[,c(1,2,5)])
+#+END_SRC
+
+#+RESULTS:
+:   Sepal.Length    Sepal.Width          Species
+:  Min.   :4.300   Min.   :2.000   setosa    :50
+:  1st Qu.:5.100   1st Qu.:2.800   versicolor:50
+:  Median :5.800   Median :3.000   virginica :50
+:  Mean   :5.843   Mean   :3.057
+:  3rd Qu.:6.400   3rd Qu.:3.300
+:  Max.   :7.900   Max.   :4.400
+
+**** \normalsize                                                                :B_note:
+:PROPERTIES:
+:BEAMER_env: note
+:END:
+
+Here is some notes...
+
+
+
+** Slide 2
+
+#+NAME: test
+#+ATTR_LaTeX: :options :center t
+#+HEADER:  :exports both :results graphics file :file tmp/test.pdf :width 6 :height 4
+#+BEGIN_SRC R
+plot(1:10, pch=16)
+#+END_SRC
+
+#+latex: \vspace*{-1em}
+
+#+RESULTS: test
+[[file:tmp/test.pdf]]
+
+#+latex: \putrel[0][0]{\includegraphics[width=2cm]{nn_logo}}
+
+
+** References
+
+[cite:@benkeser2016:hal]
+
+#+cite_export: natbib apalike
+#+print_bibliography:
+# +latex: \bibliography{refs}

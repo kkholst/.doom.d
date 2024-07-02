@@ -854,7 +854,8 @@ Arduino
   (setq helm-bib-pdf-file "pdf"
         bibtex-completion-pdf-field "File"
 	bibtex-completion-library-path `(,my/pdf-directory) ;;'("~/Documents/PDF" "~/Projects/Publications")
-	bibtex-completion-bibliography `(,my/bibliography "huge.bib")
+;;	bibtex-completion-bibliography `(,my/bibliography "huge.bib")
+        bibtex-completion-bibliography my/bibliography
         bibtex-completion-additional-search-fields '(keywords))
 
 
@@ -940,6 +941,33 @@ Arduino
       helm-input-idle-delay 0.1)
 #+END_SRC
 
+** Copilot
+
+#+BEGIN_SRC emacs-lisp
+;; accept completion from copilot and fallback to company
+;;(use-package! copilot
+;;  :hook (prog-mode . copilot-mode)
+;;  :bind (:map copilot-completion-map
+;;              ("<tab>" . 'copilot-accept-completion)
+;;              ("TAB" . 'copilot-accept-completion)
+;;              ("C-TAB" . 'copilot-accept-completion-by-word)
+;;              ("C-<tab>" . 'copilot-accept-completion-by-word)))
+
+;; (after! (evil copilot)
+;;   ;; Define the custom function that either accepts the completion or does the default behavior
+;;   (defun my/copilot-tab-or-default ()
+;;     (interactive)
+;;     (if (and (bound-and-true-p copilot-mode)
+;;              ;; Add any other conditions to check for active copilot suggestions if necessary
+;;              )
+;;         (copilot-accept-completion)
+;;       (evil-insert 1))) ; Default action to insert a tab. Adjust as needed.
+
+;;   ;; Bind the custom function to <tab> in Evil's insert state
+  ;; (evil-define-key 'insert 'global (kbd "<tab>") 'my/copilot-tab-or-default))
+#+END_SRC
+
+
 * Doom specific
 
 #+BEGIN_SRC emacs-lisp
@@ -959,9 +987,7 @@ install.packages(“languageserver”)
 ;; (setq ess-use-flymake nil)
 (setq ess-eval-visibly-p nil)
 (setq ess-r--no-company-meta t)
-#+end_src
 
-#+BEGIN_SRC emacs-lisp
 (defun my/r-lsp ()
   "Dispatch lsp/eglot in actual R files (but not poly-mode blocks)"
   (interactive)
@@ -981,9 +1007,7 @@ install.packages(“languageserver”)
   ;; (when (modulep! +lsp)
 (add-hook 'ess-r-mode-local-vars-hook #'my/r-lsp 'append)
 )
-  ;; )
-
-
+;; )
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -991,111 +1015,127 @@ install.packages(“languageserver”)
 (setq ess-local-process-name "R")
 (setq-default ess-language "R")
 
+(defun my/current-line-empty-p ()
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (looking-at-p "[[:blank:]]*$")))
+
+(defun my/mark-paragraph ()
+  (interactive)
+  (mark-paragraph)
+  (if (my/current-line-empty-p)
+      (forward-line)))
+
+(defun my/ess-tab ()
+  (interactive)
+  (when (not (use-region-p))
+    (mark-paragraph)
+    )
+  (eglot-format (region-beginning) (region-end))
+  )
+
+  ;; (save-excursion
+  ;;   (indent-according-to-mode)
+  ;;   (let ((beg (beginning-of-line)) (end (end-of-line)))
+  ;;     (eglot-format beg end)
+    ;; )))
+
 ;; remove the single-# indentation
- (defun my-ess-settings ()
-     (setq ess-indent-with-fancy-comments nil))
-   (add-hook 'ess-mode-hook #'my-ess-settings)
+(defun my-ess-settings ()
+  (local-unset-key (kbd "TAB"))
+  (local-set-key (kbd "C-<tab>") 'my/ess-tab)
+  )
+(setq ess-indent-with-fancy-comments nil)
+(add-hook 'ess-mode-hook #'my-ess-settings)
 
 (setq timeout-ms 1) ;; still necessary to avoid slow evaluation?
 (setq polymode-lsp-integration nil) ;; Creates problems with poly-R
  ;; Code check via lintr
 ;; (setq flycheck-lintr-linters
 	;; "default_linters[-which(names(default_linters)%in%c('absolute_paths_linter','commas_linter','infix_spaces_linter','spaces_left_parentheses_linter','no_tab_linter'))]")
-;; 'Buggy-as-hell' ESS:
-;;(defun ess-turn-on-SAS-listing-mode (&optional arg) nil)
-;; (setq inferior-R-font-lock-keywords
-;; 		'((ess-S-fl-keyword:prompt . t)
-;; 		  (ess-R-fl-keyword:modifiers . t)
-;; 		  (ess-R-fl-keyword:fun-defs . t)
-;; 		  (ess-R-fl-keyword:keywords . t)
-;; 		  (ess-R-fl-keyword:assign-ops . t)
-;; 		  (ess-R-fl-keyword:constants . t)
-;; 		  (ess-R-fl-keyword:messages . t)
-;; 		  (ess-fl-keyword:matrix-labels . t)
-;; 		  (ess-fl-keyword:fun-calls . t)
-;; 		  (ess-fl-keyword:numbers . t)
-;; 		  (ess-fl-keyword:operators . t)
-;; 		  (ess-fl-keyword:delimiters . t)
-;; 		  (ess-fl-keyword:= . t)
-;; 		  (ess-R-fl-keyword:F&T . t)))
-	  (defun ess-tooltip-show-at-point (text xo yo)
-	    (with-no-warnings
-	      (popup-tip text)))
+(after! flycheck
+  (setq flycheck-idle-change-delay .5))
+(set-company-backend! 'inferior-ess-r-mode
+    '(company-R-args company-R-objects company-dabbrev-code company-R-library :separate))
 
-      (defun my/ess-eval ()
-	(interactive)
-	(let* ((buffst))
-	  (if (string-equal ess-language "SAS")
-	      (progn
-		(if (and transient-mark-mode mark-active)
-		    (setq buffst (buffer-substring-no-properties (region-beginning) (region-end)))
-		    (setq buffst (buffer-substring-no-properties (beginning-of-line) (end-of-line))))
-		(save-window-excursion
-		  (switch-to-buffer "*iESS[SAS]*")
-		  (goto-char (point-max))
-		  (comint-send-input)
-		  (goto-char (point-max))
-		  (insert buffst)
-		  (comint-send-input)
-		  ))
-	    (progn
-	      (if (and transient-mark-mode mark-active)
-		  (call-interactively 'ess-eval-region)
-		(call-interactively 'ess-eval-line-and-step))
-	    ))))
+(defun ess-tooltip-show-at-point (text xo yo)
+  (with-no-warnings
+    (popup-tip text)))
 
-	(defun my/ess-edit-reload()
-	  (interactive)
-	  (ess-eval-linewise "reload()"))
+(defun my/ess-eval ()
+  (interactive)
+  (let* ((buffst))
+    (if (string-equal ess-language "SAS")
+	(progn
+	  (if (and transient-mark-mode mark-active)
+	      (setq buffst (buffer-substring-no-properties (region-beginning) (region-end)))
+	    (setq buffst (buffer-substring-no-properties (beginning-of-line) (end-of-line))))
+	  (save-window-excursion
+	    (switch-to-buffer "*iESS[SAS]*")
+	    (goto-char (point-max))
+	    (comint-send-input)
+	    (goto-char (point-max))
+	    (insert buffst)
+	    (comint-send-input)
+	    ))
+      (progn
+	(if (and transient-mark-mode mark-active)
+	    (call-interactively 'ess-eval-region)
+	  (call-interactively 'ess-eval-line-and-step))
+	))))
 
-	(defun tag-ess-eval-and-go ()
-	  (interactive)
-	  (if (region-active-p)
-		(let* ((start (region-beginning))
-		      (end (region-end))
+(defun my/ess-edit-reload()
+  (interactive)
+  (ess-eval-linewise "reload()"))
+(map! :leader "c l" #'my/ess-edit-reload)
+
+(defun ess-eval-and-go ()
+  (interactive)
+  (if (region-active-p)
+      (let* ((start (region-beginning))
+	     (end (region-end))
 		      (visibly (< (length (buffer-substring-no-properties start end)) 300)))
-		  (ess-eval-region-and-go start end visibly))
-	    (ess-eval-line-and-step)))
+	(ess-eval-region-and-go start end visibly))
+    (ess-eval-line-and-step)))
 
-    (defun my/ess-edit-dev-off()
-      (interactive)
-      (ess-eval-linewise "dev.off()"))
+(defun my/ess-edit-dev-off()
+  (interactive)
+  (ess-eval-linewise "dev.off()"))
 
-
-    (defvar my/split-ess-horizontal t "Controls behaviour (horizontal vs vertical split) of my/split-ess")
-    (unless (boundp 'my/split-ess-horizontal) (setq my/split-ess-horizontal nil))
+(defvar my/split-ess-horizontal t "Controls behaviour (horizontal vs vertical split) of my/split-ess")
+(unless (boundp 'my/split-ess-horizontal) (setq my/split-ess-horizontal nil))
     ;;(defvar my/ess-process-buffer "*R*")
 
-  ;;(defvar my/ess-process-buffer "*R*")
-  (defun my/split-ess ()
-    "Documentation..."
-    (interactive)
-    (require 'ess-inf)
-    (let* ((buf (current-buffer))
-                (pyt nil))
-      (if (or (eq major-mode 'octave-mode) (eq major-mode 'python-mode))
-	  (if (eq major-mode 'python-mode)
-	      (progn
-                (setq pyt t)
-		(run-python)
-		(switch-to-buffer "*Python*"))
+;;(defvar my/ess-process-buffer "*R*")
+(defun my/split-ess ()
+  "Documentation..."
+  (interactive)
+  (require 'ess-inf)
+  (let* ((buf (current-buffer))
+         (pyt nil))
+    (if (or (eq major-mode 'octave-mode) (eq major-mode 'python-mode))
+        (if (eq major-mode 'python-mode)
 	    (progn
-	      (run-octave)
-	      (switch-to-buffer "*Inferior Octave*")))
-	(progn
-	(if (and (boundp 'ess-language) (string-equal ess-language "SAS"))
+              (setq pyt t)
+	      (run-python)
+	      (switch-to-buffer "*Python*"))
+          (progn
+	    (run-octave)
+	    (switch-to-buffer "*Inferior Octave*")))
+      (progn
+        (if (and (boundp 'ess-language) (string-equal ess-language "SAS"))
 	    (progn
 	      (switch-to-buffer "*iESS[SAS]*")
 	      )
 	  ;;(ess-switch-to-inferior-or-script-buffer t))))
           (ess-switch-to-ESS nil))))
-      (delete-other-windows)
-      (if my/split-ess-horizontal (split-window-horizontally) (split-window-vertically))
-      (other-window 1)
-      (switch-to-buffer buf)
+    (delete-other-windows)
+    (if my/split-ess-horizontal (split-window-horizontally) (split-window-vertically))
+    (other-window 1)
+    (switch-to-buffer buf)
 ;;      (unless pyt
-        (my/swap-buffers-in-windows)))
-
+    (my/swap-buffers-in-windows)))
 #+END_SRC
 
 Roxygen
@@ -1317,7 +1357,6 @@ Org-roam https://github.com/org-roam/org-roam-ui
   ;;(require 'org-ref)
   )
 #+END_SRC
-
 
 
 * Projects, Agenda

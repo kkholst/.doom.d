@@ -6,6 +6,7 @@
 ;; use 'M-x doom/reload'.
 
 (add-load-path! "lisp")
+(package! quarto-mode)
 (package! yasnippet)
 (package! auto-yasnippet)
 (package! djvu)
@@ -33,6 +34,8 @@
 (package! org-fragtog)
 (package! ox-tufte)
 (package! texfrag)
+(package! copilot
+  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist")))
 (package! superman
   :recipe (:host github :repo "tagteam/superman"))
 (unpin! org-noter)
