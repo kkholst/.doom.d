@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: aligned
+# uuid:
+# key: aligned
+# condition: t
+# --
+\begin{aligned}
+$1
+\end{aligned}

@@ -57,7 +57,7 @@
        ;;tabs            ; a tab bar for Emacs
        treemacs          ; a project drawer, like neotree but cooler
        unicode         ; extended unicode support for various languages
-       (vc-gutter +pretty) ; vcs diff in the fringe
+       ;; (vc-gutter +pretty) ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        ;; (window-select ; visually switch windows
         ;; +switch-window)
@@ -96,7 +96,7 @@
        :checkers
        syntax              ; tasing you for every semicolon you forget
        (spell             ; tasing you for misspelling mispelling
-        +hunspell
+        ;;unspell
         +flyspell        ; flyspell instead of fuspell
         )
        grammar           ; tasing grammar mistake every you make
@@ -145,7 +145,7 @@
        emacs-lisp        ; drown in parentheses
        ;;erlang            ; an elegant language for a more civilized age
        (ess               ; emacs speaks statistics
-	+lintr +lsp)
+        +treesitter)
        ;;faust             ; dsp, but you get to keep your soul
        ;;fsharp            ; ML stands for Microsoft's Language
        ;;fstar             ; (dependent) types and (monadic) effects and Z3

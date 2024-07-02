@@ -4,7 +4,7 @@
 # --
 ---
 title: "..."
-author: "Klaus K. Holst (KKZH)"
+author: "Andreas Nordland (OANO)"
 date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
 output: html_document
 bibliography: ref.bib

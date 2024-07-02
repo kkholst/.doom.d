@@ -4,7 +4,6 @@
 #+STARTUP: overview
 
 #+BEGIN_SRC emacs-lisp
-
 #+END_SRC
 
 * Variable definitions (override in =local.el=)
@@ -17,22 +16,20 @@ clients, file templates and snippets
 #+END_SRC
 
 Various variable definitions
-
 #+BEGIN_SRC emacs-lisp
   (defvar my/emacshome "~/.config/doom/" "emacs configuration files")
   (defvar my/emacslib "~/.config/doom/lisp/" "emacs libraries")
   (defvar my/local "~/.config/" "Local libraries")
   (defvar my/project-home "~/Projects/" "Personal project directory")
   (defvar my/base-directory "~/" "Base directory")
-  ;; (defvar my/localbin (concat my/emacshome "bin/") "Primary binary path")
-  ;; (defvar my/localscript (concat my/local "scripts/") "Primary script path")
-  ;; (defvar my/homepage "http://www.holst.it" "Personal homepage")
-  ;; (defvar my/snippets (concat my/project-home "Snippets/") "Code snippets directory")
-  ;; (defvar my/bibliography-directory (concat my/project-home "Bibliography/") "Bibliography default path")
-  ;; (defvar my/bibliography (expand-file-name (concat my/bibliography-directory "huge.bib")) "Primary bibtex file")
-  ;; (defvar my/pdf-directory "~/Documents/PDF/" "Location of articles")
-  ;; (doom/reload-env) ;; Seems to be necessary for now
-  ;; (add-to-list 'load-path my/emacslib)
+  (defvar my/localbin (concat my/emacshome "bin/") "Primary binary path")
+  (defvar my/localscript (concat my/local "scripts/") "Primary script path")
+  (defvar my/snippets (concat my/project-home "snippets/") "Code snippets directory")
+  (defvar my/bibliography-directory (concat my/project-home "bibliography/") "Bibliography default path")
+  (defvar my/bibliography (expand-file-name (concat my/bibliography-directory "huge.bib")) "Primary bibtex file")
+  (defvar my/pdf-directory "~/Documents/PDF/" "Location of articles")
+  (doom/reload-env) ;; Seems to be necessary for now
+  (add-to-list 'load-path my/emacslib)
 #+END_SRC
 
 Org related directories
@@ -40,7 +37,59 @@ Org related directories
   (setq org-directory (concat my/project-home "org/"))
   (setq org-project-directory org-directory)
   (setq org-roam-directory (concat org-project-directory "roam/"))
+  ;; (setq projectile-project-search-path '("~/Projects/"))
 #+END_SRC
+
+Binaries locations
+#+BEGIN_SRC emacs-lisp
+(setq langtool-language-tool-jar (concat my/localbin "langtool_current/languagetool-commandline.jar"))
+(setq langtool-java-bin "java")
+(setq langtool-mother-tongue "en")
+
+;; default program for opening a file or an application
+(defvar my/opencmd (if IS-MAC "open" "/usr/bin/xdg-open") "Program for opening files and applications")
+#+END_SRC
+* Functions
+
+close buffers:
+#+BEGIN_SRC emacs-lisp
+(defun close-all-buffers ()
+  (interactive)
+  (mapc 'kill-buffer (buffer-list)))
+
+(defun close-other-buffers ()
+    "Kill all other buffers."
+    (interactive)
+    (mapc 'kill-buffer
+          (delq (current-buffer) (buffer-list) ) ) )
+#+END_SRC
+
+swap buffers:
+#+BEGIN_SRC emacs-lisp
+  (defun my/swap-buffers-in-windows ()
+    "Put the buffer from the selected window in next window, and vice versa"
+    (interactive)
+    (let* ((this (selected-window))
+       (other (next-window))
+       (this-buffer (window-buffer this))
+       (other-buffer (window-buffer other)))
+      (set-window-buffer other this-buffer)
+      (set-window-buffer this other-buffer)
+      )
+    )
+#+END_SRC
+
+cycle through kill-ring:
+#+BEGIN_SRC emacs-lisp
+  (defun yank-or-pop (arg)
+   (interactive "*p")
+    (if (eq last-command 'yank)
+        (yank-pop arg)
+      (yank arg))
+    nil)
+#+END_SRC
+
+
 
 
 * Projects, Agenda
@@ -77,10 +126,121 @@ set method for obtaining files in a project.
   (map! :leader "n T" #'org-project-open-todos)
 #+END_SRC
 
+* Spelling
 
-* Key Bindings
+Spell-checking settings
+#+begin_src emacs-lisp
+    ;; skip regions that match regex (org-stuff):
+    (add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
+    (add-to-list 'ispell-skip-region-alist '("#\\+BEGIN_SRC" . "#\\+END_SRC"))
+    (add-to-list 'ispell-skip-region-alist '("#\\+BEGIN_EXAMPLE" . "#\\+END_EXAMPLE"))
+#+end_src
 
-** Development
+Language tool (grammar checking)
+#+BEGIN_SRC emacs-lisp
+(after! langtool
+;; rules: https://www.languagetool.org/languages/
+(setq langtool-disabled-rules '("WHITESPACE_RULE"
+				"EN_UNPAIRED_BRACKETS"
+				"COMMA_PARENTHESIS_WHITESPACE"
+				"EN_QUOTES"))
+(map! "C-x 4 w" #'langtool-check ;; To check current buffer and show warnings.
+	    "C-x 4 W" #'langtool-check-done ;; To finish checking. All marker is removed.
+	    "C-x 4 l" #'langtool-switch-default-language
+	    "C-x 4 4" #'langtool-show-message-at-point ;; Goto warning point
+	    "C-x 4 c" #'langtool-correct-buffer ;; To correct marker follow LanguageTool suggestions.
+	    "C-x 4 5" #'langtool-goto-next-error ;; To correct marker follow LanguageTool
+))
+#+END_SRC
+Grammarly
+
+#+BEGIN_SRC emacs-lisp
+;; (with-eval-after-load 'flycheck
+;;   (flycheck-grammarly-setup))
+#+END_SRC
+
+
+* Shell/Dired
+
+
+open file or application in default program
+#+BEGIN_SRC emacs-lisp
+(defun dired-open-file (&optional file)
+  "In dired, open the file named on this line."
+  (interactive)
+  (let* ((file (or file (dired-get-filename nil t))))
+    (message "Opening %s..." file)
+    (call-process my/opencmd nil 0 nil file)
+    (message "Opening %s done" file)))
+
+(after! dired
+  (if IS-MAC
+      (progn
+ 	(setq insert-directory-program "gls" dired-use-ls-dired t)))
+  (setq list-directory-verbose-switches "-lgGh --group-directories-first")
+  ;;(setq list-directory-brief-switches "-CF")
+  (setq dired-listing-switches "-algGh --group-directories-first") ;; | awk '{print $3, $4, $5, $6, $7}'")
+  ;; g: don't list owner (but like l), G: no-group, h: human-readable, a: hidden, X: sort alphabetically by entry extension
+  (setq dired-dwim-target t) ;; midnight commander style. Nice copy,move with two dired buffers open in same frame
+  (setq dired-omit-files "^\\.[^.]\\|$Rhistory\\|$RData\\|__pycache__")
+  (require 'dired-x)
+  (add-hook 'dired-mode-hook (lambda ()
+			       (dired-hide-details-mode 0)
+			       (setq dired-omit-mode t)
+			       (local-set-key [(meta return)] 'dired-open-file))))
+
+#+END_SRC
+
+* PDF
+
+Pdf-view
+#+BEGIN_SRC emacs-lisp
+
+(defun oo (&optional file)
+  "Open file"
+  (interactive)
+  (let* (
+	 (file (expand-file-name (or file (read-file-name "File: ")))))
+    (my/open-in-external-app file)
+    ))
+
+(defvar my/opencmd (if IS-MAC "open" "/usr/bin/xdg-open") "Program for opening files and applications")
+
+(defun my/open-in-external-app (&optional file)
+  "Open the current file or dired marked files in external app.
+    Works in Microsoft Windows, Mac OS X, Linux."
+  (interactive)
+  (let ( doIt
+	 (myFileList
+	  (cond
+	   ((string-equal major-mode "dired-mode") (dired-get-marked-files))
+	   (file (list file))
+	   (t (list (buffer-file-name))) ) ) )
+
+    (setq doIt (if (<= (length myFileList) 5)
+		   t
+		 (y-or-n-p "Open more than 5 files?") ) )
+    (when doIt
+      (cond
+       ((string-equal system-type "windows-nt")
+	(mapc (lambda (fPath) (w32-shell-execute my/opencmd (replace-regexp-in-string "/" "\\" fPath t t)) ) myFileList)
+	)
+       ((string-equal system-type "darwin")
+	(mapc (lambda (fPath) (let ((process-connection-type nil)) (start-process "" nil my/opencmd fPath)) )  myFileList) )
+       ((string-equal system-type "gnu/linux")
+	(mapc (lambda (fPath) (let ((process-connection-type nil)) (start-process "" nil my/opencmd fPath)) ) myFileList) ) ) ) ) )
+
+
+  (add-hook! pdf-view-mode :append #'auto-revert-mode)
+  (map! :map pdf-view-mode-map "M-RET" (cmd!
+				     (oo (buffer-file-name))
+				     (kill-this-buffer)))
+  ;;(map! :map pdf-view-mode-map "q" #'xxx)
+#+END_SRC
+
+* Org
+
+* Rmd
 
 #+begin_src emacs-lisp
 (defun my/rmd-export ()
@@ -98,8 +258,88 @@ set method for obtaining files in a project.
   (message (concat "Written to " out))
   )
 )
+#+END_SRC
+
+* polymode
+
+#+BEGIN_SRC emacs-lisp
+(setq polymode-lsp-integration nil)
+#+END_SRC
+
+* ESS
+
+truncate buffer
+#+BEGIN_SRC emacs-lisp
+(setq comint-buffer-maximum-size 1000)
+(add-hook 'comint-output-filter-functions #'comint-truncate-buffer)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(defun my/r-lsp ()
+  "Dispatch lsp/eglot in actual R files (but not poly-mode blocks)"
+  (interactive)
+  (let* ((buf (buffer-file-name)))
+    (if buf
+        (pcase (downcase (file-name-extension buf))
+          ("R" (progn
+                 (lsp!)))
+          ("r" (progn
+                 (lsp!)))
+          ;; other file extensions?
+          ))
+    )
+  )
+
+(after! ess
+  ;; (when (modulep! +lsp)
+(add-hook 'ess-r-mode-local-vars-hook #'my/r-lsp 'append)
+)
+#+END_SRC
+
+controlling splits
+#+begin_src emacs-lisp
+(defvar my/split-ess-horizontal t "Controls behaviour (horizontal vs vertical split) of my/split-ess")
+    (unless (boundp 'my/split-ess-horizontal) (setq my/split-ess-horizontal nil))
+
+
+(defun my/split-ess ()
+    "Documentation..."
+    (interactive)
+    (require 'ess-inf)
+    (let* ((buf (current-buffer))
+                (pyt nil))
+      (if (or (eq major-mode 'octave-mode) (eq major-mode 'python-mode))
+	  (if (eq major-mode 'python-mode)
+	      (progn
+                (setq pyt t)
+		(run-python)
+		(switch-to-buffer "*Python*"))
+	    (progn
+	      (run-octave)
+	      (switch-to-buffer "*Inferior Octave*")))
+	(progn
+	(if (and (boundp 'ess-language) (string-equal ess-language "SAS"))
+	    (progn
+	      (switch-to-buffer "*iESS[SAS]*")
+	      )
+          (ess-switch-to-ESS nil))))
+      (delete-other-windows)
+      (if my/split-ess-horizontal (split-window-horizontally) (split-window-vertically))
+      (other-window 1)
+      (switch-to-buffer buf)
+        (my/swap-buffers-in-windows)))
 #+end_src
 
+* Key Bindings
+** Editor
+
+undo/redo:
+#+BEGIN_SRC emacs-lisp
+  (map! "C-z" #'undo-fu-only-undo)
+  (map! "C-S-z" #'undo-fu-only-redo)
+#+END_SRC
+
+go to characters in any window:
 #+BEGIN_SRC emacs-lisp
 (setq avy-all-windows t)
 ;;(global-set-key (kbd "C-c j") 'avy-goto-word-or-subword-1)
@@ -108,4 +348,76 @@ set method for obtaining files in a project.
       ;; "c P" #'ivy-pop-view
       "SPC" #'avy-goto-word-or-subword-1
       "O" #'ace-window)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (use-package! comment-dwim-2
+		:commands (comment-dwim-2)
+		:init
+		(map! "M-c" #'comment-dwim-2))
+#+END_SRC
+
+search
+#+BEGIN_SRC emacs-lisp
+(map! :leader "S" #'consult-line)
+#+END_SRC
+
+go between windows using the arrows
+#+BEGIN_SRC emacs-lisp
+(map! "C-<left>" #'windmove-left)
+(map! "C-<right>" #'windmove-right)
+(map! "C-<up>" #'windmove-up)
+(map! "C-<down>" #'windmove-down)
+#+END_SRC
+
+new frame go between frames
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "M-o") 'other-frame)
+(global-set-key (kbd "M-n") 'make-frame)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key [M-right] 'forward-word)
+(global-set-key [M-left] 'backward-word)
+(global-set-key [M-up] 'backward-paragraph)
+(global-set-key [M-down] 'forward-paragraph)
+
+(map! "M-g M-g" #'goto-line)
+(map! "M-g g" #'avy-goto-line)
+#+END_SRC
+
+navigate text
+expand text/lines seen before:
+
+#+BEGIN_SRC emacs-lisp
+(map! "M-e" #'hippie-expand)
+#+END_SRC
+
+** ESS
+Emacs Speaks Statistics: [[https://ess.r-project.org/][link]]
+
+C-c R:
+#+BEGIN_SRC emacs-lisp
+(map! :leader "R" #'my/split-ess)
+#+END_SRC
+
+** Mac keys
+
+#+BEGIN_SRC emacs-lisp
+(setq ns-alternate-modifier 'none
+      mac-command-modifier 'meta
+      mac-right-command-modifier 'super)
+#+END_SRC
+** Dired
+
+#+BEGIN_SRC emacs-lisp
+(map!
+ (:map dired-mode-map
+       "M-RET"    #'dired-open-file))
+#+END_SRC
+
+* test
+
+#+BEGIN_SRC emacs-lisp
+;; (setq flycheck-disabled-checkers '(r-lintr))
 #+END_SRC
