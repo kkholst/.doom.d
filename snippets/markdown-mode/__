@@ -1,4 +1,33 @@
-#name : Strong
-#contributor: Peng Deng <dengpeng@gmail.com>
+# -*- mode: snippet -*-
+# group: file templates
+# contributor: Klaus Holst <klaus@holst.it>
 # --
-**${1:Text}** $0
+---
+title: "${1:Document Title}"
+author: "Klaus K. Holst (KKZH)"
+date: "Last compiled on \`r format(Sys.time(), '%d %B, %Y')\`"
+output: html_document
+bibliography: ref.bib
+---
+
+# Introduction
+
+$0
+
+Citation: [@R-base]
+
+$\int f$
+\begin{align}
+\mu &= \int f\,dm \\
+&= \xi(\theta)
+\end{align}
+
+\`\`\`{r myplot, echo=FALSE}
+plot(1:10)
+\`\`\`
+
+
+<!-- Local Variables: -->
+<!-- eval: (define-minor-mode local-mode "local buffer mode" :init-value nil :key-map nil) -->
+<!-- my-org-buffer-local-mode: t -->
+<!-- End: -->

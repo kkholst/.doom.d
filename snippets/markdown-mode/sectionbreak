@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: sectionbreak
+# key: sectionbreak
+# --
+# $1 {data-background="#e8f4f8" data-background-image="_extensions/novo/novo_front.svg" data-background-opacity="0.1"}

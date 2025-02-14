@@ -1,0 +1,51 @@
+# -*- mode: snippet -*-
+# group: file templates
+# contributor: Klaus Holst <klaus@holst.it>
+# --
+---
+title: "${1:Title}"
+subtitle: "${2: subtitle}"
+author: "Klaus K. Holst (KKZH)"
+additional: >
+  <p style='font-style: italic; font-size: 20px; color: gray; font-weight:400;'>
+  Disclaimer: These slides are confidential, and any results are preliminary
+  and not to be shared or redistributed unless explicitly agreed upon.</p>
+date: last-modified
+format:
+  novo-revealjs
+revealjs-plugins:
+  - pointer
+  - embedpdf
+bibliography: ../share/refs.bib
+execute:
+  echo: true
+  enabled: true
+  cache: true
+---
+
+# ${1:Document Title}
+
+## Outline
+
+## Outline
+
+<br>
+
+::: {.box}
+
+<br>
+
+- A
+
+<br>
+
+- B
+
+<br>
+
+:::
+
+
+
+
+$0

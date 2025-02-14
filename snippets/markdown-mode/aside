@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: aside
+# key: aside
+# --
+[${1:text}]{.aside}

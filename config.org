@@ -156,7 +156,7 @@ Load local configuration (not version controlled)
 
 Set default working directory
 #+BEGIN_SRC emacs-lisp
-  (setq default-directory "~/")
+(setq default-directory "~/")
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -345,7 +345,7 @@ Close buffers easily
 #+END_SRC
 
 
-,#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 ;; Define a search for duplicate wordskey
 ;; Handy for for spotting errors like this this!
 (defun my/search-duplicates ()
@@ -681,9 +681,9 @@ manager or manually:
 + *pyright* can be installed with ~pip install pyright~ or ~npm i -g pyright~.
 
   #+BEGIN_SRC emacs-lisp
-    (setq pyvenv-default-virtual-env-name "dev"
-          pyvenv-virtual-env-name ".virtualenvs"
-          pyvenv-show-active-python-in-modeline t)
+    ;; (setq pyvenv-default-virtual-env-name "dev"
+          ;; pyvenv-virtual-env-name ".virtualenvs"
+          ;; pyvenv-show-active-python-in-modeline t)
   #+END_SRC
 
 
@@ -698,6 +698,41 @@ manager or manually:
      (cdlatex-mode))
      )
 #+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.qmd" . poly-markdown+r-mode))
+
+
+;; (set-file-template! "/main\\.c\\(?:c\\|pp\\)$" :trigger "__main.cpp" :mode 'c++-mode)
+;; (set-file-template! "/project\\.org$" :trigger "__project.org" :mode 'org-mode)
+(set-file-template!
+  "/talk.*\\.qmd$"
+   :trigger "__talk.qmd"
+   :mode 'markdown-mode
+   )
+#+END_SRC
+
+
+#+begin_src emacs-lisp
+(defun my/rmd-export ()
+"Export Rmd buffer to default html/pdf"
+(interactive)
+(save-buffer)
+(let* ((buf (buffer-file-name))
+       (out  (concat (file-name-base (buffer-file-name)) ".html"))
+       (args (concat "'" buf "', output_format = NULL, knit_root_dir=getwd()"))
+       (cmd (concat "rmarkdown::render(" args ")"))
+       )
+  ;; (ess-execute cmd)
+  (message (concat "Processing " buf))
+  (async-shell-command (concat "quarto render " buf))
+  ;; (ess-eval-linewise cmd)
+  ;; (message (concat "Written to " out))
+   )
+)
+(defalias 'my/qmd-export 'my/rmd-export)
+#+end_src
+
 
 * Embedded development
 
@@ -967,7 +1002,6 @@ Arduino
   ;; (evil-define-key 'insert 'global (kbd "<tab>") 'my/copilot-tab-or-default))
 #+END_SRC
 
-
 * Doom specific
 
 #+BEGIN_SRC emacs-lisp
@@ -979,7 +1013,62 @@ Arduino
 Note that lintr and languageserver needs to be installed in R for this
 to work (https://emacs-lsp.github.io/lsp-mode/page/lsp-r/ )
 #+BEGIN_SRC R :eval never :tangle no
-install.packages(“languageserver”)
+install.packages("languageserver")
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq-default ess-language "R")
+(setq ess-indent-with-fancy-comments nil)
+;; (defun my-ess-settings ()
+;;   (local-unset-key (kbd "TAB"))
+;;   (local-set-key (kbd "C-<tab>") 'my/ess-tab)
+;;   )
+;; (add-hook 'ess-mode-hook #'my-ess-settings)
+
+#+END_SRC
+
+
+#+BEGIN_SRC emacs-lisp
+(defvar my/split-ess-horizontal t "Controls behaviour (horizontal vs vertical split) of my/split-ess")
+(unless (boundp 'my/split-ess-horizontal) (setq my/split-ess-horizontal nil))
+
+(defun my/split-ess ()
+  "Documentation..."
+  (interactive)
+  (require 'ess-inf)
+  (let* ((buf (current-buffer))
+         (pyt nil))
+    (if (or (eq major-mode 'octave-mode) (eq major-mode 'python-mode))
+        (if (eq major-mode 'python-mode)
+	    (progn
+              (setq pyt t)
+	      (run-python)
+	      (switch-to-buffer "*Python*"))
+          (progn
+	    (run-octave)
+	    (switch-to-buffer "*Inferior Octave*")))
+      (progn
+        (if (and (boundp 'ess-language) (string-equal ess-language "SAS"))
+	    (progn
+	      (switch-to-buffer "*iESS[SAS]*")
+	      )
+	  ;;(ess-switch-to-inferior-or-script-buffer t))))
+          (ess-switch-to-ESS nil))))
+    (delete-other-windows)
+    (if my/split-ess-horizontal (split-window-horizontally) (split-window-vertically))
+    (other-window 1)
+    (switch-to-buffer buf)
+    (my/swap-buffers-in-windows)))
+#+END_SRC
+
+
+
+* COMMENT ESS
+
+Note that lintr and languageserver needs to be installed in R for this
+to work (https://emacs-lsp.github.io/lsp-mode/page/lsp-r/ )
+#+BEGIN_SRC R :eval never :tangle no
+install.packages("languageserver")
 #+END_SRC
 
 #+begin_src emacs-lisp
@@ -1003,10 +1092,10 @@ install.packages(“languageserver”)
     )
   )
 
-(after! ess
+;; (after! ess
   ;; (when (modulep! +lsp)
-(add-hook 'ess-r-mode-local-vars-hook #'my/r-lsp 'append)
-)
+;; (add-hook 'ess-r-mode-local-vars-hook #'my/r-lsp 'append)
+;; )
 ;; )
 #+END_SRC
 
@@ -1358,7 +1447,6 @@ Org-roam https://github.com/org-roam/org-roam-ui
   )
 #+END_SRC
 
-
 * Projects, Agenda
 
 deft
@@ -1638,8 +1726,8 @@ Avy (ace-jump-mode replacement)
  "<f12>" #'citar-open
  ;;"C-c h" #'helm-resume)
 )
-(map! :leader "n +" #'citar-open)
 (map! :leader "n B" #'citar-open)
+(map! :leader "n +" #'biblio-lookup)
 (map! :leader "n ?" #'biblio-lookup)
 (map! :leader "! !" #'consult-flycheck)
 (map! :leader "<tab>" #'ivy-yasnippet)
@@ -1692,24 +1780,6 @@ Avy (ace-jump-mode replacement)
 #+END_SRC
 
 ** Development
-
-#+begin_src emacs-lisp
-(defun my/rmd-export ()
-"Export Rmd buffer to default html/pdf"
-(interactive)
-(save-buffer)
-(let* ((buf (buffer-file-name))
-       (out  (concat (file-name-base (buffer-file-name)) ".html"))
-       (args (concat "'" buf "', output_format = NULL, knit_root_dir=getwd()"))
-       (cmd (concat "rmarkdown::render(" args ")"))
-       )
-  ;; (ess-execute cmd)
-  (message (concat "Processing " buf))
-  (ess-eval-linewise cmd)
-  (message (concat "Written to " out))
-  )
-)
-#+end_src
 
 #+BEGIN_SRC emacs-lisp
   (use-package! comment-dwim-2
@@ -1788,6 +1858,10 @@ backquote use 'C-q `'
 (after! markdown-mode
 	  (map!
            :map markdown-mode-map
+           "C-c C-c r" #'my/rmd-export))
+(after! yaml-mode
+  	  (map!
+           :map yaml-mode-map
            "C-c C-c r" #'my/rmd-export))
 #+end_src
 

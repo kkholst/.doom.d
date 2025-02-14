@@ -20,7 +20,9 @@
        ;;layout            ; auie,ctsrnm is the superior home row
 
        :completion
-       (company +childframe)         ; the ultimate code completion backend
+       ;; company
+;;       company +childframe
+         ; the ultimate code completion backend
        ;;(helm               ; the *other* search engine for love and life
        ;; +childframe +org)
        ;;ido               ; the other *other* search engine...
@@ -41,7 +43,6 @@
        ;;(emoji +unicode)  ; 🙂
        ;;fill-column       ; a `fill-column' indicator
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
-       hydra
        indent-guides     ; highlighted indent columns
        ;;(ligatures        ; ligatures and symbols to make your code pretty again
 	;; +extra)
@@ -146,12 +147,14 @@
        elm               ; care for a cup of TEA?
        emacs-lisp        ; drown in parentheses
        ;;erlang            ; an elegant language for a more civilized age
+       ;;
        (ess               ; emacs speaks statistics
         +stan
         +treesitter
-	;;+lintr
-        ;;+lsp
+        +lintr
+        +lsp
         )
+
        ;;faust             ; dsp, but you get to keep your soul
        ;;fsharp            ; ML stands for Microsoft's Language
        ;;fstar             ; (dependent) types and (monadic) effects and Z3
@@ -175,7 +178,7 @@
        ;;lean
        ;;factor
        ;;ledger            ; an accounting system in Emacs
-       ;;lua               ; one-based indices? one-based indices
+       lua               ; one-based indices? one-based indices
        markdown          ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
        ;;nix               ; I hereby declare "nix geht mehr!"
