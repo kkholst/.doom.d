@@ -21,6 +21,8 @@ https://github.com/hlissner/doom-emacs/blob/develop/docs/api.org
 Themes:
 https://github.com/hlissner/emacs-doom-themes/tree/screenshots
 
+
+
 * Variable definitions (override in =local.el=)
 
 Some functionality uses this to identify you, e.g. GPG configuration, email
@@ -114,8 +116,8 @@ available. You can either set `doom-theme' or manually load a theme with the
 This determines the style of line numbers in effect. If set to `nil', line
 numbers are disabled. For relative line numbers, set this to `relative'.
 #+BEGIN_SRC emacs-lisp
-;; (setq display-line-numbers-type t)
-(add-hook! '(org-mode-hook LaTeX-mode-hook) #'doom-disable-line-numbers-h)
+(setq display-line-numbers-type nil)
+;;(add-hook! '(org-mode-hook LaTeX-mode-hook) #'doom-disable-line-numbers-h)
 #+END_SRC
 
 Other styles
@@ -129,7 +131,7 @@ Other styles
 ;; (transient-mark-mode t) ;; Make marked block visible (cancel marked blok with C-g)
 #+END_SRC
 
- The following uses the framebar to display the buffer/filename and projectile project
+ The following uses the frame-bar to display the buffer/filename and projectile project
 #+BEGIN_SRC emacs-lisp
 (setq frame-title-format
       '(""
@@ -210,8 +212,12 @@ Time stamps
 
 Don't wrap lines
 #+BEGIN_SRC emacs-lisp
-(setq-default truncate-lines 1)
-(global-visual-line-mode -1)
+;;(setq-default truncate-lines 1)
+;;(global-visual-line-mode -1)
+(setq truncate-lines 1)
+
+(setq display-fill-column-indicator-column 80)
+(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 #+END_SRC
 
 Stop annoying decisions on how to split the screen
@@ -734,6 +740,18 @@ manager or manually:
 #+end_src
 
 
+** Folding
+
+#+BEGIN_SRC emacs-lisp
+;; (defun my/fold-all()
+;;   (interactive)
+;;   (hs-minor-mode)
+;;   (hs-hide-all)
+;;   )
+;; (add-hook! '(ess-mode-hook python-mode-hook c++-mode-hook) #'my/fold-all)
+(add-hook! '(ess-mode-hook python-mode-hook c++-mode-hook) #'+fold/close-all)
+#+END_SRC
+
 * Embedded development
 
 Processing
@@ -886,6 +904,9 @@ Arduino
     (setq bibtex-align-at-equal-sign t)
     (add-hook 'bibtex-mode-hook (lambda () (set-fill-column 120)))))
 
+(after! bibtex
+  (bibtex-set-dialect 'BibTeX))
+
   (setq helm-bib-pdf-file "pdf"
         bibtex-completion-pdf-field "File"
 	bibtex-completion-library-path `(,my/pdf-directory) ;;'("~/Documents/PDF" "~/Projects/Publications")
@@ -1008,62 +1029,7 @@ Arduino
 (set-popup-rule! "^\\*" :side 'bottom :height 0.5)
 #+END_SRC
 
-* ESS
-
-Note that lintr and languageserver needs to be installed in R for this
-to work (https://emacs-lsp.github.io/lsp-mode/page/lsp-r/ )
-#+BEGIN_SRC R :eval never :tangle no
-install.packages("languageserver")
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(setq-default ess-language "R")
-(setq ess-indent-with-fancy-comments nil)
-;; (defun my-ess-settings ()
-;;   (local-unset-key (kbd "TAB"))
-;;   (local-set-key (kbd "C-<tab>") 'my/ess-tab)
-;;   )
-;; (add-hook 'ess-mode-hook #'my-ess-settings)
-
-#+END_SRC
-
-
-#+BEGIN_SRC emacs-lisp
-(defvar my/split-ess-horizontal t "Controls behaviour (horizontal vs vertical split) of my/split-ess")
-(unless (boundp 'my/split-ess-horizontal) (setq my/split-ess-horizontal nil))
-
-(defun my/split-ess ()
-  "Documentation..."
-  (interactive)
-  (require 'ess-inf)
-  (let* ((buf (current-buffer))
-         (pyt nil))
-    (if (or (eq major-mode 'octave-mode) (eq major-mode 'python-mode))
-        (if (eq major-mode 'python-mode)
-	    (progn
-              (setq pyt t)
-	      (run-python)
-	      (switch-to-buffer "*Python*"))
-          (progn
-	    (run-octave)
-	    (switch-to-buffer "*Inferior Octave*")))
-      (progn
-        (if (and (boundp 'ess-language) (string-equal ess-language "SAS"))
-	    (progn
-	      (switch-to-buffer "*iESS[SAS]*")
-	      )
-	  ;;(ess-switch-to-inferior-or-script-buffer t))))
-          (ess-switch-to-ESS nil))))
-    (delete-other-windows)
-    (if my/split-ess-horizontal (split-window-horizontally) (split-window-vertically))
-    (other-window 1)
-    (switch-to-buffer buf)
-    (my/swap-buffers-in-windows)))
-#+END_SRC
-
-
-
-* COMMENT ESS
+* Emacs Speaks Statistics
 
 Note that lintr and languageserver needs to be installed in R for this
 to work (https://emacs-lsp.github.io/lsp-mode/page/lsp-r/ )
@@ -1072,10 +1038,33 @@ install.packages("languageserver")
 #+END_SRC
 
 #+begin_src emacs-lisp
+(setq ess-ask-for-ess-directory nil)
+(setq ess-local-process-name "R")
+(setq-default ess-language "R")
 ;;(setq flycheck-disabled-checkers '(r-lintr))
-;; (setq ess-use-flymake nil)
-(setq ess-eval-visibly-p nil)
+(setq ess-use-flymake nil)
+;;(setq ess-eval-visibly-p nil)
+;;(setq ess-eval-visibly t) ;; 'nowait
 (setq ess-r--no-company-meta t)
+(setq ess-indent-with-fancy-comments nil)
+;; (setq ess-use-tracebug nil)
+;; (setq timeout-ms 1) ;; still necessary to avoid slow evaluation?
+(setq polymode-lsp-integration nil) ;; Creates problems with poly-R
+
+ ;; Code check via lintr
+;; (setq flycheck-lintr-linters
+	;; "default_linters[-which(names(default_linters)%in%c('absolute_paths_linter','commas_linter','infix_spaces_linter','spaces_left_parentheses_linter','no_tab_linter'))]")
+;; (after! flycheck
+;;   (setq flycheck-idle-change-delay .5))
+;; (set-company-backend! 'inferior-ess-r-mode
+;;     '(company-R-args company-R-objects company-dabbrev-code company-R-library :separate))
+
+
+;; https://github.com/emacs-ess/ESS/issues/1297#issuecomment-2322831635
+(advice-add 'ess-roxy-complete-tag :around  #'cape-wrap-noninterruptible)
+(advice-add 'ess-filename-completion :around  #'cape-wrap-noninterruptible)
+(advice-add 'ess-r-package-completion :around  #'cape-wrap-noninterruptible)
+(advice-add 'ess-r-object-completion :around  #'cape-wrap-noninterruptible)
 
 (defun my/r-lsp ()
   "Dispatch lsp/eglot in actual R files (but not poly-mode blocks)"
@@ -1092,18 +1081,13 @@ install.packages("languageserver")
     )
   )
 
-;; (after! ess
-  ;; (when (modulep! +lsp)
-;; (add-hook 'ess-r-mode-local-vars-hook #'my/r-lsp 'append)
-;; )
-;; )
+;;(after! ess
+;;  (when (modulep! +lsp)
+;;    (add-hook 'ess-r-mode-local-vars-hook #'my/r-lsp 'append)
+;;    ))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(setq ess-ask-for-ess-directory nil)
-(setq ess-local-process-name "R")
-(setq-default ess-language "R")
-
 (defun my/current-line-empty-p ()
   (interactive)
   (save-excursion
@@ -1135,18 +1119,8 @@ install.packages("languageserver")
   (local-unset-key (kbd "TAB"))
   (local-set-key (kbd "C-<tab>") 'my/ess-tab)
   )
-(setq ess-indent-with-fancy-comments nil)
 (add-hook 'ess-mode-hook #'my-ess-settings)
 
-(setq timeout-ms 1) ;; still necessary to avoid slow evaluation?
-(setq polymode-lsp-integration nil) ;; Creates problems with poly-R
- ;; Code check via lintr
-;; (setq flycheck-lintr-linters
-	;; "default_linters[-which(names(default_linters)%in%c('absolute_paths_linter','commas_linter','infix_spaces_linter','spaces_left_parentheses_linter','no_tab_linter'))]")
-(after! flycheck
-  (setq flycheck-idle-change-delay .5))
-(set-company-backend! 'inferior-ess-r-mode
-    '(company-R-args company-R-objects company-dabbrev-code company-R-library :separate))
 
 (defun ess-tooltip-show-at-point (text xo yo)
   (with-no-warnings
@@ -1252,7 +1226,7 @@ Roxygen
 
 * Org
 
-Org R markdown export
+R markdown export
 #+BEGIN_SRC emacs-lisp
   (use-package! ox-ravel
 	      :after ox)
@@ -1714,7 +1688,7 @@ Avy (ace-jump-mode replacement)
       "SPC" #'avy-goto-word-or-subword-1
       ;; "O" #'ace-window
       )
-(map! "C-x o" #'ace-window)
+;; (map! "C-x o" #'ace-window)
 #+END_SRC
 
 
@@ -1726,9 +1700,10 @@ Avy (ace-jump-mode replacement)
  "<f12>" #'citar-open
  ;;"C-c h" #'helm-resume)
 )
-(map! :leader "n B" #'citar-open)
+;; (map! :leader "n B" #'citar-open)
 (map! :leader "n +" #'biblio-lookup)
-(map! :leader "n ?" #'biblio-lookup)
+(map! :leader "n ?" #'biblio-doi-insert-bibtex)
+(map! :leader "n B" #'dissemin-lookup)
 (map! :leader "! !" #'consult-flycheck)
 (map! :leader "<tab>" #'ivy-yasnippet)
 

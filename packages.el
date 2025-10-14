@@ -6,7 +6,13 @@
 ;; use 'M-x doom/reload'.
 
 (add-load-path! "lisp")
-(package! quarto-mode)
+
+;;(package! ess)
+;;(package! ess-view-data)
+;;(package! polymode)
+;;(package! poly-R)
+;;(package! quarto-mode)
+
 (package! yasnippet)
 (package! auto-yasnippet)
 (package! djvu)
