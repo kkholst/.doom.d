@@ -1,5 +1,12 @@
 ;;; local.el -*- lexical-binding: t; -*-
 
+
+;; (setq my/font "LiterationMono Nerd Font Propo")
+;; (setq! doom-font (font-spec :family my/font :size 16) ;; :weight 'light)
+;;        doom-variable-pitch-font (font-spec :family my/font :size 16)
+;;        doom-unicode-font (font-spec :family my/font :size 16)
+;;        doom-big-font (font-spec :family my/font :size 20))
+
 (setq! doom-font (font-spec :family "FiraCode Nerd Font" :size 16) ;; :weight 'light)
        doom-variable-pitch-font (font-spec :family "FiraCode Nerd Font" :size 16)
        doom-unicode-font (font-spec :family "FiraCode Nerd Font" :size 16)
@@ -12,3 +19,5 @@
 (setq my/project-home "~/Projects/")
 
 (setq doom-theme 'doom-oksolar-dark-padded-modeline)
+
+(setq +doom-dashboard-banner-file (expand-file-name "fine_background.jpg" "~/Pictures/this is fine/"))

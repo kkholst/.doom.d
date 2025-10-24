@@ -21,8 +21,6 @@ https://github.com/hlissner/doom-emacs/blob/develop/docs/api.org
 Themes:
 https://github.com/hlissner/emacs-doom-themes/tree/screenshots
 
-
-
 * Variable definitions (override in =local.el=)
 
 Some functionality uses this to identify you, e.g. GPG configuration, email
@@ -152,6 +150,9 @@ Load local configuration (not version controlled)
 #+BEGIN_SRC emacs-lisp
   (if (file-exists-p (concat my/emacshome "local.el"))
       (load (concat my/emacshome "local.el")))
+  (if (file-exists-p (concat my/emacshome "local_pre.el"))
+      (load (concat my/emacshome "local_pre.el")))
+#+END_
 #+END_SRC
 
 * Miscellaneous / Editor behaviour
@@ -1862,4 +1863,10 @@ backquote use 'C-q `'
 #+END_SRC
 
 
+* Post configuration
 
+Load local configuration (not version controlled)
+#+BEGIN_SRC emacs-lisp
+  (if (file-exists-p (concat my/emacshome "local_post.el"))
+      (load (concat my/emacshome "local_post.el")))
+#+END_SRC
