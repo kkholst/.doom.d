@@ -152,8 +152,7 @@ Load local configuration (not version controlled)
       (load (concat my/emacshome "local.el")))
   (if (file-exists-p (concat my/emacshome "local_pre.el"))
       (load (concat my/emacshome "local_pre.el")))
-#+END_
-#+END_SRC
+#+END_#+END_SRC
 
 * Miscellaneous / Editor behaviour
 
