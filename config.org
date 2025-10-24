@@ -1590,6 +1590,10 @@ Capture
 
   (map! "M-e" #'hippie-expand)
 
+  (after! corfu ;; avoid RET may accidentally commit an automatically selected candidate
+   (keymap-unset corfu-map "RET")
+  )
+
   ;; Makes control+pgup/pgdn arrow keys scroll one line at the time
   (define-key global-map [C-prior] (lambda() (interactive) (scroll-down 1)))
   (define-key global-map [C-next] (lambda() (interactive) (scroll-up 1)))
@@ -1631,7 +1635,9 @@ Capture
 
   (map! "M-q" #'my/fill) ;; M-q: fill, C-u M-q: unfill
 
-  (global-set-key "\M-s" 'ispell-word) ;; Ispell word
+  ;;(global-set-key "\M-s" 'ispell-word) ;; Ispell word
+  (map! "M-q" #'cape-dict)
+  ;;(global-set-key "\M-s" 'ispell-word) ;; Ispell word
 
   (global-set-key (kbd "C-x M-<return>")  (lambda() (interactive) (revert-buffer t t)))
 #+END_SRC
