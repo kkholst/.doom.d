@@ -90,7 +90,7 @@
        ;;terraform         ; infrastructure as code
        ;;tmux              ; an API for interacting with tmux
        ;;upload            ; map local to remote projects via ssh/ftp
-       ;;tree-sitter       ; syntax and parsing, sitting in a tree...
+       tree-sitter       ; syntax and parsing, sitting in a tree...
 
        :os      
        (:if (featurep :system 'macos) macos)
@@ -98,17 +98,16 @@
 
        :lang    
        (cc                ; C/C++/Obj-C madness
-	    +lsp)
+	+lsp)
        data              ; config/data formats
        elm               ; care for a cup of TEA?
        emacs-lisp        ; drown in parentheses
        (ess               ; emacs speaks statistics
         ;;+stan
-        +treesitter
-        ;;+lintr
+        +tree-sitter
+        +lintr
         +lsp
        )
-
        (julia             ; a better, faster MATLAB
         +lsp)
        (latex             ; writing papers in Emacs has never been so fun
@@ -130,10 +129,9 @@
         ;; +pyenv             ; Python virtual environment support
 	;;+poetry            ; Python packaging, dependency management, and virtual environment
         +lsp
-        ;;+tree-sitter
+        +tree-sitter
         ;;+pyright
         )
-
        (sh                ; she sells {ba,z,fi}sh shells on the C xor
         +zsh)
        ;;terra             ; Earth and Moon in alignment for performance.

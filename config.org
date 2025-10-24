@@ -1705,7 +1705,7 @@ Avy (ace-jump-mode replacement)
 (map! :leader "n ?" #'biblio-doi-insert-bibtex)
 (map! :leader "n B" #'dissemin-lookup)
 (map! :leader "! !" #'consult-flycheck)
-(map! :leader "<tab>" #'ivy-yasnippet)
+(map! :leader "<tab>" #'yasnippet-capf)
 
 #+END_SRC
 
@@ -1842,6 +1842,7 @@ backquote use 'C-q `'
 
 
 ** ESS
+
 
 #+BEGIN_SRC emacs-lisp
 
