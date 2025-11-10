@@ -1578,8 +1578,10 @@ Disable suspend-frame key binding
 
   (map! "M-q" #'my/fill) ;; M-q: fill, C-u M-q: unfill
 
-  ;;(global-set-key "\M-s" 'ispell-word) ;; Ispell word
-  (map! "M-s" #'cape-dict)
+  (map! "M-s s" #'ispell-word)
+  (map! "M-s s" #'ispell-word)
+  (map! "M-s M-s" #'cape-dict)
+  ;; (global-set-key "\M-s" 'ispell-word)
 
   (global-set-key (kbd "C-x M-<return>")  (lambda() (interactive) (revert-buffer t t)))
 #+END_SRC
