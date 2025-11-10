@@ -30,6 +30,12 @@ clients, file templates and snippets
       user-mail-address "klaus@holst.it")
 #+END_SRC
 
+GPG key to use for encryption (Either the Key ID or set to nil to use symmetric encryption).
+#+BEGIN_SRC emacs-lisp
+  (setq org-crypt-key nil)
+#+END_SRC
+
+** Path variables
 Various variable definitions
 #+BEGIN_SRC emacs-lisp
   ;; (setq my/bibliography-directory (expand-file-name "~/Projects/Bibliography/"))
@@ -49,11 +55,6 @@ Various variable definitions
   (add-to-list 'load-path my/emacslib)
 #+END_SRC
 
-GPG key to use for encryption (Either the Key ID or set to nil to use symmetric encryption).
-#+BEGIN_SRC emacs-lisp
-  (setq org-crypt-key "3249D6A2848986C7EE3B7CBD606357DB6D474C95")
-#+END_SRC
-
 Org related directories
 #+BEGIN_SRC emacs-lisp
   (setq org-directory (concat my/project-home "org/"))
@@ -61,13 +62,21 @@ Org related directories
   (setq org-roam-directory (concat org-project-directory "roam/"))
 #+END_SRC
 
-Binaries locations
+** Binaries locations
 #+BEGIN_SRC emacs-lisp
+
+(setq dap-lldb-debug-program '("/opt/homebrew/opt/llvm/bin/lldb-vscode"))
+;;(setq dap-lldb-debug-program '("lldb"))
+(setq flycheck-c/c++-googlelint-executable "cpplint"
+      flycheck-c/c++-cppcheck-executable "cppcheck"
+      flycheck-python-pylint-executable "pylint"
+      flycheck-r-lintr-executable "R"
+      )
 (setq langtool-language-tool-jar (concat my/localbin "langtool_cur/languagetool-commandline.jar"))
 (setq langtool-java-bin "java")
 (setq langtool-mother-tongue "en")
-(setq org-babel-C++-compiler (concat "ccache clang++")
-      org-babel-python-command "python3")
+(setq org-babel-C++-compiler (concat "ccache clang++"))
+;;org-babel-python-command "python3")
 (setq lsp-clients-clangd-executable "clangd")
 (setq plantuml-jar-path (expand-file-name (concat my/localbin "plantuml/plantuml.jar")))
 (defvar my/opencmd (if IS-MAC "open" "/usr/bin/xdg-open") "Program for opening files and applications")
@@ -145,6 +154,11 @@ Other styles
              (format (if (buffer-modified-p)  " ◉ %s" "  ●  %s") project-name))))))
 #+END_SRC
 
+Doom specific
+#+BEGIN_SRC emacs-lisp
+(set-popup-rule! "^\\*" :side 'bottom :height 0.5)
+#+END_SRC
+
 ** Local configuration
 Load local configuration (not version controlled)
 #+BEGIN_SRC emacs-lisp
@@ -172,37 +186,37 @@ Allows =which-key= to cycle pages via C-h (n)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-  ;; Remove block with DEL (or replace with any other key/insert)
-  (when (> emacs-major-version 23)
-    (delete-selection-mode t)
-    (pending-delete-mode t))
+;; Remove block with DEL (or replace with any other key/insert)
+(when (> emacs-major-version 23)
+  (delete-selection-mode t)
+  (pending-delete-mode t))
 
-  ;; opening compressed tarballs as a directory
-  (setq auto-compression-mode 1)
+;; opening compressed tarballs as a directory
+(setq auto-compression-mode 1)
 
-  ;; Emacs will not automatically add new lines
-  (setq next-line-add-newlines nil)
+;; Emacs will not automatically add new lines
+(setq next-line-add-newlines nil)
 
-  ;; Scroll down with the cursor,move down the buffer one
-  ;; line at a time, instead of in larger amounts.
-  (setq scroll-step 1)
+;; Scroll down with the cursor,move down the buffer one
+;; line at a time, instead of in larger amounts.
+(setq scroll-step 1)
 
-  ;; Replace annoying yes/no prompt with a y/n prompt
-  (fset 'yes-or-no-p 'y-or-n-p)
+;; Replace annoying yes/no prompt with a y/n prompt
+(fset 'yes-or-no-p 'y-or-n-p)
 
-  ;;(highlight-changes-mode) ;; Set to see changes in document
+;;(highlight-changes-mode) ;; Set to see changes in document
 
-  ;; disabled in emacs "because new users often find it confusing".
-  ;; re-enable:
-  (put 'upcase-region 'disabled nil)
-  (put 'downcase-region 'disabled nil)
-  (put 'narrow-to-region 'disabled nil)
+;; disabled in emacs "because new users often find it confusing".
+;; re-enable:
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
 
-  (setq byte-compile-warnings '(cl-functions))
-  ;; disable warning generated when functions are redefined with defadvice
-  (setq ad-redefinition-action 'accept)
+(setq byte-compile-warnings '(cl-functions))
+;; disable warning generated when functions are redefined with defadvice
+(setq ad-redefinition-action 'accept)
 
-  (prefer-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
 #+END_SRC
 
 Time stamps
@@ -570,7 +584,6 @@ Language tool (grammar checking)
 ))
 #+END_SRC
 
-
 Seems to slow down, so disabling for now
 #+BEGIN_SRC emacs-lisp
 ;; (with-eval-after-load 'flycheck
@@ -591,10 +604,6 @@ https://emacs-lsp.github.io/lsp-mode/page/lsp-r/
       lsp-pyright-multi-root nil ;; way too slow
       lsp-pyright-typechecking-mode "off")
 
-(setq dap-lldb-debug-program '("/opt/homebrew/opt/llvm/bin/lldb-vscode"))
-;;(setq dap-lldb-debug-program '("lldb"))
-
-
 (defun dap-clean(&optional arg)
   (interactive)
   (kill-matching-buffers ".*LLDB::" nil t)
@@ -609,11 +618,7 @@ Code linters
 #+BEGIN_SRC emacs-lisp
 (after! flycheck
   (require 'flycheck-google-cpplint)
-  (setq flycheck-c/c++-googlelint-executable "cpplint"
-        flycheck-c/c++-cppcheck-executable "cppcheck"
-        flycheck-python-pylint-executable "pylint"
-        flycheck-r-lintr-executable "R"
-        flycheck-pylintrc "~/.pylintrc"
+  (setq flycheck-pylintrc "~/.config/pylintrc"
         flycheck-cppcheck-standards '("c++11"))
   (flycheck-add-next-checker 'c/c++-cppcheck '(warning . c/c++-googlelint)))
 
@@ -691,10 +696,6 @@ manager or manually:
           ;; pyvenv-virtual-env-name ".virtualenvs"
           ;; pyvenv-show-active-python-in-modeline t)
   #+END_SRC
-
-
-
-
 ** Rmarkdown
 
 #+BEGIN_SRC emacs-lisp
@@ -707,7 +708,6 @@ manager or manually:
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.qmd" . poly-markdown+r-mode))
-
 
 ;; (set-file-template! "/main\\.c\\(?:c\\|pp\\)$" :trigger "__main.cpp" :mode 'c++-mode)
 ;; (set-file-template! "/project\\.org$" :trigger "__project.org" :mode 'org-mode)
@@ -743,13 +743,11 @@ manager or manually:
 ** Folding
 
 #+BEGIN_SRC emacs-lisp
-;; (defun my/fold-all()
-;;   (interactive)
-;;   (hs-minor-mode)
-;;   (hs-hide-all)
-;;   )
-;; (add-hook! '(ess-mode-hook python-mode-hook c++-mode-hook) #'my/fold-all)
-(add-hook! '(ess-mode-hook python-mode-hook c++-mode-hook) #'+fold/close-all)
+(add-hook! '(
+             ess-mode-hook
+             python-mode-hook
+             c++-mode-hook)
+           #'+fold/close-all)
 #+END_SRC
 
 * Embedded development
@@ -803,7 +801,6 @@ Arduino
   :after dired
   :bind (:map dired-mode-map
 	 ("/" . dired-narrow)))
-
 
 (defun dired-open-file (&optional file)
   "In dired, open the file named on this line."
@@ -967,67 +964,7 @@ Arduino
 (if (or (not (boundp 'warning-suppress-types)) (not warning-suppress-types))
     (setq warning-suppress-types '(yasnippet backquote-change))
   (add-to-list 'warning-suppress-types '(yasnippet backquote-change)))
-
   #+END_SRC
-
-  Helm
-  #+BEGIN_SRC emacs-lisp
-;; Show results in a child-frame
-;; (setq helm-display-function 'helm-display-buffer-in-own-frame
-;;       helm-display-buffer-reuse-frame t
-;;       helm-display-buffer-width 120
-;;       helm-display-buffer-height 30
-;;       helm-use-undecorated-frame-option t
-;;      helm-use-undecorated-frame-option nil
-;;)
-;;(use-package! helm-c-yasnippet
-;;  :after helm yasnippet)
-;;(use-package! helm-flycheck
-;;  :after helm flycheck)
-(setq helm-recentf-fuzzy-match t
-      helm-buffers-fuzzy-matching t
-      helm-locate-fuzzy-match t
-      helm-M-x-fuzzy-match t
-      helm-semantic-fuzzy-match t
-      helm-imenu-fuzzy-match t
-      helm-apropos-fuzzy-match t
-      helm-lisp-fuzzy-completion t
-      helm-candidate-number-limit 500
-      helm-idle-delay 0.1
-      helm-input-idle-delay 0.1)
-#+END_SRC
-
-** Copilot
-
-#+BEGIN_SRC emacs-lisp
-;; accept completion from copilot and fallback to company
-;;(use-package! copilot
-;;  :hook (prog-mode . copilot-mode)
-;;  :bind (:map copilot-completion-map
-;;              ("<tab>" . 'copilot-accept-completion)
-;;              ("TAB" . 'copilot-accept-completion)
-;;              ("C-TAB" . 'copilot-accept-completion-by-word)
-;;              ("C-<tab>" . 'copilot-accept-completion-by-word)))
-
-;; (after! (evil copilot)
-;;   ;; Define the custom function that either accepts the completion or does the default behavior
-;;   (defun my/copilot-tab-or-default ()
-;;     (interactive)
-;;     (if (and (bound-and-true-p copilot-mode)
-;;              ;; Add any other conditions to check for active copilot suggestions if necessary
-;;              )
-;;         (copilot-accept-completion)
-;;       (evil-insert 1))) ; Default action to insert a tab. Adjust as needed.
-
-;;   ;; Bind the custom function to <tab> in Evil's insert state
-  ;; (evil-define-key 'insert 'global (kbd "<tab>") 'my/copilot-tab-or-default))
-#+END_SRC
-
-* Doom specific
-
-#+BEGIN_SRC emacs-lisp
-(set-popup-rule! "^\\*" :side 'bottom :height 0.5)
-#+END_SRC
 
 * Emacs Speaks Statistics
 
@@ -1107,6 +1044,13 @@ install.packages("languageserver")
     )
   (eglot-format (region-beginning) (region-end))
   )
+
+
+  (defun my-revert ()
+	(define-key ess-transcript-mode-map (kbd "C-c C-c")
+	  (lambda () (interactive) (revert-buffer t t))))
+
+  (add-hook 'ess-transcript-mode-hook 'my-revert)
 
   ;; (save-excursion
   ;;   (indent-according-to-mode)
@@ -1223,6 +1167,7 @@ Roxygen
     (add-hook 'edit-indirect-before-commit-hook (lambda () (ess-roxy-toggle-roxy-region (point-min) (point-max))) nil t)
     (ess-roxy-toggle-roxy-region (point-min) (point-max))))
 #+END_SRC
+
 
 * Org
 
@@ -1508,7 +1453,7 @@ Capture
 ;; (setq org-agenda-files `(,org-directory))
 #+END_SRC
 
-* Key bindings
+* Other key bindings
 
 #+BEGIN_SRC emacs-lisp
 (setq ns-alternate-modifier 'none
@@ -1516,14 +1461,18 @@ Capture
       mac-right-command-modifier 'super)
 #+END_SRC
 
+** Editor
 
+Disable suspend-frame key binding
 #+BEGIN_SRC emacs-lisp
-(global-unset-key (kbd "C-x C-z"))
+(use-package undo-fu
+  :config
+  (global-unset-key (kbd "C-z"))
+    (global-unset-key (kbd "C-x C-z"))
+  (global-set-key (kbd "C-z")   'undo-fu-only-undo)
+  (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
 ;;(put 'suspend-frame 'disabled t)
 #+END_SRC
-
-
-** Editor
 
 #+BEGIN_SRC emacs-lisp
 ;;(windmove-default-keybindings 'ctrl)
@@ -1532,7 +1481,6 @@ Capture
   (global-set-key [C-M-up] 'windmove-up)
   (global-set-key [C-M-down] 'windmove-down)
 #+END_SRC
-
 
 #+BEGIN_SRC emacs-lisp
   (if (not IS-MAC)
@@ -1545,11 +1493,6 @@ Capture
 	      (define-key emacs-lisp-mode-map "\C-c\C-c"
 		'eval-region)))
 
-  (defun my-revert ()
-	(define-key ess-transcript-mode-map (kbd "C-c C-c")
-	  (lambda () (interactive) (revert-buffer t t))))
-
-  (add-hook 'ess-transcript-mode-hook 'my-revert)
 
   (define-key comint-mode-map (kbd "M-<up>") 'comint-previous-input)
   (define-key comint-mode-map (kbd "M-<down>") 'comint-next-input)
@@ -1636,8 +1579,7 @@ Capture
   (map! "M-q" #'my/fill) ;; M-q: fill, C-u M-q: unfill
 
   ;;(global-set-key "\M-s" 'ispell-word) ;; Ispell word
-  (map! "M-q" #'cape-dict)
-  ;;(global-set-key "\M-s" 'ispell-word) ;; Ispell word
+  (map! "M-s" #'cape-dict)
 
   (global-set-key (kbd "C-x M-<return>")  (lambda() (interactive) (revert-buffer t t)))
 #+END_SRC
@@ -1709,12 +1651,11 @@ Avy (ace-jump-mode replacement)
 ;; (map! :leader "n B" #'citar-open)
 (map! :leader "n +" #'biblio-lookup)
 (map! :leader "n ?" #'biblio-doi-insert-bibtex)
+(map! :leader "n b" #'citar-open) ;; instead of citar-open-notes
 (map! :leader "n B" #'dissemin-lookup)
 (map! :leader "! !" #'consult-flycheck)
 (map! :leader "<tab>" #'yasnippet-capf)
-
 #+END_SRC
-
 
 
 ** Dired / shell
