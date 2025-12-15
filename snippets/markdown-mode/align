@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: align
+# uuid:
+# key: align
+# condition: t
+# --
+\begin{align*}
+$1
+\end{align*}

@@ -106,7 +106,7 @@
         ;;+stan
         +tree-sitter
         +lintr
-        +lsp
+        ;; +lsp
        )
        (julia             ; a better, faster MATLAB
         +lsp)
