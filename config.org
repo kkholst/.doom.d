@@ -166,7 +166,7 @@ Load local configuration (not version controlled)
       (load (concat my/emacshome "local.el")))
   (if (file-exists-p (concat my/emacshome "local_pre.el"))
       (load (concat my/emacshome "local_pre.el")))
-#+END_#+END_SRC
+#+END_SRC
 
 * Miscellaneous / Editor behaviour
 
@@ -303,6 +303,7 @@ Encryption
   (use-package epa-file
     :config
     (setq epa-file-name-regexp "\\.\\(gpg\\|asc\\)$"
+          epa-pinentry-mode 'loopback
           epa-armor t)
     ;;  (epa-file-name-regexp-update)
     ;; (epa-file-enable) ;; Already enabled
@@ -1094,8 +1095,8 @@ install.packages("languageserver")
 
 (defun my/ess-edit-reload()
   (interactive)
-  (ess-eval-linewise "reload()"))
-(map! :leader "c l" #'my/ess-edit-reload)
+  (ess-eval-linewise "Reload()"))
+(map! :leader "c R" #'my/ess-edit-reload)
 
 (defun ess-eval-and-go ()
   (interactive)
