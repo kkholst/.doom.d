@@ -402,7 +402,7 @@ Close buffers easily
 #+BEGIN_SRC emacs-lisp
 (defun my/transpose-buffers (arg)
   "Transpose the buffers shown in two windows."
-  ((interactive) "p")
+  (interactive "p")
   (let ((selector (if (>= arg 0) 'next-window 'previous-window)))
     (while (/= arg 0)
       (let ((this-win (window-buffer))
