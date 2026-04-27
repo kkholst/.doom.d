@@ -30,3 +30,5 @@
 (after! corfu ;; avoid RET may accidentally commit an automatically selected candidate
   (keymap-unset corfu-map "RET")
   )
+
+(map! :leader "m" #'cdlatex-lr-pair)
