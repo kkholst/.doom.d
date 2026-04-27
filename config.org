@@ -114,7 +114,7 @@ available. You can either set `doom-theme' or manually load a theme with the
 This determines the style of line numbers in effect. If set to `nil', line
 numbers are disabled. For relative line numbers, set this to `relative'.
 #+BEGIN_SRC emacs-lisp
-(setq display-line-numbers-type t)
+(setq display-line-numbers-type nil)
 ;;(add-hook! '(org-mode-hook LaTeX-mode-hook) #'doom-disable-line-numbers-h)
 #+END_SRC
 
