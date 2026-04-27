@@ -29,7 +29,7 @@
 (package! peep-dired)
 (package! dired-ranger)
 (package! dired-narrow)
-(package! dired-narrow)
+(package! org-projectile)
 (package! comment-dwim-2)
 (package! google-translate)
 (package! flycheck-google-cpplint)

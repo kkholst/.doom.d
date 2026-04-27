@@ -19,10 +19,7 @@
 (setq my/project-home "~/Projects/")
 
 (setq doom-theme 'doom-oksolar-dark-padded-modeline)
-
 (setq +doom-dashboard-banner-file (expand-file-name "fine_background.jpg" "~/Pictures/this is fine/"))
-
-
 
 (setq treesit-language-source-alist
    '((bash "https://github.com/tree-sitter/tree-sitter-bash")

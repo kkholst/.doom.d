@@ -6,26 +6,33 @@
 title: "${1:Document Title}"
 author: "Klaus K. Holst (KKZH)"
 date: "Last compiled on \`r format(Sys.time(), '%d %B, %Y')\`"
-output: html_document
-bibliography: ref.bib
+format: html
+bibliography: "\`system('kpsewhich huge.bib', intern=TRUE)\`"
 ---
 
 # Introduction
 
-$0
+![Elephant](elephant.png){#fig-elephant}
 
-Citation: [@R-base]
+See @fig-elephant for an illustration.
 
-$\int f$
+Citation: [@linbowang2017:truncationdeath]
+$$
 \begin{align}
-\mu &= \int f\,dm \\
-&= \xi(\theta)
+\mu &= \int f\,dm \ = \xi(\theta)
 \end{align}
+$$ {#eq-m}
 
-\`\`\`{r myplot, echo=FALSE}
+see @eq-m.
+
+See @fig-myplot.
+
+\`\`\`{r fig-myplot, echo=FALSE}
+#| fig-cap: "Plots"
 plot(1:10)
 \`\`\`
 
+$0
 
 <!-- Local Variables: -->
 <!-- eval: (define-minor-mode local-mode "local buffer mode" :init-value nil :key-map nil) -->

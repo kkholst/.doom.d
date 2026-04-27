@@ -122,7 +122,7 @@
 	+hugo
         +noter
 	+present
-	+roam2
+	+roam
         +pandoc            ; export-with-pandoc support
         )
        (python
