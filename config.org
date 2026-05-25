@@ -79,7 +79,24 @@ Org related directories
 ;;org-babel-python-command "python3")
 (setq lsp-clients-clangd-executable "clangd")
 (setq plantuml-jar-path (expand-file-name (concat my/localbin "plantuml/plantuml.jar")))
-(defvar my/opencmd (if IS-MAC "open" "/usr/bin/xdg-open") "Program for opening files and applications")
+
+
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(defvar my/opencmd
+  (cond
+   ;; Check for WSL (Windows Subsystem for Linux)
+   ((and (eq system-type 'gnu/linux)
+         (string-match-p "microsoft\\|wsl"
+                         (downcase (shell-command-to-string "uname -r"))))
+    ;; requires wslpath -- sudo apt install wslu
+    "wslview")
+   ;; Check for macOS
+   (IS-MAC "open")
+   ;; Default to xdg-open on other Linux/Unix systems
+   (t "/usr/bin/xdg-open"))
+  "Program for opening files and applications")
 #+END_SRC
 
 ** Appearance
@@ -999,10 +1016,24 @@ install.packages("languageserver")
 
 
 ;; https://github.com/emacs-ess/ESS/issues/1297#issuecomment-2322831635
-(advice-add 'ess-roxy-complete-tag :around  #'cape-wrap-noninterruptible)
-(advice-add 'ess-filename-completion :around  #'cape-wrap-noninterruptible)
-(advice-add 'ess-r-package-completion :around  #'cape-wrap-noninterruptible)
-(advice-add 'ess-r-object-completion :around  #'cape-wrap-noninterruptible)
+;; NOTE: cape-wrap-noninterruptible disables C-g during the call, which
+;; causes Emacs to fully hang if the inferior R is busy (long computation,
+;; readline, browser()). Keep it ONLY for ess-roxy-complete-tag (the case
+;; the upstream issue actually addresses). For the others, use
+;; cape-wrap-nonexclusive so corfu can fall back to other capfs.
+(advice-add 'ess-roxy-complete-tag    :around #'cape-wrap-noninterruptible)
+(advice-add 'ess-filename-completion  :around #'cape-wrap-nonexclusive)
+(advice-add 'ess-r-package-completion :around #'cape-wrap-nonexclusive)
+(advice-add 'ess-r-object-completion  :around #'cape-wrap-nonexclusive)
+
+;; Run lintr only on save / mode-enable, not on every keystroke. lintr
+;; spawns an R subprocess each run and is a major source of stalls.
+(after! flycheck
+  (setq flycheck-check-syntax-automatically '(save mode-enabled)
+        flycheck-idle-change-delay 2.0))
+
+(after! ess
+  (map! :map inferior-ess-r-mode-map "M-r" #'consult-history))
 
 (defun my/r-lsp ()
   "Dispatch lsp/eglot in actual R files (but not poly-mode blocks)"
@@ -1019,10 +1050,16 @@ install.packages("languageserver")
     )
   )
 
-;;(after! ess
-;;  (when (modulep! +lsp)
-;;    (add-hook 'ess-r-mode-local-vars-hook #'my/r-lsp 'append)
-;;    ))
+(after! ess
+  ;; (when (modulep! :tools lsp +eglot)
+  ;;   ;; Only spin up eglot for genuine .R/.r files, not poly-mode chunks.
+  ;;  (add-hook 'ess-r-mode-local-vars-hook #'my/r-lsp 'append))
+
+  ;; Eglot/eldoc tuning to avoid blocking the UI on completion/sig help.
+  (when (boundp 'eglot-events-buffer-size)
+    (setq eglot-events-buffer-size 0)) ;; less log overhead
+  (setq eglot-send-changes-idle-time 0.5
+        eldoc-idle-delay 0.5))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -1065,7 +1102,37 @@ install.packages("languageserver")
   (local-set-key (kbd "C-<tab>") 'my/ess-tab)
   )
 (add-hook 'ess-mode-hook #'my-ess-settings)
+;; (add-hook 'inferior-R-mode-hook
+;;           (lambda ()
+;;             (eldoc-mode -1)))
+;; (add-hook 'eldoc-mode-hook
+;;           (lambda ()
+;;             (when (and (derived-mode-p 'inferior-ess-mode)
+;;                        eldoc-mode)
+;;               (eldoc-mode -1)))
+;;           ;; keep it near top
+;;           )
+(add-hook 'inferior-R-mode-hook
+          (lambda ()
+            ;; Slow down eldoc and don't auto-pop completion in the REPL;
+            ;; ess-r-object-completion blocks Emacs while waiting for the
+            ;; inferior R process. Manual TAB still works.
+            (setq-local eldoc-idle-delay 1.0)
+            (when (boundp 'corfu-auto)
+              (setq-local corfu-auto nil))
+            (when (boundp 'corfu-auto-delay)
+              (setq-local corfu-auto-delay 0.5))))
+(add-hook 'inferior-R-mode-hook
+          (lambda ()
+            (when (fboundp 'company-mode) (company-mode -1))))
 
+;; In R source buffers, give corfu a longer delay so a stray keystroke
+;; doesn't immediately fire ess-r-object-completion against a busy R.
+(add-hook 'ess-r-mode-hook
+          (lambda ()
+            (when (boundp 'corfu-auto-delay)
+              (setq-local corfu-auto-delay 0.4))
+            (setq-local eldoc-idle-delay 0.5)))
 
 (defun ess-tooltip-show-at-point (text xo yo)
   (with-no-warnings
@@ -1486,7 +1553,7 @@ Disable suspend-frame key binding
 #+BEGIN_SRC emacs-lisp
   (if (not IS-MAC)
       (progn
-      (map! "C-u M-+" #'doom/decrease-font-size)
+      (map! "C-+" #'doom/decrease-font-size)
       (map! "M-+" #'doom/increase-font-size)))
 
   (add-hook 'emacs-lisp-mode-hook
@@ -1675,6 +1742,111 @@ Avy (ace-jump-mode replacement)
     "C-c RET"      #'dired-open-file
     "C-c %"        #'helm-ag
     "C-c /"        #'helm-find))
+#+END_SRC
+
+*** Midnight-Commander style two-pane dired
+
+A fast MC-like workflow on top of vanilla dired. Hit =<f9>= (or =SPC o m=) to
+open the current directory in a left/right split with a second dired pane on
+the right defaulting to =$HOME= (or the other window's directory if it is
+already a dired buffer). =dired-dwim-target= makes =C= (copy) and =R= (rename
+/ move) propose the *other* pane as destination, exactly like MC's F5/F6.
+
+| key   | action                                                   |
+|-------+----------------------------------------------------------|
+| <f3>  | view file (read-only)                                    |
+| <f4>  | edit file                                                |
+| <f5>  | copy marked files to other pane                          |
+| <f6>  | rename / move marked files to other pane                 |
+| <f7>  | create directory                                         |
+| <f8>  | delete marked files                                      |
+| <f9>  | toggle two-pane dired                                    |
+| TAB   | switch to other dired pane                               |
+| =     | diff file at point against same-named file in other pane |
+
+#+BEGIN_SRC emacs-lisp
+(defun my/dired-two-pane (&optional dir)
+  "Open DIR (default: current) in a left/right two-pane dired layout.
+The right pane defaults to $HOME unless another dired buffer is already
+visible, in which case its directory is reused."
+  (interactive)
+  (let* ((left  (or dir
+                    (when (derived-mode-p 'dired-mode) default-directory)
+                    default-directory))
+         (other (catch 'found
+                  (dolist (w (window-list))
+                    (with-current-buffer (window-buffer w)
+                      (when (and (derived-mode-p 'dired-mode)
+                                 (not (equal default-directory left)))
+                        (throw 'found default-directory))))
+                  nil))
+         (right (or other (expand-file-name "~/"))))
+    (delete-other-windows)
+    (dired left)
+    (let ((win (split-window-right)))
+      (select-window win)
+      (dired right)
+      (other-window 1))))
+
+(defun my/dired-toggle-two-pane ()
+  "Toggle between single-pane and two-pane dired."
+  (interactive)
+  (if (and (derived-mode-p 'dired-mode)
+           (= (length (window-list)) 2)
+           (with-current-buffer (window-buffer (next-window))
+             (derived-mode-p 'dired-mode)))
+      (delete-other-windows)
+    (my/dired-two-pane)))
+
+(defun my/dired-other-pane-dir ()
+  "Return the directory shown in the other dired window, or nil."
+  (let ((w (next-window)))
+    (when (and w (not (eq w (selected-window))))
+      (with-current-buffer (window-buffer w)
+        (when (derived-mode-p 'dired-mode)
+          default-directory)))))
+
+(defun my/dired-diff-with-other-pane ()
+  "Diff file at point against same-named file in the other dired pane."
+  (interactive)
+  (let* ((this (dired-get-filename nil t))
+         (other-dir (my/dired-other-pane-dir))
+         (other (and other-dir (expand-file-name (file-name-nondirectory this) other-dir))))
+    (if (and other (file-exists-p other))
+        (ediff-files this other)
+      (user-error "No matching file in other pane"))))
+
+(after! dired
+  ;; F-keys mimic Midnight Commander
+  (map! :map dired-mode-map
+        "<f3>" #'dired-view-file
+        "<f4>" #'dired-find-file
+        "<f5>" #'dired-do-copy
+        "<f6>" #'dired-do-rename
+        "<f7>" #'dired-create-directory
+        "<f8>" #'dired-do-delete
+        "<f9>" #'my/dired-toggle-two-pane
+        "TAB"  #'other-window
+        "="    #'my/dired-diff-with-other-pane))
+
+;; Global launcher: <f9> anywhere opens the two-pane view rooted at the
+;; current buffer's directory.
+(map! "<f9>" #'my/dired-two-pane
+      :leader "o m" #'my/dired-two-pane)
+#+END_SRC
+
+*** Sunrise Commander
+
+A more faithful Norton/MC clone built on dired. Launch with =SPC o M= or
+=M-x sunrise=. Inside Sunrise, =C-c t= opens a vterm at the active pane's
+directory, =C-c C-c= clones the active pane to the passive one, and the
+usual MC keys (F5/F6/F7/F8) work too.
+
+#+BEGIN_SRC emacs-lisp
+(use-package! sunrise-commander
+  :commands (sunrise sunrise-cd)
+  :init
+  (map! :leader "o M" #'sunrise))
 #+END_SRC
 
 

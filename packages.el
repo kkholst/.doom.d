@@ -29,6 +29,8 @@
 (package! peep-dired)
 (package! dired-ranger)
 (package! dired-narrow)
+(package! sunrise-commander
+  :recipe (:host github :repo "sunrise-commander/sunrise-commander"))
 (package! org-projectile)
 (package! comment-dwim-2)
 (package! google-translate)
