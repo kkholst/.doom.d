@@ -21,14 +21,18 @@
 ;; This advice detects that case and prepends the eglot project root.
 (defun my/eglot-uri-to-path-fix (orig uri)
   (let ((result (funcall orig uri)))
+    ;; languageserver (<=0.3.18) returns bare relative paths like "R/cate.R"
+    ;; instead of "file:///project/root/R/cate.R". The correct test is whether
+    ;; the path is relative (not absolute), not whether it exists on disk --
+    ;; since default-directory at call time may differ from default-directory
+    ;; at jump time, causing xref to store a relative path that expands wrong.
     (if (and result
-             (not (file-exists-p result))
-             (not (string-prefix-p "file://" (or uri ""))))
+             (not (string-prefix-p "file://" (or uri "")))
+             (not (file-name-absolute-p result)))
         (let* ((server (eglot-current-server))
                (root (and server (project-root (eglot--project server)))))
           (if root
-              (let ((candidate (expand-file-name result root)))
-                (if (file-exists-p candidate) candidate result))
+              (expand-file-name result root)
             result))
       result)))
 
