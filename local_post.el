@@ -13,6 +13,28 @@
 
 (global-set-key (kbd "C-c d") #'find-definition-with-prompt)
 
+;; Workaround for languageserver (<=0.3.18) bug where workspace/symbol
+;; responses return bare relative paths like "R/cate.R" instead of
+;; proper "file:///project/root/R/cate.R" URIs. eglot-uri-to-path
+;; falls through on non-file:// URIs, returning the bare path, which
+;; expand-file-name then resolves against "/" producing "/R/cate.R".
+;; This advice detects that case and prepends the eglot project root.
+(defun my/eglot-uri-to-path-fix (orig uri)
+  (let ((result (funcall orig uri)))
+    (if (and result
+             (not (file-exists-p result))
+             (not (string-prefix-p "file://" (or uri ""))))
+        (let* ((server (eglot-current-server))
+               (root (and server (project-root (eglot--project server)))))
+          (if root
+              (let ((candidate (expand-file-name result root)))
+                (if (file-exists-p candidate) candidate result))
+            result))
+      result)))
+
+(with-eval-after-load 'eglot
+  (advice-add 'eglot-uri-to-path :around #'my/eglot-uri-to-path-fix))
+
 (map! :leader "L" #'my/ess-run-loadall)
 
 (map! :leader "R" #'my/split-ess)
