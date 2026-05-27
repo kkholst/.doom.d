@@ -997,10 +997,6 @@ install.packages("languageserver")
   (setq eglot-events-buffer-size 0    ;; don't log all LSP traffic (reduces GC pressure)
         eglot-autoshutdown t          ;; kill R LSP process when last buffer closes
         eglot-sync-connect 1          ;; 1s then connect in background; avoids startup freeze
-        eglot-stay-out-of '(imenu)    ;; don't override imenu with sync documentSymbol;
-                                      ;; avoids redisplay/menubar freezes when R LS is slow
-                                      ;; (e.g. under heavy CPU load from simulations).
-                                      ;; xref/M-./completion/workspace-symbol still use LSP.
         eglot-ignored-server-capabilities
         '(:documentOnTypeFormattingProvider))) ;; disable on-type formatting; ESS handles indentation
 
