@@ -929,11 +929,9 @@ Arduino
         bibtex-completion-bibliography my/bibliography
         bibtex-completion-additional-search-fields '(keywords))
 
-
 (use-package! citar
   :init
-  ;;(citar-bibliography '("~//references.bib"))
-  (setq citar-bibliography `(,my/bibliography)
+  (setq citar-bibliography my/bibliography
         citar-library-paths `(,my/pdf-directory)
         citar-notes-paths `(,(concat org-directory "citar/"))
         citar-org-roam-note-title-template "${author} (${year}) - ${title}")
@@ -1847,6 +1845,78 @@ usual MC keys (F5/F6/F7/F8) work too.
   :commands (sunrise sunrise-cd)
   :init
   (map! :leader "o M" #'sunrise))
+#+END_SRC
+
+*** Dirvish
+
+Modern, polished dired replacement with rich previews, icon support and
+fast async listings. Launched explicitly via =SPC o d= so it co-exists
+with vanilla dired, =my/dired-two-pane=, and Sunrise without taking over.
+
+| key            | action                                |
+|----------------+---------------------------------------|
+| SPC o d        | open dirvish in current directory     |
+| q              | quit dirvish session                  |
+| TAB            | toggle file preview                   |
+| a              | toggle attribute columns              |
+| f              | jump to file (fd / consult)           |
+| s              | sort cycle                            |
+| y              | yank menu (copy/move/symlink/...)     |
+| M-f / M-b      | history forward / back                |
+| M-n / M-p      | next / previous file in subtree       |
+
+Dirvish is *not* set as a global override of dired (we keep dired vanilla
+to preserve =dired+=, =dired-narrow=, =peep-dired=, two-pane and Sunrise
+behaviour). Use =M-x dirvish-override-dired-mode= interactively if you
+want to A/B test the global takeover.
+
+#+BEGIN_SRC emacs-lisp
+(use-package! dirvish
+  :commands (dirvish dirvish-side dirvish-dwim)
+  :init
+  (map! :leader "o d" #'dirvish)
+  :config
+  ;; Columns shown in the main file list.
+  (setq dirvish-attributes
+        '(vc-state subtree-state nerd-icons collapse git-msg file-time file-size))
+  ;; Use the same listing switches as our dired setup.
+  (setq dirvish-hide-details nil)
+  (setq dirvish-default-layout '(0 0.4 0.6))    ; no parent, 40% main / 60% preview
+  (setq dirvish-mode-line-format
+        '(:left (sort symlink) :right (omit yank index)))
+  ;; Reuse our preferred ls switches when available.
+  (when (boundp 'dired-listing-switches)
+    (setq dirvish-listing-switches dired-listing-switches)))
+#+END_SRC
+
+*** diredc
+
+A more "commander-like" experience built closer to vanilla dired.
+Provides dual-pane frames, persistent per-buffer history, trash support,
+quick shell, and bookmarks. Launched via =SPC o D= so it stays opt-in.
+
+Inside diredc:
+
+| key       | action                                 |
+|-----------+----------------------------------------|
+| TAB       | switch to other pane                   |
+| C-c ?     | show help (very useful, lots of keys)  |
+| C-q       | quit diredc and clean up its frames    |
+| M-d       | new dual-pane frame                    |
+| C-<right> / C-<left> | history forward / back        |
+| C-c C-s   | pop a shell in current directory       |
+| C-c C-t   | toggle trash (use trash vs delete)     |
+| C-c C-r   | rename / refactor selection            |
+
+#+BEGIN_SRC emacs-lisp
+(use-package! diredc
+  :commands (diredc diredc-mode)
+  :init
+  (map! :leader "o D" #'diredc)
+  :config
+  ;; Send deletions to the system trash instead of nuking files.
+  (setq diredc-trash-info-header-function #'diredc-trash-info-header-default)
+  (setq delete-by-moving-to-trash t))
 #+END_SRC
 
 

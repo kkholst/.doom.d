@@ -31,6 +31,8 @@
 (package! dired-narrow)
 (package! sunrise-commander
   :recipe (:host github :repo "sunrise-commander/sunrise-commander"))
+(package! dirvish)
+(package! diredc)
 (package! org-projectile)
 (package! comment-dwim-2)
 (package! google-translate)
